@@ -1,4 +1,6 @@
 target/
+node_modules/
+.pnpm-store/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
