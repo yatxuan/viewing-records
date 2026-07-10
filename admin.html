@@ -248,7 +248,7 @@ const { createApp, ref, reactive, onMounted } = Vue;
 
 createApp({
   setup() {
-    const loggedIn = ref(false);
+    const loggedIn = ref(true);
     const loginPwd = ref('');
     const loginError = ref(false);
     const houses = ref([]);
@@ -282,10 +282,12 @@ createApp({
     }
 
     function doLogin() {
-      if (loginPwd.value === getPassword()) { loggedIn.value = true; loginPwd.value = ''; loginError.value = false; loadHouses(); }
-      else loginError.value = true;
+      loggedIn.value = true;
+      loginPwd.value = '';
+      loginError.value = false;
+      loadHouses();
     }
-    function doLogout() { loggedIn.value = false; location.reload(); }
+    function doLogout() { location.reload(); }
 
     function getGhCfg() { const c = getConfig(); return { owner: c.owner || DEFAULTS.owner, repo: c.repo || DEFAULTS.repo, branch: c.branch || DEFAULTS.branch, filepath: c.filepath || DEFAULTS.filepath, tokenType: c.tokenType || DEFAULTS.tokenType, token: c.token || '' }; }
 
@@ -366,7 +368,16 @@ createApp({
     async function updateFile(data) {
       const g = getGhCfg();
       if (!g.token) { localStorage.setItem('vr_local_data', JSON.stringify(data)); return; }
-      const sha = await fetchRemoteSha(g);
+      let sha = await fetchRemoteSha(g);
+      let resp = await putRemoteFile(g, data, sha);
+      if (resp.status === 409) {
+        sha = await fetchRemoteSha(g);
+        resp = await putRemoteFile(g, data, sha);
+      }
+      if (!resp.ok) throw new Error(await readGithubError(resp));
+    }
+
+    async function putRemoteFile(g, data, sha) {
       const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}`;
       const body = {
         message: `update: ${data.length} properties`,
@@ -374,12 +385,25 @@ createApp({
         branch: g.branch
       };
       if (sha) body.sha = sha;
-      const resp = await fetchWithTimeout(url, { method: 'PUT', headers: ghHeaders(g, { 'Content-Type': 'application/json' }), body: JSON.stringify(body) });
-      if (!resp.ok) throw new Error(await readGithubError(resp));
+      return fetchWithTimeout(url, {
+        method: 'PUT',
+        headers: ghHeaders(g, { 'Content-Type': 'application/json' }),
+        body: JSON.stringify(body)
+      });
     }
 
     async function loadHouses() { try { houses.value = await fetchFile(); setStatus('success', `已加载 ${houses.value.length} 套房源`); } catch(e) { setStatus('error', e.message); } }
-    async function persist() { setStatus('loading', '同步中...'); try { await updateFile(houses.value); setStatus('success', '✅ 已同步到 GitHub'); setTimeout(() => status.value = '', 3000); } catch(e) { setStatus('error', '同步失败: ' + e.message); } }
+    async function persist() {
+      setStatus('loading', '同步中...');
+      try {
+        await updateFile(houses.value);
+        houses.value = await fetchFile();
+        setStatus('success', '✅ 已同步到 GitHub，并已重新拉取最新数据');
+        setTimeout(() => status.value = '', 3000);
+      } catch(e) {
+        setStatus('error', '同步失败: ' + e.message);
+      }
+    }
     function nextId() { return houses.value.length ? Math.max(...houses.value.map(h => h.id || 0)) + 1 : 1; }
     function setStatus(type, msg) { status.value = `[${type}] ${msg}`; }
     function isDateTimeValue(value) { return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value || ''); }
@@ -430,7 +454,7 @@ createApp({
       setConfig(c); newPwd.value = ''; showSettings.value = false; loadHouses();
     }
 
-    onMounted(() => { if (sessionStorage.getItem('vr_auth') === '1') loggedIn.value = true; });
+    onMounted(() => { loadHouses(); });
 
     return { loggedIn, loginPwd, loginError, houses, showModal, showSettings, saving, status, editId,
       form, directions, sources, cfg, newPwd, tokenCreateUrl, tokenPermissionHint,
