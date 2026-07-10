@@ -4,803 +4,330 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理后台 - 看房记录</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #f5f6fa; color: #2d3436; padding: 24px 16px; min-height: 100vh;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #2d3436; padding: 24px 16px; min-height: 100vh; }
   .container { max-width: 720px; margin: 0 auto; }
   header { text-align: center; margin-bottom: 24px; }
   header h1 { font-size: 24px; font-weight: 700; color: #1a1a2e; }
   header p { color: #888; font-size: 13px; margin-top: 4px; }
-  .back-link { display: inline-block; margin-bottom: 16px; color: #6c5ce7; text-decoration: none; font-size: 14px; }
-  .back-link:hover { text-decoration: underline; }
-
-  /* Login */
-  .login-box {
-    background: #fff; border-radius: 16px; padding: 32px; max-width: 360px;
-    margin: 60px auto; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align: center;
-  }
-  .login-box h2 { margin-bottom: 20px; font-size: 18px; }
-  .login-box input {
-    width: 100%; padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 8px;
-    font-size: 14px; margin-bottom: 12px; outline: none;
-  }
+  .back-link { display: inline-block; margin-bottom: 16px; color: #6c5ce7; text-decoration: none; }
+  .login-box { background: #fff; border-radius: 16px; padding: 32px; max-width: 360px; margin: 60px auto; box-shadow: 0 2px 12px rgba(0,0,0,.06); text-align: center; }
+  .login-box h2 { margin-bottom: 20px; }
+  .login-box input { width: 100%; padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 14px; margin-bottom: 12px; outline: none; }
   .login-box input:focus { border-color: #6c5ce7; }
-  .login-box .btn { width: 100%; }
-  .login-error { color: #e74c3c; font-size: 13px; margin-bottom: 12px; display: none; }
-
-  /* Toolbar */
   .toolbar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 4px; padding: 8px 16px;
-    border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-  }
+  .btn { padding: 8px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
   .btn-primary { background: #6c5ce7; color: #fff; }
   .btn-primary:hover { background: #5b4cdb; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-secondary { background: #dfe6e9; color: #2d3436; }
-  .btn-secondary:hover { background: #b2bec3; }
   .btn-danger { background: #ff7675; color: #fff; }
-  .btn-danger:hover { background: #d63031; }
   .btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
-
-  /* Status */
-  .status-msg {
-    padding: 10px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none;
-  }
-  .status-msg.show { display: block; }
+  .status-msg { padding: 10px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
   .status-msg.success { background: #e8f5e9; color: #27ae60; }
   .status-msg.error { background: #fde8e8; color: #c0392b; }
   .status-msg.loading { background: #e8f4fd; color: #2980b9; }
-
-  /* House list */
-  .house-list { display: flex; flex-direction: column; gap: 12px; }
-  .house-item {
-    background: #fff; border-radius: 12px; padding: 16px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center;
-  }
-  .house-info { flex: 1; }
-  .house-info .addr { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-  .house-info .meta { font-size: 12px; color: #888; }
+  .house-item { background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(0,0,0,.04); display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .house-info .addr { font-weight: 600; font-size: 14px; }
+  .house-info .meta { font-size: 12px; color: #888; margin-top: 2px; }
   .house-actions { display: flex; gap: 6px; }
-
-  /* Modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px;
-  }
-  .modal-overlay.active { display: flex; }
-  .modal {
-    background: #fff; border-radius: 16px; width: 100%; max-width: 520px;
-    max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  }
-  .modal h2 { font-size: 20px; margin-bottom: 20px; color: #1a1a2e; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; border-radius: 16px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+  .modal h2 { font-size: 20px; margin-bottom: 20px; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .form-row.full { grid-template-columns: 1fr; }
   .form-group { display: flex; flex-direction: column; gap: 4px; }
-  .form-group label { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.3px; }
-  .form-group input, .form-group select, .form-group textarea {
-    padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 8px;
-    font-size: 14px; font-family: inherit; transition: border-color 0.2s; outline: none;
-  }
+  .form-group label { font-size: 12px; font-weight: 600; color: #888; }
+  .form-group input, .form-group select, .form-group textarea { padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #6c5ce7; }
   .form-group textarea { resize: vertical; min-height: 60px; }
   .modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
-
-  /* Stars in form */
-  .star-input { display: flex; gap: 4px; margin-top: 4px; }
-  .star-input .star { font-size: 22px; cursor: pointer; transition: transform 0.15s; }
-  .star-input .star:hover { transform: scale(1.2); }
-  .star-input .star.active { color: #f39c12; }
-  .star-input .star.inactive { color: #ddd; }
-
-  @media (max-width: 480px) {
-    .form-row { grid-template-columns: 1fr; }
-    .house-item { flex-direction: column; align-items: flex-start; gap: 12px; }
-  }
+  .star-input { display: flex; gap: 4px; }
+  .star-input span { font-size: 22px; cursor: pointer; }
+  .star-input .active { color: #f39c12; }
+  .star-input .inactive { color: #ddd; }
+  .section-title { font-size: 13px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .5px; margin: 16px 0 12px; }
+  .section-title:first-child { margin-top: 0; }
+  @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<div class="container">
-  <a href="./index.html" class="back-link">← 返回看房记录</a>
+<div id="app">
+  <div class="container">
+    <a href="./index.html" class="back-link">← 返回看房记录</a>
 
-  <!-- 登录界面 -->
-  <div id="loginView">
-    <div class="login-box">
-      <h2>🔐 管理后台</h2>
-      <p class="login-error" id="loginError">密码错误</p>
-      <input type="password" id="loginPassword" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter')doLogin()">
-      <br>
-      <button class="btn btn-primary" onclick="doLogin()">登录</button>
-      <p style="font-size:12px;color:#aaa;margin-top:16px;">默认密码: admin123<br>首次使用请登录后修改</p>
-    </div>
-  </div>
-
-  <!-- 管理界面 -->
-  <div id="adminView" style="display:none;">
-    <header>
-      <h1>📝 管理房源数据</h1>
-      <p>修改后会自动同步到 GitHub</p>
-    </header>
-
-    <div class="toolbar">
-      <button class="btn btn-primary" onclick="openAddModal()">＋ 新增房源</button>
-      <button class="btn btn-secondary" onclick="openSettings()">⚙️ 设置</button>
-      <button class="btn btn-secondary" onclick="doLogout()">退出</button>
+    <!-- Login -->
+    <div v-if="!loggedIn">
+      <div class="login-box">
+        <h2>🔐 管理后台</h2>
+        <p style="color:#e74c3c;font-size:13px;margin-bottom:12px;display:none" v-show="loginError">密码错误</p>
+        <input type="password" v-model="loginPwd" placeholder="请输入管理密码" @keydown.enter="doLogin">
+        <button class="btn btn-primary" @click="doLogin" style="width:100%">登录</button>
+        <p style="font-size:12px;color:#aaa;margin-top:16px">默认密码: admin123</p>
+      </div>
     </div>
 
-    <div class="status-msg" id="statusMsg"></div>
-
-    <div class="house-list" id="houseList"></div>
+    <!-- Admin -->
+    <template v-else>
+      <header><h1>📝 管理房源数据</h1><p>修改后自动同步到 GitHub</p></header>
+      <div class="toolbar">
+        <button class="btn btn-primary" @click="openAdd">＋ 新增房源</button>
+        <button class="btn btn-secondary" @click="showSettings = true">⚙️ 设置</button>
+        <button class="btn btn-secondary" @click="doLogout()">退出</button>
+      </div>
+      <div class="status-msg success" v-if="status">{{ status }}</div>
+      <div class="house-item" v-for="h in houses" :key="h.id">
+        <div class="house-info">
+          <div class="addr">{{ h.address }}</div>
+          <div class="meta">{{ h.type==='agent'?'🏢 中介':'👤 个人' }} · ¥{{ Number(h.price||0).toLocaleString() }}/月 · {{ h.roomType || '房型未填' }}</div>
+        </div>
+        <div class="house-actions">
+          <button class="btn btn-secondary btn-sm" @click="openEdit(h)">编辑</button>
+          <button class="btn btn-danger btn-sm" @click="delHouse(h.id)">删除</button>
+        </div>
+      </div>
+    </template>
   </div>
-</div>
 
-<!-- 编辑弹窗 -->
-<div class="modal-overlay" id="editModal" onclick="if(event.target===this)closeEditModal()">
-  <div class="modal">
-    <h2 id="editTitle">新增房源</h2>
-    <form id="editForm" onsubmit="saveHouse(event)">
-      <input type="hidden" id="f_id">
-
-      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-left:4px">排序与状态</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>类型</label>
-          <select id="f_type" required>
-            <option value="personal">个人转租</option>
-            <option value="agent">中介</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>状态</label>
-          <select id="f_status">
-            <option value="viewing">🔍 考虑中</option>
-            <option value="booked">⭐ 意向中</option>
-            <option value="living">🏠 居住中</option>
-            <option value="rejected">❌ 不考虑</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 12px;padding-left:4px">基本信息</div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label>地址</label>
-          <input type="text" id="f_address" placeholder="详细地址" required>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>房租（元/月）</label>
-          <input type="number" id="f_price" placeholder="如 1350">
-        </div>
-        <div class="form-group">
-          <label>房型</label>
-          <input type="text" id="f_roomType" placeholder="如一房一厅">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>楼层</label>
-          <input type="text" id="f_floor" placeholder="如 2楼">
-        </div>
-        <div class="form-group">
-          <label>朝向</label>
-          <select id="f_direction">
-            <option value="">请选择</option>
-            <option value="南">南</option><option value="东南">东南</option>
-            <option value="东">东</option><option value="西南">西南</option>
-            <option value="西">西</option><option value="北">北</option>
-            <option value="不确定">不确定</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>面积（㎡）</label>
-          <input type="number" step="0.1" id="f_area" placeholder="如 35">
-        </div>
-        <div class="form-group">
-          <label>家电情况</label>
-          <input type="text" id="f_furniture" placeholder="如包家电 / 需接手">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>采光</label>
-          <input type="text" id="f_lighting" placeholder="如一般 / 还行 / 未知">
-        </div>
-        <div class="form-group">
-          <label>装修</label>
-          <select id="f_decor">
-            <option value="">请选择</option>
-            <option value="毛坯">毛坯</option><option value="简装">简装</option>
-            <option value="精装">精装</option><option value="豪装">豪装</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>采光备注</label>
-          <input type="text" id="f_lightingNote" placeholder="补充说明">
-        </div>
-        <div class="form-group">
-          <label>电梯</label>
-          <select id="f_elevator">
-            <option value="">请选择</option>
-            <option value="有电梯">有电梯</option>
-            <option value="无电梯">无电梯</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 12px;padding-left:4px">费用明细</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>水电网情况</label>
-          <input type="text" id="f_waterElectric" placeholder="如包管理+网络">
-        </div>
-        <div class="form-group">
-          <label>水电类型</label>
-          <select id="f_utility">
-            <option value="">请选择</option>
-            <option value="民水民电">民水民电</option>
-            <option value="商水商电">商水商电</option>
-            <option value="民水商电">民水商电</option>
-            <option value="不确定">不确定</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>电费（元/度）</label>
-          <input type="number" step="0.01" id="f_electricPrice" placeholder="留空为无">
-        </div>
-        <div class="form-group">
-          <label>每月用电量（度）<span style="font-weight:400;color:#aaa">默认425</span></label>
-          <input type="number" id="f_elecUsage" placeholder="425" value="425">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>水费（元/吨）</label>
-          <input type="number" step="0.1" id="f_waterPrice" placeholder="留空为无">
-        </div>
-        <div class="form-group">
-          <label>每月用水量（吨）<span style="font-weight:400;color:#aaa">默认2</span></label>
-          <input type="number" id="f_waterUsage" placeholder="2" value="2">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>物业费（元/㎡/月）</label>
-          <input type="number" step="0.1" id="f_propFee" placeholder="留空为无">
-        </div>
-        <div class="form-group">
-          <label>服务费（元/月）</label>
-          <input type="number" id="f_serviceFee" placeholder="留空为无">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>押金方式</label>
-          <select id="f_deposit">
-            <option value="">请选择</option>
-            <option value="押一付一">押一付一</option>
-            <option value="押二付一">押二付一</option>
-            <option value="押一付三">押一付三</option>
-            <option value="其他">其他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>中介费</label>
-          <input type="text" id="f_agentFee" placeholder="如：半个月租">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>租期</label>
-          <select id="f_leaseTerm">
-            <option value="">请选择</option>
-            <option value="1年">1年</option><option value="半年">半年</option>
-            <option value="1年可续">1年可续</option><option value="半年可续">半年可续</option>
-            <option value="可短租">可短租</option><option value="面议">面议</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>评分（1-10）</label>
-          <select id="f_score">
-            <option value="">打分</option>
-            <option value="10">10 · 完美</option><option value="9">9 · 很好</option>
-            <option value="8">8 · 不错</option><option value="7">7 · 还行</option>
-            <option value="6">6 · 一般</option><option value="5">5 · 勉强</option>
-            <option value="4">4 · 较差</option><option value="3">3 · 很差</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 12px;padding-left:4px">联系与备注</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>看房时间</label>
-          <input type="text" id="f_viewTime" placeholder="如明天中午">
-        </div>
-        <div class="form-group">
-          <label>微信号</label>
-          <input type="text" id="f_wechat" placeholder="微信号">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>来源</label>
-          <select id="f_source">
-            <option value="">— 无 —</option>
-            <option value="抖音">抖音</option><option value="咸鱼">咸鱼</option>
-            <option value="小红书">小红书</option><option value="58同城">58同城</option>
-            <option value="豆瓣">豆瓣</option><option value="朋友圈">朋友圈</option>
-            <option value="其他">其他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>满意度（1-5星）</label>
-          <div class="star-input" id="starInput">
-            <span class="star inactive" data-v="1" onclick="setStar(1)">☆</span>
-            <span class="star inactive" data-v="2" onclick="setStar(2)">☆</span>
-            <span class="star inactive" data-v="3" onclick="setStar(3)">☆</span>
-            <span class="star inactive" data-v="4" onclick="setStar(4)">☆</span>
-            <span class="star inactive" data-v="5" onclick="setStar(5)">☆</span>
+  <!-- Edit Modal -->
+  <div class="modal-overlay show" v-if="showModal" @click.self="showModal=false">
+    <div class="modal">
+      <h2>{{ editId ? '编辑房源' : '新增房源' }}</h2>
+      <form @submit.prevent="save">
+        <div class="section-title">排序与状态</div>
+        <div class="form-row">
+          <div class="form-group"><label>类型</label>
+            <select v-model="form.type"><option value="personal">个人转租</option><option value="agent">中介</option></select>
           </div>
-          <input type="hidden" id="f_satisfaction" value="">
+          <div class="form-group"><label>状态</label>
+            <select v-model="form.status">
+              <option value="viewing">🔍 考虑中</option><option value="booked">⭐ 意向中</option>
+              <option value="living">🏠 居住中</option><option value="rejected">❌ 不考虑</option>
+            </select>
+          </div>
         </div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label>优点</label>
-          <textarea id="f_pros" placeholder="如：采光好、近地铁..."></textarea>
-        </div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label>缺点 / 隐忧</label>
-          <textarea id="f_cons" placeholder="如：楼道暗、周边吵..."></textarea>
-        </div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label>备注</label>
-          <textarea id="f_notes" placeholder="其他想记录的信息"></textarea>
-        </div>
-      </div>
 
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
-        <button type="submit" class="btn btn-primary" id="saveBtn">保存</button>
-      </div>
-    </form>
+        <div class="section-title">基本信息</div>
+        <div class="form-row full"><div class="form-group"><label>地址</label><input v-model="form.address" required></div></div>
+        <div class="form-row">
+          <div class="form-group"><label>房租（元/月）</label><input type="number" v-model="form.price"></div>
+          <div class="form-group"><label>房型</label><input v-model="form.roomType"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>楼层</label><input v-model="form.floor"></div>
+          <div class="form-group"><label>朝向</label>
+            <select v-model="form.direction"><option value="">请选择</option><option v-for="d in directions" :value="d">{{ d }}</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>面积（㎡）</label><input type="number" step="0.1" v-model="form.area"></div>
+          <div class="form-group"><label>家电情况</label><input v-model="form.furniture"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>采光</label><input v-model="form.lighting"></div>
+          <div class="form-group"><label>装修</label>
+            <select v-model="form.decor"><option value="">请选择</option><option value="毛坯">毛坯</option><option value="简装">简装</option><option value="精装">精装</option><option value="豪装">豪装</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>采光备注</label><input v-model="form.lightingNote"></div>
+          <div class="form-group"><label>电梯</label>
+            <select v-model="form.elevator"><option value="">请选择</option><option value="有电梯">有电梯</option><option value="无电梯">无电梯</option></select>
+          </div>
+        </div>
+
+        <div class="section-title">费用明细</div>
+        <div class="form-row">
+          <div class="form-group"><label>水电网情况</label><input v-model="form.waterElectric"></div>
+          <div class="form-group"><label>水电类型</label>
+            <select v-model="form.utility"><option value="">请选择</option><option value="民水民电">民水民电</option><option value="商水商电">商水商电</option><option value="民水商电">民水商电</option><option value="不确定">不确定</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>电费（元/度）</label><input type="number" step="0.01" v-model="form.electricPrice"></div>
+          <div class="form-group"><label>每月用电量（度）</label><input type="number" v-model="form.elecUsage" value="425"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>水费（元/吨）</label><input type="number" step="0.1" v-model="form.waterPrice"></div>
+          <div class="form-group"><label>每月用水量（吨）</label><input type="number" v-model="form.waterUsage" value="2"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>物业费（元/㎡/月）</label><input type="number" step="0.1" v-model="form.propFee"></div>
+          <div class="form-group"><label>服务费（元/月）</label><input type="number" v-model="form.serviceFee"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>押金方式</label>
+            <select v-model="form.deposit"><option value="">请选择</option><option value="押一付一">押一付一</option><option value="押二付一">押二付一</option><option value="押一付三">押一付三</option></select>
+          </div>
+          <div class="form-group"><label>中介费</label><input v-model="form.agentFee"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>租期</label>
+            <select v-model="form.leaseTerm"><option value="">请选择</option><option value="1年">1年</option><option value="半年">半年</option><option value="1年可续">1年可续</option></select>
+          </div>
+          <div class="form-group"><label>评分（1-10）</label>
+            <select v-model="form.score"><option value="">打分</option><option v-for="s in 10" :value="s">{{ s }} · {{ ['','很差','较差','勉强','一般','还行','不错','很好','完美'][s] || '' }}</option></select>
+          </div>
+        </div>
+
+        <div class="section-title">联系与备注</div>
+        <div class="form-row">
+          <div class="form-group"><label>看房时间</label><input v-model="form.viewTime"></div>
+          <div class="form-group"><label>微信号</label><input v-model="form.wechat"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>来源</label>
+            <select v-model="form.source"><option value="">— 无 —</option><option v-for="s in sources" :value="s">{{ s }}</option></select>
+          </div>
+          <div class="form-group"><label>满意度</label>
+            <div class="star-input">
+              <span v-for="i in 5" :key="i" :class="i <= form.satisfaction ? 'active' : 'inactive'" @click="form.satisfaction = i">★</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-row full"><div class="form-group"><label>优点</label><textarea v-model="form.pros" placeholder="如：采光好、近地铁..."></textarea></div></div>
+        <div class="form-row full"><div class="form-group"><label>缺点 / 隐忧</label><textarea v-model="form.cons" placeholder="如：楼道暗、周边吵..."></textarea></div></div>
+        <div class="form-row full"><div class="form-group"><label>备注</label><textarea v-model="form.notes"></textarea></div></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" @click="showModal=false">取消</button>
+          <button type="submit" class="btn btn-primary" :disabled="saving">{{ saving ? '保存中...' : '保存' }}</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 
-<!-- 设置弹窗 -->
-<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettingsModal()">
-  <div class="modal">
-    <h2>⚙️ 设置</h2>
-    <div class="form-row full">
-      <div class="form-group">
-        <label>GitHub 用户名</label>
-        <input type="text" id="s_owner" placeholder="your-github-username">
+  <!-- Settings Modal -->
+  <div class="modal-overlay show" v-if="showSettings" @click.self="showSettings=false">
+    <div class="modal">
+      <h2>⚙️ 设置</h2>
+      <div class="form-row full"><div class="form-group"><label>GitHub 用户名</label><input v-model="cfg.owner"></div></div>
+      <div class="form-row full"><div class="form-group"><label>仓库名</label><input v-model="cfg.repo"></div></div>
+      <div class="form-row">
+        <div class="form-group"><label>分支</label><input v-model="cfg.branch"></div>
+        <div class="form-group"><label>文件路径</label><input v-model="cfg.filepath"></div>
       </div>
-    </div>
-    <div class="form-row full">
-      <div class="form-group">
-        <label>仓库名</label>
-        <input type="text" id="s_repo" placeholder="your-repo-name">
+      <div class="form-row full"><div class="form-group"><label>Personal Access Token</label>
+        <input type="password" v-model="cfg.token" placeholder="ghp_xxxxxxxxxxxx">
+        <small style="font-size:11px;color:#aaa"><a href="https://github.com/settings/tokens/new" target="_blank" style="color:#6c5ce7">创建 Token</a>（勾选 repo 权限）</small>
+      </div></div>
+      <div class="form-row full"><div class="form-group"><label>修改管理密码</label><input type="password" v-model="newPwd" placeholder="留空不修改"></div></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" @click="showSettings=false">取消</button>
+        <button class="btn btn-primary" @click="saveSettings">保存设置</button>
       </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>分支</label>
-        <input type="text" id="s_branch" placeholder="main">
-      </div>
-      <div class="form-group">
-        <label>文件路径</label>
-        <input type="text" id="s_filepath" placeholder="data.json">
-      </div>
-    </div>
-    <div class="form-row full">
-      <div class="form-group">
-        <label>Personal Access Token</label>
-        <input type="password" id="s_token" placeholder="ghp_xxxxxxxxxxxx">
-        <small style="font-size:11px;color:#aaa;margin-top:2px;">
-          <a href="https://github.com/settings/tokens/new" target="_blank" style="color:#6c5ce7;">点此创建 Token</a>（勾选 repo 权限）
-        </small>
-      </div>
-    </div>
-    <div class="form-row full">
-      <div class="form-group">
-        <label>修改管理密码</label>
-        <input type="password" id="s_password" placeholder="留空则不修改">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" onclick="closeSettingsModal()">取消</button>
-      <button type="button" class="btn btn-primary" onclick="saveSettings()">保存设置</button>
     </div>
   </div>
 </div>
 
 <script>
-// ====== 配置 & 状态 ======
-let houses = [];
-let sha = '';       // data.json 的 SHA，更新时需要
-let currentStars = 0;
+const { createApp, ref, reactive, onMounted } = Vue;
 
-const DEFAULTS = {
-  owner: 'yatxuan',
-  repo: 'viewing-records',
-  branch: 'main',
-  filepath: 'data.json',
-  password: 'admin123',
-};
+createApp({
+  setup() {
+    const loggedIn = ref(false);
+    const loginPwd = ref('');
+    const loginError = ref(false);
+    const houses = ref([]);
+    const showModal = ref(false);
+    const showSettings = ref(false);
+    const saving = ref(false);
+    const status = ref('');
+    const editId = ref(null);
+    const newPwd = ref('');
 
-function getConfig() {
-  try {
-    return JSON.parse(localStorage.getItem('vr_config') || '{}');
-  } catch { return {}; }
-}
+    const DEFAULTS = { owner: 'yatxuan', repo: 'viewing-records', branch: 'main', filepath: 'data.json', password: 'admin123' };
 
-function setConfig(cfg) {
-  localStorage.setItem('vr_config', JSON.stringify(cfg));
-}
+    function getConfig() { try { return JSON.parse(localStorage.getItem('vr_config') || '{}'); } catch { return {}; } }
+    function setConfig(cfg) { localStorage.setItem('vr_config', JSON.stringify(cfg)); }
+    function getPassword() { return getConfig().password || DEFAULTS.password; }
 
-function getPassword() {
-  const cfg = getConfig();
-  return cfg.password || DEFAULTS.password;
-}
+    const directions = ['', '南', '东南', '东', '西南', '西', '北', '不确定'];
+    const sources = ['', '抖音', '咸鱼', '小红书', '58同城', '豆瓣', '朋友圈', '其他'];
 
-function getGhConfig() {
-  const cfg = getConfig();
-  return {
-    owner: cfg.owner || DEFAULTS.owner,
-    repo: cfg.repo || DEFAULTS.repo,
-    branch: cfg.branch || DEFAULTS.branch,
-    filepath: cfg.filepath || DEFAULTS.filepath,
-    token: cfg.token || '',
-  };
-}
-
-// ====== 认证 ======
-function doLogin() {
-  const pwd = document.getElementById('loginPassword').value;
-  if (pwd === getPassword()) {
-    sessionStorage.setItem('vr_auth', '1');
-    showAdmin();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-  }
-}
-
-function showAdmin() {
-  document.getElementById('loginView').style.display = 'none';
-  document.getElementById('adminView').style.display = 'block';
-  loadHouses();
-}
-
-function doLogout() {
-  sessionStorage.removeItem('vr_auth');
-  location.reload();
-}
-
-// ====== 数据加载（优先 GitHub，回退到 localStorage） ======
-const LOCAL_KEY = 'vr_local_data';
-
-// 安全地用 atob 解码 UTF-8 base64
-function b64DecodeUnicode(str) {
-  const bytes = Uint8Array.from(atob(str), c => c.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
-}
-
-async function fetchFile() {
-  const gh = getGhConfig();
-  // 如果没有 Token，直接用本地数据
-  if (!gh.token) {
-    console.warn('未配置 GitHub Token，使用本地数据');
-    const raw = localStorage.getItem(LOCAL_KEY);
-    return raw ? JSON.parse(raw) : [];
-  }
-  const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${gh.filepath}?ref=${gh.branch}`;
-  try {
-    const resp = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${gh.token}` },
+    const form = reactive({
+      id: '', type: 'personal', status: 'viewing', address: '', price: '', roomType: '', floor: '', direction: '',
+      area: '', furniture: '', lighting: '', decor: '', lightingNote: '', elevator: '', waterElectric: '', utility: '',
+      electricPrice: '', elecUsage: '425', waterPrice: '', waterUsage: '2', propFee: '', serviceFee: '',
+      deposit: '', agentFee: '', leaseTerm: '', score: '', viewTime: '', wechat: '', source: '',
+      pros: '', cons: '', notes: '', satisfaction: ''
     });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const json = await resp.json();
-    sha = json.sha;
-    return JSON.parse(b64DecodeUnicode(json.content).replace(/\n$/, ''));
-  } catch(e) {
-    console.warn('GitHub 加载失败，使用本地数据:', e.message);
-    const raw = localStorage.getItem(LOCAL_KEY);
-    return raw ? JSON.parse(raw) : [];
-  }
-}
 
-async function updateFile(data) {
-  const gh = getGhConfig();
-  // 没有 Token 就存本地
-  if (!gh.token) {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
-    return;
-  }
-  const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${gh.filepath}`;
-  const body = {
-    message: `update: ${data.length} properties`,
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-    sha: sha,
-    branch: gh.branch,
-  };
-  const resp = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${gh.token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-  if (!resp.ok) {
-    const errBody = await resp.json().catch(() => ({}));
-    throw new Error(errBody.message || `HTTP ${resp.status}`);
-  }
-  const result = await resp.json();
-  sha = result.content.sha;
-}
-
-// ====== 数据操作 ======
-async function loadHouses() {
-  showStatus('loading', '正在从 GitHub 加载...');
-  try {
-    houses = await fetchFile();
-    renderList();
-    showStatus('success', `已加载 ${houses.length} 套房源`);
-  } catch(err) {
-    showStatus('error', err.message);
-  }
-}
-
-async function persistHouses() {
-  showStatus('loading', '正在同步到 GitHub...');
-  try {
-    await updateFile(houses);
-    showStatus('success', '✅ 已同步到 GitHub');
-    setTimeout(() => hideStatus(), 3000);
-  } catch(err) {
-    showStatus('error', `同步失败: ${err.message}`);
-  }
-}
-
-function nextId() {
-  if (!houses.length) return 1;
-  return Math.max(...houses.map(h => h.id || 0)) + 1;
-}
-
-function renderList() {
-  const container = document.getElementById('houseList');
-  if (!houses.length) {
-    container.innerHTML = '<p style="text-align:center;color:#aaa;padding:40px 0;">暂无房源数据</p>';
-    return;
-  }
-  container.innerHTML = houses.map(h => `
-    <div class="house-item">
-      <div class="house-info">
-        <div class="addr">${h.address}</div>
-        <div class="meta">
-          ${h.type === 'agent' ? '🏢 中介' : '👤 个人'} ·
-          ${h.price ? '¥' + Number(h.price).toLocaleString() + '/月' : '价格待定'} ·
-          ${h.roomType || '房型未填'}
-          ${h.satisfaction ? ' · ' + '⭐'.repeat(Math.max(1, h.satisfaction)) : ''}
-        </div>
-      </div>
-      <div class="house-actions">
-        <button class="btn btn-secondary btn-sm" onclick="openEditModal(${h.id})">编辑</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteHouse(${h.id})">删除</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ====== 表单 ======
-function openAddModal() {
-  document.getElementById('editTitle').textContent = '新增房源';
-  document.getElementById('editForm').reset();
-  document.getElementById('f_id').value = '';
-  currentStars = 0;
-  updateStarDisplay(0);
-  document.getElementById('editModal').classList.add('active');
-}
-
-function openEditModal(id) {
-  const h = houses.find(d => d.id === id);
-  if (!h) return;
-  document.getElementById('editTitle').textContent = '编辑房源';
-  document.getElementById('f_id').value = h.id;
-  document.getElementById('f_type').value = h.type || 'personal';
-  document.getElementById('f_status').value = h.status || 'viewing';
-  document.getElementById('f_price').value = h.price || '';
-  document.getElementById('f_address').value = h.address || '';
-  document.getElementById('f_roomType').value = h.roomType || '';
-  document.getElementById('f_floor').value = h.floor || '';
-  document.getElementById('f_direction').value = h.direction || '';
-  document.getElementById('f_area').value = h.area || '';
-  document.getElementById('f_furniture').value = h.furniture || '';
-  document.getElementById('f_lighting').value = h.lighting || '';
-  document.getElementById('f_decor').value = h.decor || '';
-  document.getElementById('f_lightingNote').value = h.lightingNote || '';
-  document.getElementById('f_elevator').value = h.elevator || '';
-  document.getElementById('f_waterElectric').value = h.waterElectric || '';
-  document.getElementById('f_utility').value = h.utility || '';
-  document.getElementById('f_electricPrice').value = h.electricPrice || '';
-  document.getElementById('f_elecUsage').value = h.elecUsage || '425';
-  document.getElementById('f_waterPrice').value = h.waterPrice || '';
-  document.getElementById('f_waterUsage').value = h.waterUsage || '2';
-  document.getElementById('f_propFee').value = h.propFee || '';
-  document.getElementById('f_serviceFee').value = h.serviceFee || '';
-  document.getElementById('f_deposit').value = h.deposit || '';
-  document.getElementById('f_agentFee').value = h.agentFee || '';
-  document.getElementById('f_leaseTerm').value = h.leaseTerm || '';
-  document.getElementById('f_score').value = h.score || '';
-  document.getElementById('f_viewTime').value = h.viewTime || '';
-  document.getElementById('f_wechat').value = h.wechat || '';
-  document.getElementById('f_source').value = h.source || '';
-  document.getElementById('f_pros').value = h.pros || '';
-  document.getElementById('f_cons').value = h.cons || '';
-  document.getElementById('f_notes').value = h.notes || '';
-  document.getElementById('f_satisfaction').value = h.satisfaction || '';
-  currentStars = h.satisfaction || 0;
-  updateStarDisplay(currentStars);
-  document.getElementById('editModal').classList.add('active');
-}
-
-function closeEditModal() {
-  document.getElementById('editModal').classList.remove('active');
-}
-
-function setStar(v) {
-  currentStars = v;
-  document.getElementById('f_satisfaction').value = v;
-  updateStarDisplay(v);
-}
-
-function updateStarDisplay(v) {
-  const stars = document.querySelectorAll('#starInput .star');
-  stars.forEach(s => {
-    const val = parseInt(s.dataset.v);
-    s.className = val <= v ? 'star active' : 'star inactive';
-    s.textContent = val <= v ? '★' : '☆';
-  });
-}
-
-async function saveHouse(e) {
-  e.preventDefault();
-  const saveBtn = document.getElementById('saveBtn');
-  saveBtn.disabled = true;
-  saveBtn.textContent = '保存中...';
-
-  try {
-    const idEl = document.getElementById('f_id');
-    const editId = idEl.value ? parseInt(idEl.value) : null;
-
-    const house = {
-      id: editId || nextId(),
-      type: document.getElementById('f_type').value,
-      status: document.getElementById('f_status').value,
-      address: document.getElementById('f_address').value,
-      price: document.getElementById('f_price').value || '',
-      roomType: document.getElementById('f_roomType').value,
-      floor: document.getElementById('f_floor').value,
-      direction: document.getElementById('f_direction').value,
-      area: document.getElementById('f_area').value,
-      furniture: document.getElementById('f_furniture').value,
-      lighting: document.getElementById('f_lighting').value,
-      decor: document.getElementById('f_decor').value,
-      lightingNote: document.getElementById('f_lightingNote').value,
-      elevator: document.getElementById('f_elevator').value,
-      waterElectric: document.getElementById('f_waterElectric').value,
-      utility: document.getElementById('f_utility').value,
-      electricPrice: document.getElementById('f_electricPrice').value,
-      elecUsage: document.getElementById('f_elecUsage').value,
-      waterPrice: document.getElementById('f_waterPrice').value,
-      waterUsage: document.getElementById('f_waterUsage').value,
-      propFee: document.getElementById('f_propFee').value,
-      serviceFee: document.getElementById('f_serviceFee').value,
-      deposit: document.getElementById('f_deposit').value,
-      agentFee: document.getElementById('f_agentFee').value,
-      leaseTerm: document.getElementById('f_leaseTerm').value,
-      score: document.getElementById('f_score').value,
-      viewTime: document.getElementById('f_viewTime').value,
-      wechat: document.getElementById('f_wechat').value,
-      source: document.getElementById('f_source').value,
-      pros: document.getElementById('f_pros').value,
-      cons: document.getElementById('f_cons').value,
-      notes: document.getElementById('f_notes').value,
-      satisfaction: document.getElementById('f_satisfaction').value || '',
-    };
-
-    if (editId) {
-      const idx = houses.findIndex(d => d.id === editId);
-      if (idx >= 0) houses[idx] = house;
-    } else {
-      houses.push(house);
+    function resetForm() {
+      Object.keys(form).forEach(k => { form[k] = k === 'elecUsage' || k === 'waterUsage' ? form[k] : ''; });
+      form.elecUsage = '425'; form.waterUsage = '2'; form.status = 'viewing'; form.type = 'personal'; form.satisfaction = '';
     }
 
-    await persistHouses();
-    renderList();
-    closeEditModal();
-  } catch(err) {
-    showStatus('error', `保存失败: ${err.message}`);
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = '保存';
+    function doLogin() {
+      if (loginPwd.value === getPassword()) { loggedIn.value = true; loginPwd.value = ''; loginError.value = false; loadHouses(); }
+      else loginError.value = true;
+    }
+    function doLogout() { loggedIn.value = false; location.reload(); }
+
+    function getGhCfg() { const c = getConfig(); return { owner: c.owner || DEFAULTS.owner, repo: c.repo || DEFAULTS.repo, branch: c.branch || DEFAULTS.branch, filepath: c.filepath || DEFAULTS.filepath, token: c.token || '' }; }
+
+    async function fetchFile() {
+      const g = getGhCfg();
+      if (!g.token) { const raw = localStorage.getItem('vr_local_data'); return raw ? JSON.parse(raw) : []; }
+      try {
+        const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}?ref=${g.branch}`;
+        const resp = await fetch(url, { headers: { Authorization: `Bearer ${g.token}` } });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+        const bytes = Uint8Array.from(atob(json.content), c => c.charCodeAt(0));
+        return JSON.parse(new TextDecoder().decode(bytes).replace(/\n$/, ''));
+      } catch(e) { console.warn('GitHub 失败:', e.message); const raw = localStorage.getItem('vr_local_data'); return raw ? JSON.parse(raw) : []; }
+    }
+
+    async function updateFile(data) {
+      const g = getGhCfg();
+      if (!g.token) { localStorage.setItem('vr_local_data', JSON.stringify(data)); return; }
+      const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}`;
+      const body = { message: `update: ${data.length} properties`, content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
+      const resp = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${g.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    }
+
+    async function loadHouses() { try { houses.value = await fetchFile(); setStatus('success', `已加载 ${houses.value.length} 套房源`); } catch(e) { setStatus('error', e.message); } }
+    async function persist() { setStatus('loading', '同步中...'); try { await updateFile(houses.value); setStatus('success', '✅ 已同步到 GitHub'); setTimeout(() => status.value = '', 3000); } catch(e) { setStatus('error', '同步失败: ' + e.message); } }
+    function nextId() { return houses.value.length ? Math.max(...houses.value.map(h => h.id || 0)) + 1 : 1; }
+    function setStatus(type, msg) { status.value = `[${type}] ${msg}`; }
+
+    function openAdd() { resetForm(); editId.value = null; showModal.value = true; }
+    function openEdit(h) {
+      resetForm(); editId.value = h.id;
+      Object.keys(form).forEach(k => { if (h[k] !== undefined) form[k] = h[k]; });
+      showModal.value = true;
+    }
+
+    async function save() {
+      saving.value = true;
+      try {
+        const house = { ...form, id: editId.value || nextId() };
+        if (editId.value) { const idx = houses.value.findIndex(d => d.id === editId.value); if (idx >= 0) houses.value[idx] = house; }
+        else houses.value.push(house);
+        await persist();
+        showModal.value = false;
+      } finally { saving.value = false; }
+    }
+
+    function delHouse(id) { if (!confirm('确定删除？')) return; houses.value = houses.value.filter(d => d.id !== id); persist(); }
+
+    const cfg = reactive(getConfig());
+    function saveSettings() {
+      const c = { ...cfg };
+      if (newPwd.value && newPwd.value.length >= 4) c.password = newPwd.value;
+      setConfig(c); newPwd.value = ''; showSettings.value = false; loadHouses();
+    }
+
+    onMounted(() => { if (sessionStorage.getItem('vr_auth') === '1') loggedIn.value = true; });
+
+    return { loggedIn, loginPwd, loginError, houses, showModal, showSettings, saving, status, editId,
+      form, directions, sources, cfg, newPwd, doLogin, doLogout, openAdd, openEdit, save, delHouse, saveSettings };
   }
-}
-
-async function deleteHouse(id) {
-  if (!confirm('确定删除这套房源？')) return;
-  houses = houses.filter(d => d.id !== id);
-  await persistHouses();
-  renderList();
-}
-
-// ====== 设置 ======
-function openSettings() {
-  const gh = getGhConfig();
-  document.getElementById('s_owner').value = gh.owner || '';
-  document.getElementById('s_repo').value = gh.repo || '';
-  document.getElementById('s_branch').value = gh.branch || '';
-  document.getElementById('s_filepath').value = gh.filepath || '';
-  document.getElementById('s_token').value = gh.token || '';
-  document.getElementById('s_password').value = '';
-  document.getElementById('settingsModal').classList.add('active');
-}
-
-function closeSettingsModal() {
-  document.getElementById('settingsModal').classList.remove('active');
-}
-
-function saveSettings() {
-  const cfg = getConfig();
-  cfg.owner = document.getElementById('s_owner').value.trim();
-  cfg.repo = document.getElementById('s_repo').value.trim();
-  cfg.branch = document.getElementById('s_branch').value.trim() || 'main';
-  cfg.filepath = document.getElementById('s_filepath').value.trim() || 'data.json';
-  cfg.token = document.getElementById('s_token').value.trim();
-
-  const newPwd = document.getElementById('s_password').value;
-  if (newPwd && newPwd.length >= 4) {
-    cfg.password = newPwd;
-  }
-
-  setConfig(cfg);
-  closeSettingsModal();
-  loadHouses();
-}
-
-// ====== 状态提示 ======
-function showStatus(type, msg) {
-  const el = document.getElementById('statusMsg');
-  el.className = `status-msg show status-${type}`;
-  el.textContent = msg;
-}
-function hideStatus() {
-  document.getElementById('statusMsg').className = 'status-msg';
-}
-
-// ====== 初始化 ======
-(function init() {
-  if (sessionStorage.getItem('vr_auth') === '1') {
-    showAdmin();
-  }
-})();
+}).mount('#app');
 </script>
 </body>
 </html>
