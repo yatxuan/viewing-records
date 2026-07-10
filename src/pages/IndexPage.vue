@@ -7,7 +7,7 @@ import {
   NMessageProvider,
   NSpace,
 } from "naive-ui";
-import { Add, FunnelOutline, RefreshOutline, SettingsOutline } from "@vicons/ionicons5";
+import { Add, RefreshOutline, SettingsOutline } from "@vicons/ionicons5";
 import CompareView from "../components/CompareView.vue";
 import FilterDialog from "../components/FilterDialog.vue";
 import HouseCard from "../components/HouseCard.vue";
@@ -18,7 +18,9 @@ import {
   loadAndSaveHouses,
   loadHouses,
   normalizeDataConfig,
+  refreshRemoteHouses,
   saveStoredConfig,
+  submitLocalHousesToRemote,
   testDataConnection,
 } from "../shared/data-service.js";
 import { formatRoomType, sortableDisplayOrder, sortablePrice, sortableTime } from "../shared/formatters.js";
@@ -96,9 +98,40 @@ async function reloadData() {
   error.value = "";
   try {
     houses.value = await loadHouses();
-    status.value = `已加载 ${houses.value.length} 套房源`;
+    status.value = `已从本地缓存加载 ${houses.value.length} 套房源`;
   } catch (err) {
     error.value = `加载失败: ${err.message}`;
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function refreshRemoteData() {
+  loading.value = true;
+  error.value = "";
+  status.value = "正在从远程拉取并合并...";
+  try {
+    const result = await refreshRemoteHouses();
+    houses.value = result.houses;
+    status.value = `已合并远程数据：远程 ${result.remoteCount} 套，本地保留 ${result.localCount} 套，新增 ${result.addedCount} 套`;
+  } catch (err) {
+    error.value = `刷新远程失败: ${err.message}`;
+    status.value = "";
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function submitRemoteData() {
+  loading.value = true;
+  error.value = "";
+  status.value = "正在提交本地数据到远程...";
+  try {
+    await submitLocalHousesToRemote(houses.value);
+    status.value = `已提交 ${houses.value.length} 套本地房源到远程`;
+  } catch (err) {
+    error.value = `提交远程失败: ${err.message}`;
+    status.value = "";
   } finally {
     loading.value = false;
   }
@@ -110,7 +143,7 @@ async function deleteHouse(house) {
   status.value = "同步中...";
   try {
     houses.value = await loadAndSaveHouses(houses.value.filter((item) => item.id !== house.id));
-    status.value = "已删除并重新拉取最新数据";
+    status.value = "已删除，本地缓存已更新";
   } catch (err) {
     error.value = `删除失败: ${err.message}`;
   }
@@ -142,7 +175,7 @@ async function testConfig(nextConfig) {
   status.value = "正在测试连接...";
   try {
     const result = await testDataConnection(nextConfig);
-    const sourceMap = { github: "GitHub", localStorage: "浏览器本地数据", localFile: "本地文件" };
+    const sourceMap = { github: "GitHub" };
     status.value = `连接成功，读取到 ${result.count} 条数据（${sourceMap[result.source] || result.source}）`;
   } catch (err) {
     error.value = `连接失败: ${err.message}`;
@@ -226,11 +259,14 @@ onMounted(reloadData);
 
       <div class="toolbar">
         <div class="toolbar-group">
-          <n-button secondary @click="reloadData">
+          <n-button secondary @click="refreshRemoteData">
             <template #icon>
               <n-icon><RefreshOutline /></n-icon>
             </template>
             刷新数据
+          </n-button>
+          <n-button type="primary" secondary @click="submitRemoteData">
+            提交数据
           </n-button>
         </div>
         <div v-if="tab === 'list'" class="view-switch">

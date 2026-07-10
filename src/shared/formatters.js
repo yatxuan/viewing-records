@@ -17,8 +17,12 @@ export function formatRoomType(house) {
   const balcony = [house.balconies, house.balconySize && house.balconies !== "无阳台" ? house.balconySize : ""]
     .filter(Boolean)
     .join(" ");
-  const parts = [house.bedrooms, house.livingRooms, balcony, kitchen, house.toilets].filter(Boolean);
-  return parts.length ? parts.join("") : house.roomType || "";
+  const parts = [house.bedrooms, house.livingRooms, balcony, kitchen].filter(Boolean);
+  return removeToiletText(parts.length ? parts.join("") : house.roomType || "");
+}
+
+function removeToiletText(value) {
+  return String(value || "").replace(/一厕|二厕|厕所/g, "");
 }
 
 export function formatFurniture(house) {
@@ -31,7 +35,8 @@ export function formatFurniture(house) {
 export function formatKitchen(house) {
   if (!house || house.hasKitchen !== "yes") return house?.hasKitchen === "no" ? "无厨房" : "";
   const type = house.kitchenType === "shared" ? "公用厨房" : house.kitchenType === "independent" ? "独立厨房" : "有厨房";
-  if (house.kitchenType === "shared" && house.sharedKitchenLocation) return `${type} · ${house.sharedKitchenLocation}`;
+  const sharedLocation = removeToiletText(house.sharedKitchenLocation);
+  if (house.kitchenType === "shared" && sharedLocation) return `${type} · ${sharedLocation}`;
   return type;
 }
 

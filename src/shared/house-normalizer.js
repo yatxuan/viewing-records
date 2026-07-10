@@ -21,7 +21,7 @@ export function normalizeHouse(form) {
       ? form.contacts.filter((item) => item.type && item.value).map((item) => ({ type: item.type, value: item.value }))
       : [],
   };
-  house.toilets = "一厕";
+  delete house.toilets;
   house.roomType = roomSummary(house);
   house.furniture = house.furnitureComplete ? "家电齐全" : house.appliances.join("、");
   house.commuteDurationMinutes = normalizePositiveNumber(house.commuteDurationMinutes);
@@ -48,7 +48,7 @@ export function applyDefaults(form) {
   if (!form.lighting) form.lighting = "未知";
   if (!form.direction) form.direction = "未知";
   if (!form.livingRooms) form.livingRooms = "0厅";
-  form.toilets = "一厕";
+  delete form.toilets;
 }
 
 function roomSummary(house) {
@@ -56,5 +56,5 @@ function roomSummary(house) {
   const balcony = [house.balconies, house.balconySize && house.balconies !== "无阳台" ? house.balconySize : ""]
     .filter(Boolean)
     .join(" ");
-  return [house.bedrooms, house.livingRooms, balcony, kitchen, house.toilets].filter(Boolean).join("");
+  return [house.bedrooms, house.livingRooms, balcony, kitchen].filter(Boolean).join("");
 }

@@ -3,7 +3,6 @@ export const DEFAULT_CONFIG = {
   repo: "viewing-records",
   branch: "main",
   filepath: "data.json",
-  dataSourceMode: "remote",
 };
 
 export const DEFAULT_HOUSE = {
@@ -23,7 +22,6 @@ export const DEFAULT_HOUSE = {
   hasKitchen: "",
   kitchenType: "",
   sharedKitchenLocation: "",
-  toilets: "一厕",
   cookingType: "",
   floor: "",
   direction: "未知",
@@ -89,7 +87,6 @@ export const kitchenTypeOptions = [
 export const sharedKitchenLocationOptions = [
   { label: "和阳台共用", value: "和阳台共用" },
   { label: "门口玄关共用", value: "门口玄关共用" },
-  { label: "挨着厕所", value: "挨着厕所" },
 ];
 export const cookingOptions = ["天然气", "煤气", "电磁炉"].map((value) => ({
   label: value === "天然气" ? "天然气做饭" : value === "煤气" ? "煤气做饭" : value,

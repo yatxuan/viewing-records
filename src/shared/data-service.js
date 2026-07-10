@@ -27,7 +27,6 @@ export function normalizeDataConfig(config = {}) {
     repo: next.repo || DEFAULT_CONFIG.repo,
     branch: next.branch || DEFAULT_CONFIG.branch,
     filepath: next.filepath || next.filePath || DEFAULT_CONFIG.filepath,
-    dataSourceMode: next.dataSourceMode || DEFAULT_CONFIG.dataSourceMode,
     githubFileUrl: next.githubFileUrl || "",
     token: next.token || "",
   };
@@ -88,34 +87,11 @@ export function parseGitHubFileUrl(value) {
 }
 
 export async function loadHouses() {
-  const config = getRemoteConfig();
-  if (config.dataSourceMode === "local") return fetchLocalData({ preferCache: true });
-
-  try {
-    return await fetchRemoteData();
-  } catch (error) {
-    console.warn("GitHub 加载失败，使用本地数据:", error.message);
-    return fetchLocalData({ preferCache: false });
-  }
+  return fetchLocalData({ preferCache: true });
 }
 
 export async function saveHouses(houses) {
-  const config = getRemoteConfig();
-  if (config.dataSourceMode === "local" || !config.token) {
-    saveHousesToLocal(houses);
-    if (config.dataSourceMode !== "local") {
-      saveStoredConfig({ ...config, dataSourceMode: "local" });
-    }
-    return;
-  }
-
-  let sha = await fetchRemoteSha(config);
-  let response = await putRemoteFile(config, houses, sha);
-  if (response.status === 409) {
-    sha = await fetchRemoteSha(config);
-    response = await putRemoteFile(config, houses, sha);
-  }
-  if (!response.ok) throw new Error(await readGithubError(response));
+  saveHousesToLocal(houses);
 }
 
 export function saveHousesToLocal(houses) {
@@ -124,16 +100,6 @@ export function saveHousesToLocal(houses) {
 
 export async function testDataConnection(config) {
   const nextConfig = normalizeDataConfig(config);
-  if (nextConfig.dataSourceMode === "local") {
-    const localFileData = await fetchLocalFileData(nextConfig.filepath || DEFAULT_CONFIG.filepath);
-    const cachedData = readLocalCache();
-    return {
-      ok: true,
-      count: Array.isArray(cachedData || localFileData) ? (cachedData || localFileData).length : 0,
-      source: cachedData ? "localStorage" : "localFile",
-    };
-  }
-
   const response = await fetchWithTimeout(githubContentUrl(nextConfig), {
     headers: nextConfig.token ? githubHeaders(nextConfig) : {},
   });
@@ -145,13 +111,61 @@ export async function testDataConnection(config) {
 
 export async function loadAndSaveHouses(houses) {
   await saveHouses(houses);
-  const config = getRemoteConfig();
-  if (config.dataSourceMode === "local" || !config.token) return houses;
-  return loadHouses();
+  return houses;
+}
+
+export async function refreshRemoteHouses() {
+  const localHouses = await loadHouses();
+  const remoteHouses = await fetchRemoteData();
+  const houses = mergeHouses(localHouses, remoteHouses);
+  saveHousesToLocal(houses);
+  return {
+    houses,
+    localCount: localHouses.length,
+    remoteCount: remoteHouses.length,
+    addedCount: houses.length - localHouses.length,
+  };
+}
+
+export async function submitLocalHousesToRemote(houses) {
+  const data = Array.isArray(houses) ? houses : await loadHouses();
+  await saveRemoteHouses(data);
+  return data;
 }
 
 export function nextHouseId(houses) {
   return houses.length ? Math.max(...houses.map((house) => Number(house.id) || 0)) + 1 : 1;
+}
+
+function mergeHouses(localHouses, remoteHouses) {
+  const result = Array.isArray(localHouses) ? localHouses.slice() : [];
+  const seen = new Set(result.map(houseIdentity).filter(Boolean));
+  (Array.isArray(remoteHouses) ? remoteHouses : []).forEach((house) => {
+    const identity = houseIdentity(house);
+    if (identity && seen.has(identity)) return;
+    result.push(house);
+    if (identity) seen.add(identity);
+  });
+  return result;
+}
+
+function houseIdentity(house) {
+  if (!house) return "";
+  if (house.id !== undefined && house.id !== null && house.id !== "") return `id:${house.id}`;
+  const address = String(house.address || "").trim();
+  return address ? `address:${address}` : "";
+}
+
+async function saveRemoteHouses(houses) {
+  const config = getRemoteConfig();
+  if (!config.token) throw new Error("请先在设置中填写 Personal Access Token，才能提交到远程");
+  let sha = await fetchRemoteSha(config);
+  let response = await putRemoteFile(config, houses, sha);
+  if (response.status === 409) {
+    sha = await fetchRemoteSha(config);
+    response = await putRemoteFile(config, houses, sha);
+  }
+  if (!response.ok) throw new Error(await readGithubError(response));
 }
 
 async function fetchRemoteData() {
