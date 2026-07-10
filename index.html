@@ -1,406 +1,946 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的看房记录</title>
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #f5f6fa; color: #2d3436; padding: 24px 16px; min-height: 100vh;
-  }
-  .container { max-width: 900px; margin: 0 auto; }
-  header { text-align: center; margin-bottom: 32px; }
-  header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; }
-  header p { color: #888; font-size: 14px; margin-top: 6px; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的看房记录</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+          sans-serif;
+        background: #f5f6fa;
+        color: #2d3436;
+        padding: 24px 16px;
+        min-height: 100vh;
+      }
+      [v-cloak] {
+        display: none;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a2e;
+      }
+      header p {
+        color: #888;
+        font-size: 14px;
+        margin-top: 6px;
+      }
+      .header-actions {
+        margin-top: 14px;
+        display: flex;
+        justify-content: center;
+      }
+      .admin-entry {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 8px 18px;
+        border-radius: 18px;
+        background: #1a1a2e;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 6px 18px rgba(26, 26, 46, 0.18);
+      }
+      .admin-entry:hover {
+        background: #2d2d54;
+      }
 
-  .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
-  .tab {
-    padding: 8px 24px; border-radius: 20px; font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: all .2s; border: 2px solid #e0e0e0; background: #fff; color: #888;
-  }
-  .tab.active { border-color: #6c5ce7; background: #6c5ce7; color: #fff; }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+      .tab {
+        padding: 8px 24px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid #e0e0e0;
+        background: #fff;
+        color: #888;
+      }
+      .tab.active {
+        border-color: #6c5ce7;
+        background: #6c5ce7;
+        color: #fff;
+      }
 
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 20px;
+      }
 
-  .card {
-    background: #fff; border-radius: 16px; overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform 0.2s;
-    cursor: pointer;
-  }
-  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+      .card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s;
+        cursor: pointer;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      }
 
-  .card-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
-  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .badge-personal { background: #e8f5e9; color: #2e7d32; }
-  .badge-agent { background: #fff3e0; color: #e65100; }
-  .source-tag { font-size: 11px; color: #999; padding: 3px 8px; background: #f0f0f0; border-radius: 10px; }
+      .card-header {
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .badge-personal {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .badge-agent {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .source-tag {
+        font-size: 11px;
+        color: #999;
+        padding: 3px 8px;
+        background: #f0f0f0;
+        border-radius: 10px;
+      }
 
-  .card-body { padding: 0 20px 16px; }
-  .address { font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 14px; }
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-  .info-item { display: flex; flex-direction: column; }
-  .info-label { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-  .info-value { font-size: 14px; font-weight: 500; }
-  .info-value.price { color: #e74c3c; font-weight: 700; font-size: 18px; }
-  .info-value.price span { font-size: 13px; font-weight: 400; color: #999; }
-  .light-note { font-size: 12px; color: #888; margin-top: 2px; }
+      .card-body {
+        padding: 0 20px 16px;
+      }
+      .address {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 14px;
+      }
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 16px;
+      }
+      .info-item {
+        display: flex;
+        flex-direction: column;
+      }
+      .info-label {
+        font-size: 11px;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+      }
+      .info-value {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .info-value.price {
+        color: #e74c3c;
+        font-weight: 700;
+        font-size: 18px;
+      }
+      .info-value.price span {
+        font-size: 13px;
+        font-weight: 400;
+        color: #999;
+      }
+      .light-note {
+        font-size: 12px;
+        color: #888;
+        margin-top: 2px;
+      }
 
-  .card-footer {
-    padding: 14px 20px; border-top: 1px solid #f0f0f0;
-    display: flex; align-items: center; justify-content: space-between; background: #fafbfc;
-  }
-  .wechat { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #07c160; font-weight: 600; }
-  .view-time { font-size: 12px; color: #888; }
+      .card-footer {
+        padding: 14px 20px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fafbfc;
+      }
+      .wechat {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: #07c160;
+        font-weight: 600;
+      }
+      .view-time {
+        font-size: 12px;
+        color: #888;
+      }
 
-  .subsidy-info {
-    grid-column: 1 / -1; background: #fef9e7; border-radius: 8px; padding: 8px 12px;
-    font-size: 12px; color: #856404; line-height: 1.5;
-  }
-  .shui-dian { grid-column: 1 / -1; display: flex; gap: 16px; font-size: 13px; }
-  .dot-electric { width: 8px; height: 8px; border-radius: 50%; background: #f39c12; display: inline-block; }
-  .dot-water { width: 8px; height: 8px; border-radius: 50%; background: #3498db; display: inline-block; }
+      .subsidy-info {
+        grid-column: 1 / -1;
+        background: #fef9e7;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: #856404;
+        line-height: 1.5;
+      }
+      .shui-dian {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 16px;
+        font-size: 13px;
+      }
+      .dot-electric {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #f39c12;
+        display: inline-block;
+      }
+      .dot-water {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #3498db;
+        display: inline-block;
+      }
 
-  .status-bar {
-    text-align: center; padding: 10px; margin-bottom: 20px; border-radius: 10px; font-size: 13px;
-  }
-  .status-bar.loading { background: #e8f4fd; color: #2980b9; }
-  .status-bar.error { background: #fde8e8; color: #c0392b; }
-  .status-bar.ok { background: #e8f5e9; color: #27ae60; }
+      .status-bar {
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        font-size: 13px;
+      }
+      .status-bar.loading {
+        background: #e8f4fd;
+        color: #2980b9;
+      }
+      .status-bar.error {
+        background: #fde8e8;
+        color: #c0392b;
+      }
+      .status-bar.ok {
+        background: #e8f5e9;
+        color: #27ae60;
+      }
 
-  .compare-table {
-    width: 100%; border-collapse: collapse; background: #fff;
-    border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); font-size: 13px;
-  }
-  .compare-table th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-size: 12px; color: #888; font-weight: 600; }
-  .compare-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
-  .cost-low { color: #27ae60; font-weight: 600; background: #eafaf1 !important; }
-  .cost-high { color: #e74c3c; font-weight: 600; background: #fdedec !important; }
+      .compare-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        font-size: 13px;
+      }
+      .compare-table th {
+        background: #f8f9fa;
+        padding: 10px 12px;
+        text-align: left;
+        font-size: 12px;
+        color: #888;
+        font-weight: 600;
+      }
+      .compare-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .cost-low {
+        color: #27ae60;
+        font-weight: 600;
+        background: #eafaf1 !important;
+      }
+      .cost-high {
+        color: #e74c3c;
+        font-weight: 600;
+        background: #fdedec !important;
+      }
 
-  .empty-state { text-align: center; padding: 60px 20px; color: #aaa; }
-  .admin-link { position: fixed; bottom: 12px; right: 12px; opacity: 0.3; font-size: 12px; color: #999; text-decoration: none; }
-  .admin-link:hover { opacity: 1; }
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #aaa;
+      }
+      .empty-state strong {
+        display: block;
+        color: #1a1a2e;
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      .admin-link {
+        position: fixed;
+        bottom: 12px;
+        right: 12px;
+        opacity: 0.3;
+        font-size: 12px;
+        color: #999;
+        text-decoration: none;
+      }
+      .admin-link:hover {
+        opacity: 1;
+      }
 
-  /* Detail overlay */
-  .detail-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
-    backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px;
-  }
-  .detail-overlay.show { display: flex; }
-  .detail-box {
-    background: #fff; border-radius: 16px; max-width: 520px; width: 100%;
-    max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2);
-  }
-  .detail-header {
-    padding: 24px; background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-    color: #fff; border-radius: 16px 16px 0 0; margin: -16px -16px 0;
-  }
-  .detail-section { padding: 16px 24px; }
-  .detail-section-title { font-size: 12px; font-weight: 700; color: #aaa; text-transform: uppercase; margin-bottom: 10px; }
-  .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px; }
-  .detail-row:last-child { border-bottom: none; }
-  .detail-actions { padding: 12px 24px 24px; display: flex; gap: 8px; }
-  .btn-edit { flex: 1; padding: 12px; background: #6c5ce7; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .btn-delete { padding: 12px 16px; background: #fdedec; color: #e74c3c; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+      /* Detail overlay */
+      .detail-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .detail-overlay.show {
+        display: flex;
+      }
+      .detail-box {
+        background: #fff;
+        border-radius: 16px;
+        max-width: 520px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      }
+      .detail-header {
+        padding: 24px;
+        background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+        color: #fff;
+        border-radius: 16px 16px 0 0;
+        margin: -16px -16px 0;
+      }
+      .detail-section {
+        padding: 16px 24px;
+      }
+      .detail-section-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #aaa;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 13px;
+      }
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+      .detail-actions {
+        padding: 12px 24px 24px;
+        display: flex;
+        gap: 8px;
+      }
+      .btn-edit {
+        flex: 1;
+        padding: 12px;
+        background: #6c5ce7;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-delete {
+        padding: 12px 16px;
+        background: #fdedec;
+        color: #e74c3c;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-secondary {
+        padding: 12px 16px;
+        background: #f4f6fb;
+        color: #666;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
 
-  @media (max-width: 480px) {
-    .cards { grid-template-columns: 1fr; }
-    .info-grid { grid-template-columns: 1fr; }
-  }
-</style>
-</head>
-<body>
-<div id="app">
-  <div class="container">
-    <header>
-      <h1>🏠 我的看房记录</h1>
-      <p>{{ houses.length }} 套房源 · {{ today }}</p>
-    </header>
-
-    <div class="tabs">
-      <div class="tab" :class="{ active: tab === 'list' }" @click="tab = 'list'">🏠 房源列表</div>
-      <div class="tab" :class="{ active: tab === 'compare' }" @click="tab = 'compare'">📊 对比分析</div>
-    </div>
-
-    <!-- List -->
-    <div v-if="tab === 'list'">
-      <div class="status-bar loading" v-if="loading">加载中...</div>
-      <div class="status-bar error" v-if="error">{{ error }}</div>
-      <div class="status-bar ok" v-if="!loading && !error">✅ 已加载</div>
-      <div class="cards">
-        <div class="card" v-for="h in houses" :key="h.id" @click="openDetail(h)">
-          <div class="card-header">
-            <span class="badge" :class="h.type==='personal'?'badge-personal':'badge-agent'">{{ h.type==='personal'?'个人转租':'中介' }}</span>
-            <span class="source-tag">{{ h.source || '—' }}</span>
+      @media (max-width: 480px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <div class="container">
+        <header>
+          <h1>🏠 我的看房记录</h1>
+          <p>{{ houses.length }} 套房源 · {{ today }}</p>
+          <div class="header-actions">
+            <a class="admin-entry" href="./admin.html">管理后台</a>
           </div>
-          <div class="card-body">
-            <div class="address">{{ h.address }}</div>
-            <div class="info-grid">
-              <div class="info-item" v-if="h.price">
-                <span class="info-label">房租</span>
-                <span class="info-value price">¥{{ Number(h.price).toLocaleString() }}<span>/月</span></span>
+        </header>
+
+        <div class="tabs">
+          <div
+            class="tab"
+            :class="{ active: tab === 'list' }"
+            @click="tab = 'list'"
+          >
+            🏠 房源列表
+          </div>
+          <div
+            class="tab"
+            :class="{ active: tab === 'compare' }"
+            @click="tab = 'compare'"
+          >
+            📊 对比分析
+          </div>
+        </div>
+
+        <!-- List -->
+        <div v-if="tab === 'list'">
+          <div class="status-bar loading" v-if="loading">加载中...</div>
+          <div class="status-bar error" v-if="error">{{ error }}</div>
+          <div class="status-bar ok" v-if="!loading && !error && houses.length">
+            已加载 {{ houses.length }} 套房源
+          </div>
+          <div class="empty-state" v-if="!loading && !error && !houses.length">
+            <strong>还没有房源记录</strong>
+            <p>去管理页添加第一套看房信息吧。</p>
+          </div>
+          <div class="cards" v-if="houses.length">
+            <div
+              class="card"
+              v-for="h in houses"
+              :key="h.id"
+              @click="openDetail(h)"
+            >
+              <div class="card-header">
+                <span
+                  class="badge"
+                  :class="h.type==='personal'?'badge-personal':'badge-agent'"
+                  >{{ h.type==='personal'?'个人转租':'中介' }}</span
+                >
+                <span class="source-tag">{{ h.source || '—' }}</span>
               </div>
-              <div class="info-item" v-if="h.roomType">
-                <span class="info-label">房型</span>
-                <span class="info-value">{{ h.roomType }}{{ h.floor ? ' · '+h.floor+'楼' : '' }}</span>
-              </div>
-              <div class="info-item" v-if="h.furniture">
-                <span class="info-label">家电</span>
-                <span class="info-value">{{ h.furniture }}</span>
-              </div>
-              <div class="info-item" v-if="h.lighting">
-                <span class="info-label">采光</span>
-                <span class="info-value">{{ h.lighting }}</span>
-                <span class="light-note" v-if="h.lightingNote">{{ h.lightingNote }}</span>
-              </div>
-              <div class="info-item" v-if="h.utility">
-                <span class="info-label">水电类型</span>
-                <span class="info-value" :style="{color: h.utility==='民水民电'?'#27ae60':h.utility==='商水商电'?'#e74c3c':'#f39c12'}">{{ h.utility }}</span>
-              </div>
-              <template v-else-if="h.electricPrice || h.waterPrice">
-                <div class="shui-dian">
-                  <div class="item" v-if="h.electricPrice"><span class="dot-electric"></span>电费 ¥{{ h.electricPrice }}/度</div>
-                  <div class="item" v-if="h.waterPrice"><span class="dot-water"></span>水费 ¥{{ h.waterPrice }}/吨</div>
+              <div class="card-body">
+                <div class="address">{{ h.address }}</div>
+                <div class="info-grid">
+                  <div class="info-item" v-if="h.price">
+                    <span class="info-label">房租</span>
+                    <span class="info-value price"
+                      >¥{{ Number(h.price).toLocaleString() }}<span
+                        >/月</span
+                      ></span
+                    >
+                  </div>
+                  <div class="info-item" v-if="h.roomType">
+                    <span class="info-label">房型</span>
+                    <span class="info-value"
+                      >{{ h.roomType }}{{ h.floor ? ' · '+h.floor+'楼' : ''
+                      }}</span
+                    >
+                  </div>
+                  <div class="info-item" v-if="h.furniture">
+                    <span class="info-label">家电</span>
+                    <span class="info-value">{{ h.furniture }}</span>
+                  </div>
+                  <div class="info-item" v-if="h.lighting">
+                    <span class="info-label">采光</span>
+                    <span class="info-value">{{ h.lighting }}</span>
+                    <span class="light-note" v-if="h.lightingNote"
+                      >{{ h.lightingNote }}</span
+                    >
+                  </div>
+                  <div class="info-item" v-if="h.utility">
+                    <span class="info-label">水电类型</span>
+                    <span
+                      class="info-value"
+                      :style="{color: h.utility==='民水民电'?'#27ae60':h.utility==='商水商电'?'#e74c3c':'#f39c12'}"
+                      >{{ h.utility }}</span
+                    >
+                  </div>
+                  <template v-else-if="h.electricPrice || h.waterPrice">
+                    <div class="shui-dian">
+                      <div class="item" v-if="h.electricPrice">
+                        <span class="dot-electric"></span>电费 ¥{{
+                        h.electricPrice }}/度
+                      </div>
+                      <div class="item" v-if="h.waterPrice">
+                        <span class="dot-water"></span>水费 ¥{{ h.waterPrice
+                        }}/吨
+                      </div>
+                    </div>
+                  </template>
+                  <div class="info-item" v-if="h.viewTime">
+                    <span class="info-label">看房时间</span>
+                    <span class="info-value">{{ h.viewTime }}</span>
+                  </div>
+                  <div class="info-item" v-if="h.score">
+                    <span class="info-label">评分</span>
+                    <span
+                      class="info-value"
+                      :style="{color: parseInt(h.score)>=8?'#27ae60':parseInt(h.score)>=6?'#3498db':'#e74c3c', fontWeight:700, fontSize:'16px'}"
+                      >⭐ {{ h.score }}/10</span
+                    >
+                  </div>
+                  <div
+                    class="info-item"
+                    v-if="h.satisfaction && h.satisfaction > 0"
+                    style="grid-column: 1/-1"
+                  >
+                    <span class="info-label">满意度</span>
+                    <span style="font-size: 18px"
+                      >{{ '⭐'.repeat(h.satisfaction) }}</span
+                    >
+                  </div>
+                  <div class="subsidy-info" v-if="h.pros || h.cons || h.notes">
+                    <div v-if="h.pros">✅ {{ h.pros }}</div>
+                    <div v-if="h.cons" style="margin-top: 4px">
+                      ❌ {{ h.cons }}
+                    </div>
+                    <div v-if="h.notes" style="margin-top: 4px">
+                      📝 {{ h.notes }}
+                    </div>
+                  </div>
                 </div>
-              </template>
-              <div class="info-item" v-if="h.viewTime">
-                <span class="info-label">看房时间</span>
-                <span class="info-value">{{ h.viewTime }}</span>
               </div>
-              <div class="info-item" v-if="h.score">
-                <span class="info-label">评分</span>
-                <span class="info-value" :style="{color: parseInt(h.score)>=8?'#27ae60':parseInt(h.score)>=6?'#3498db':'#e74c3c', fontWeight:700, fontSize:'16px'}">⭐ {{ h.score }}/10</span>
-              </div>
-              <div class="info-item" v-if="h.satisfaction && h.satisfaction > 0" style="grid-column:1/-1">
-                <span class="info-label">满意度</span>
-                <span style="font-size:18px">{{ '⭐'.repeat(h.satisfaction) }}</span>
-              </div>
-              <div class="subsidy-info" v-if="h.pros || h.cons || h.notes">
-                <div v-if="h.pros">✅ {{ h.pros }}</div>
-                <div v-if="h.cons" style="margin-top:4px">❌ {{ h.cons }}</div>
-                <div v-if="h.notes" style="margin-top:4px">📝 {{ h.notes }}</div>
+              <div class="card-footer">
+                <span class="wechat">{{ h.wechat || '待联系' }}</span>
+                <span class="view-time" v-if="h.viewTime"
+                  >{{ h.viewTime }}</span
+                >
               </div>
             </div>
           </div>
-          <div class="card-footer">
-            <span class="wechat">{{ h.wechat || '待联系' }}</span>
-            <span class="view-time" v-if="h.viewTime">{{ h.viewTime }}</span>
+        </div>
+
+        <!-- Compare -->
+        <div v-if="tab === 'compare'">
+          <div class="empty-state" v-if="activeHouses.length < 2">
+            <p>至少添加 2 套有价格的房源才能对比</p>
+          </div>
+          <template v-else>
+            <div
+              style="
+                text-align: center;
+                padding: 16px;
+                background: #eafaf1;
+                border-radius: 12px;
+                margin-bottom: 20px;
+              "
+            >
+              <div style="font-size: 13px; color: #888">💰 最低月租</div>
+              <div style="font-size: 24px; font-weight: 800; color: #27ae60">
+                ¥{{ cheapest.price.toLocaleString() }}/月
+              </div>
+            </div>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>项目</th>
+                  <th v-for="h in sortedHouses">{{ shortAddr(h) }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="[label, fn, cost] in compareRows">
+                  <td style="color: #888; font-weight: 500">{{ label }}</td>
+                  <td
+                    v-for="h in sortedHouses"
+                    :class="{ 'cost-low': cost && lowestPrice(h, fn), 'cost-high': cost && highestPrice(h, fn) }"
+                  >
+                    {{ fn(h) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <template v-for="h in sortedHouses" :key="'pros-'+h.id">
+              <div
+                v-if="h.pros || h.cons"
+                style="
+                  background: #fff;
+                  border-radius: 12px;
+                  padding: 16px;
+                  margin: 16px 0;
+                  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+                "
+              >
+                <div style="font-size: 14px; color: #888; margin-bottom: 8px">
+                  {{ shortAddr(h) }}
+                </div>
+                <div v-if="h.pros" style="color: #27ae60; font-size: 13px">
+                  ✅ {{ h.pros }}
+                </div>
+                <div
+                  v-if="h.cons"
+                  style="color: #e74c3c; font-size: 13px; margin-top: 4px"
+                >
+                  ❌ {{ h.cons }}
+                </div>
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>
+
+      <a class="admin-link" href="./admin.html">管理</a>
+
+      <!-- Detail overlay -->
+      <div
+        v-if="detailHouse"
+        class="detail-overlay"
+        :class="{ show: detailHouse }"
+        @click.self="closeDetail"
+      >
+        <div class="detail-box">
+          <div class="detail-header">
+            <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px">
+              {{ detailHouse.address }}
+            </div>
+            <div style="font-size: 28px; font-weight: 800">
+              {{ detailHouse.price ?
+              '¥'+Number(detailHouse.price).toLocaleString()+'/月' : '价格待定'
+              }}
+            </div>
+            <div
+              v-if="calcTotal(detailHouse).total > 0"
+              style="font-size: 13px; opacity: 0.8; margin-top: 4px"
+            >
+              月总支出 ¥{{ calcTotal(detailHouse).total.toLocaleString() }}
+            </div>
+          </div>
+
+          <template v-for="[title, rows] in detailSections">
+            <div class="detail-section" v-if="rows.some(r => r[1])">
+              <div class="detail-section-title">{{ title }}</div>
+              <template v-for="[label, value] in rows" :key="label">
+                <div class="detail-row" v-if="value">
+                  <span style="color: #999">{{ label }}</span>
+                  <span :style="detailRowStyle(label, value)">{{ value }}</span>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <div class="detail-actions">
+            <a class="btn-edit" :href="adminUrl">去管理页编辑</a>
+            <button class="btn-secondary" @click="closeDetail">关闭</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Compare -->
-    <div v-if="tab === 'compare'">
-      <div class="empty-state" v-if="activeHouses.length < 2">
-        <p>至少添加 2 套有价格的房源才能对比</p>
-      </div>
-      <template v-else>
-        <div style="text-align:center;padding:16px;background:#eafaf1;border-radius:12px;margin-bottom:20px">
-          <div style="font-size:13px;color:#888">💰 最低月租</div>
-          <div style="font-size:24px;font-weight:800;color:#27ae60">¥{{ cheapest.price.toLocaleString() }}/月</div>
-        </div>
-        <table class="compare-table">
-          <thead><tr><th>项目</th><th v-for="h in sortedHouses">{{ shortAddr(h) }}</th></tr></thead>
-          <tbody>
-            <tr v-for="[label, fn, cost] in compareRows">
-              <td style="color:#888;font-weight:500">{{ label }}</td>
-              <td v-for="h in sortedHouses" :class="{ 'cost-low': cost && lowestPrice(h, fn), 'cost-high': cost && highestPrice(h, fn) }">
-                {{ fn(h) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-for="h in sortedHouses" :key="'pros-'+h.id" v-if="h.pros || h.cons" style="background:#fff;border-radius:12px;padding:16px;margin:16px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)">
-          <div style="font-size:14px;color:#888;margin-bottom:8px">{{ shortAddr(h) }}</div>
-          <div v-if="h.pros" style="color:#27ae60;font-size:13px">✅ {{ h.pros }}</div>
-          <div v-if="h.cons" style="color:#e74c3c;font-size:13px;margin-top:4px">❌ {{ h.cons }}</div>
-        </div>
-      </template>
-    </div>
-  </div>
+    <script>
+      const { createApp, ref, computed, onMounted } = Vue;
 
-  <a class="admin-link" href="./admin.html">管理</a>
+      createApp({
+        setup() {
+          const CONFIG = {
+            owner: "yatxuan",
+            repo: "viewing-records",
+            branch: "main",
+            filePath: "data.json",
+          };
+          const houses = ref([]);
+          const loading = ref(true);
+          const error = ref("");
+          const tab = ref("list");
+          const detailHouse = ref(null);
+          const today = new Date().toLocaleDateString("zh-CN");
 
-  <!-- Detail overlay -->
-  <div class="detail-overlay" :class="{ show: detailHouse }" @click.self="detailHouse = null">
-    <div class="detail-box">
-      <div class="detail-header">
-        <div style="font-size:18px;font-weight:700;margin-bottom:4px">{{ detailHouse.address }}</div>
-        <div style="font-size:28px;font-weight:800">
-          {{ detailHouse.price ? '¥'+Number(detailHouse.price).toLocaleString()+'/月' : '价格待定' }}
-        </div>
-        <div v-if="calcTotal(detailHouse).total > 0" style="font-size:13px;opacity:.8;margin-top:4px">月总支出 ¥{{ calcTotal(detailHouse).total.toLocaleString() }}</div>
-      </div>
+          // UTF-8 safe base64 decode
+          function b64Decode(str) {
+            const bytes = Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
+            return new TextDecoder().decode(bytes);
+          }
 
-      <template v-for="[title, rows] in detailSections">
-        <div class="detail-section" v-if="rows.some(r => r[1])">
-          <div class="detail-section-title">{{ title }}</div>
-          <div class="detail-row" v-for="[label, value] in rows" v-if="value">
-            <span style="color:#999">{{ label }}</span>
-            <span :style="detailRowStyle(label, value)">{{ value }}</span>
-          </div>
-        </div>
-      </template>
+          async function fetchRemoteData() {
+            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.filePath}?ref=${CONFIG.branch}`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const json = await resp.json();
+            return JSON.parse(b64Decode(json.content).replace(/\n$/, ""));
+          }
 
-      <div class="detail-actions">
-        <button class="btn-edit" @click="closeDetail(); $emit('edit', detailHouse.id)">✏️ 编辑</button>
-        <button class="btn-delete" @click="deleteHouse(detailHouse.id)">🗑️ 删除</button>
-      </div>
-    </div>
-  </div>
-</div>
+          async function fetchLocalData() {
+            const localResp = await fetch("./data.json");
+            if (localResp.ok) return localResp.json();
 
-<script>
-const { createApp, ref, computed, onMounted } = Vue;
+            const raw = localStorage.getItem("vr_local_data");
+            if (raw) return JSON.parse(raw);
+            return [];
+          }
 
-createApp({
-  setup() {
-    const CONFIG = { owner: 'yatxuan', repo: 'viewing-records', branch: 'main', filePath: 'data.json' };
-    const houses = ref([]);
-    const loading = ref(true);
-    const error = ref('');
-    const tab = ref('list');
-    const detailHouse = ref(null);
-    const today = new Date().toLocaleDateString('zh-CN');
+          async function loadData() {
+            try {
+              return await fetchRemoteData();
+            } catch (e) {
+              console.warn("GitHub 加载失败，使用本地数据:", e.message);
+              return fetchLocalData();
+            }
+          }
 
-    // UTF-8 safe base64 decode
-    function b64Decode(str) {
-      const bytes = Uint8Array.from(atob(str), c => c.charCodeAt(0));
-      return new TextDecoder().decode(bytes);
-    }
+          onMounted(async () => {
+            try {
+              houses.value = await loadData();
+            } catch (e) {
+              error.value = "加载失败: " + e.message;
+            } finally {
+              loading.value = false;
+            }
+          });
 
-    async function loadData() {
-      try {
-        const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.filePath}?ref=${CONFIG.branch}`;
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const json = await resp.json();
-        return JSON.parse(b64Decode(json.content).replace(/\n$/, ''));
-      } catch(e) {
-        console.warn('GitHub 加载失败，使用本地数据:', e.message);
-        const raw = localStorage.getItem('vr_local_data');
-        if (raw) return JSON.parse(raw);
-        return [];
-      }
-    }
+          const activeHouses = computed(() =>
+            houses.value.filter((h) => h && h.status !== "rejected" && h.price),
+          );
+          const sortedHouses = computed(() =>
+            activeHouses.value
+              .slice()
+              .sort((a, b) => parseFloat(a.price) - parseFloat(b.price)),
+          );
+          const cheapest = computed(() => sortedHouses.value[0]);
 
-    onMounted(async () => {
-      try {
-        houses.value = await loadData();
-      } catch(e) {
-        error.value = '加载失败: ' + e.message;
-      } finally {
-        loading.value = false;
-      }
-    });
+          const compareRows = [
+            ["月租", (h) => `¥${Number(h.price).toLocaleString()}`, true],
+            [
+              "总月支出",
+              (h) => {
+                const t = calcTotal(h);
+                return t.total > 0 ? "¥" + t.total.toLocaleString() : "-";
+              },
+              true,
+            ],
+            ["房型", (h) => h.roomType || "-"],
+            ["楼层", (h) => (h.floor ? h.floor + "楼" : "-")],
+            ["朝向", (h) => h.direction || "-"],
+            ["面积", (h) => (h.area ? h.area + "㎡" : "-")],
+            ["采光", (h) => h.lighting || "-"],
+            ["水电类型", (h) => h.utility || "-"],
+            [
+              "电费",
+              (h) => (h.electricPrice ? "¥" + h.electricPrice + "/度" : "-"),
+            ],
+            ["水费", (h) => (h.waterPrice ? "¥" + h.waterPrice + "/吨" : "-")],
+            ["物业费", (h) => (h.propFee ? "¥" + h.propFee + "/㎡" : "-")],
+            ["押金", (h) => h.deposit || "-"],
+            ["装修", (h) => h.decor || "-"],
+            ["电梯", (h) => h.elevator || "-"],
+            ["评分", (h) => (h.score ? "⭐" + h.score + "/10" : "-")],
+          ];
 
-    const activeHouses = computed(() => houses.value.filter(h => h.status !== 'rejected' && h.price));
-    const sortedHouses = computed(() => activeHouses.value.slice().sort((a, b) => parseFloat(a.price) - parseFloat(b.price)));
-    const cheapest = computed(() => sortedHouses.value[0]);
+          function lowestPrice(h, fn) {
+            const num = parseFloat(fn(h).replace(/[^\d.]/g, ""));
+            if (!num) return false;
+            const nums = sortedHouses.value
+              .map((x) => parseFloat(fn(x).replace(/[^\d.]/g, "")))
+              .filter(Boolean);
+            return num === Math.min(...nums);
+          }
+          function highestPrice(h, fn) {
+            const num = parseFloat(fn(h).replace(/[^\d.]/g, ""));
+            if (!num) return false;
+            const nums = sortedHouses.value
+              .map((x) => parseFloat(fn(x).replace(/[^\d.]/g, "")))
+              .filter(Boolean);
+            return num === Math.max(...nums);
+          }
 
-    const compareRows = [
-      ['月租', h => `¥${Number(h.price).toLocaleString()}`, true],
-      ['总月支出', h => { const t = calcTotal(h); return t.total > 0 ? '¥'+t.total.toLocaleString() : '-'; }, true],
-      ['房型', h => h.roomType || '-'],
-      ['楼层', h => h.floor ? h.floor+'楼' : '-'],
-      ['朝向', h => h.direction || '-'],
-      ['面积', h => h.area ? h.area+'㎡' : '-'],
-      ['采光', h => h.lighting || '-'],
-      ['水电类型', h => h.utility || '-'],
-      ['电费', h => h.electricPrice ? '¥'+h.electricPrice+'/度' : '-'],
-      ['水费', h => h.waterPrice ? '¥'+h.waterPrice+'/吨' : '-'],
-      ['物业费', h => h.propFee ? '¥'+h.propFee+'/㎡' : '-'],
-      ['押金', h => h.deposit || '-'],
-      ['装修', h => h.decor || '-'],
-      ['电梯', h => h.elevator || '-'],
-      ['评分', h => h.score ? '⭐'+h.score+'/10' : '-'],
-    ];
+          function calcTotal(h) {
+            if (!h) return { total: 0, detail: "-" };
+            const rent = parseFloat(h.price) || 0;
+            const propFee = Math.round(
+              (parseFloat(h.propFee) || 0) * (parseFloat(h.area) || 0),
+            );
+            const waterFee = Math.round(
+              (parseFloat(h.waterPrice) || 0) * (parseFloat(h.waterUsage) || 0),
+            );
+            const elecFee = Math.round(
+              (parseFloat(h.electricPrice) || 0) *
+                (parseFloat(h.elecUsage) || 0),
+            );
+            const svcFee = parseFloat(h.serviceFee) || 0;
+            const total = rent + propFee + svcFee + waterFee + elecFee;
+            const details = [];
+            if (waterFee) details.push("水" + waterFee);
+            if (elecFee) details.push("电" + elecFee);
+            if (propFee) details.push("物" + propFee);
+            if (svcFee) details.push("服" + svcFee);
+            return { total, detail: details.join("+") || "-" };
+          }
 
-    function lowestPrice(h, fn) {
-      const num = parseFloat(fn(h).replace(/[^\d.]/g,''));
-      if (!num) return false;
-      const nums = sortedHouses.value.map(x => parseFloat(fn(x).replace(/[^\d.]/g,''))).filter(Boolean);
-      return num === Math.min(...nums);
-    }
-    function highestPrice(h, fn) {
-      const num = parseFloat(fn(h).replace(/[^\d.]/g,''));
-      if (!num) return false;
-      const nums = sortedHouses.value.map(x => parseFloat(fn(x).replace(/[^\d.]/g,''))).filter(Boolean);
-      return num === Math.max(...nums);
-    }
+          const detailSections = computed(() => {
+            const h = detailHouse.value;
+            if (!h) return [];
+            return [
+              [
+                "基本信息",
+                [
+                  ["房型", h.roomType],
+                  ["楼层", h.floor],
+                  ["朝向", h.direction],
+                  ["面积", h.area],
+                  ["采光", h.lighting],
+                  ["采光备注", h.lightingNote],
+                  ["家电", h.furniture],
+                  ["装修", h.decor],
+                  ["电梯", h.elevator],
+                ],
+              ],
+              [
+                "费用明细",
+                [
+                  ["月租金", h.price ? "¥" + h.price : "-"],
+                  ["水电类型", h.utility],
+                  [
+                    "电费",
+                    h.electricPrice
+                      ? "¥" +
+                        h.electricPrice +
+                        "/度" +
+                        (h.elecUsage ? " (" + h.elecUsage + "度/月)" : "")
+                      : "-",
+                  ],
+                  [
+                    "水费",
+                    h.waterPrice
+                      ? "¥" +
+                        h.waterPrice +
+                        "/吨" +
+                        (h.waterUsage ? " (" + h.waterUsage + "吨/月)" : "")
+                      : "-",
+                  ],
+                  [
+                    "物业费",
+                    h.propFee
+                      ? "¥" +
+                        h.propFee +
+                        "/㎡" +
+                        (h.area ? " ×" + h.area + "㎡" : "")
+                      : "-",
+                  ],
+                  ["服务费", h.serviceFee ? "¥" + h.serviceFee + "/月" : "-"],
+                  ["押金方式", h.deposit],
+                  ["中介费", h.agentFee],
+                  ["租期", h.leaseTerm],
+                  [
+                    "月总支出",
+                    calcTotal(h).total > 0
+                      ? "¥" + calcTotal(h).total.toLocaleString()
+                      : "-",
+                  ],
+                ],
+              ],
+              [
+                "评分",
+                [
+                  ["综合评分", h.score ? "⭐ " + h.score + "/10" : "-"],
+                  [
+                    "满意度",
+                    h.satisfaction ? "⭐".repeat(h.satisfaction) : "-",
+                  ],
+                ],
+              ],
+              [
+                "联系信息",
+                [
+                  ["看房时间", h.viewTime],
+                  ["微信号", h.wechat],
+                  ["来源", h.source],
+                  ["备注", h.notes],
+                ],
+              ],
+              [
+                "优缺点",
+                [
+                  ["优点", h.pros],
+                  ["缺点", h.cons],
+                ],
+              ],
+            ];
+          });
 
-    function calcTotal(h) {
-      const rent = parseFloat(h.price) || 0;
-      const propFee = Math.round((parseFloat(h.propFee) || 0) * (parseFloat(h.area) || 0));
-      const waterFee = Math.round((parseFloat(h.waterPrice) || 0) * (parseFloat(h.waterUsage) || 0));
-      const elecFee = Math.round((parseFloat(h.elecPrice) || 0) * (parseFloat(h.elecUsage) || 0));
-      const svcFee = parseFloat(h.serviceFee) || 0;
-      const total = rent + propFee + svcFee + waterFee + elecFee;
-      const details = [];
-      if (waterFee) details.push('水'+waterFee);
-      if (elecFee) details.push('电'+elecFee);
-      if (propFee) details.push('物'+propFee);
-      if (svcFee) details.push('服'+svcFee);
-      return { total, detail: details.join('+') || '-' };
-    }
+          function detailRowStyle(label, value) {
+            let s = "font-weight:500;text-align:right;max-width:60%";
+            if (label === "水电类型" && value === "民水民电")
+              s += ";color:#27ae60;font-weight:600";
+            if (label === "水电类型" && value === "商水商电")
+              s += ";color:#e74c3c;font-weight:600";
+            if (label === "月总支出" && value !== "-")
+              s += ";color:#e74c3c;font-weight:700;font-size:15px";
+            return s;
+          }
 
-    const detailSections = computed(() => {
-      const h = detailHouse.value;
-      if (!h) return [];
-      return [
-        ['基本信息', [
-          ['房型', h.roomType], ['楼层', h.floor], ['朝向', h.direction],
-          ['面积', h.area], ['采光', h.lighting], ['采光备注', h.lightingNote],
-          ['家电', h.furniture], ['装修', h.decor], ['电梯', h.elevator]
-        ]],
-        ['费用明细', [
-          ['月租金', h.price ? '¥'+h.price : '-'],
-          ['水电类型', h.utility],
-          ['电费', h.electricPrice ? '¥'+h.electricPrice+'/度'+(h.elecUsage?' ('+h.elecUsage+'度/月)':'') : '-'],
-          ['水费', h.waterPrice ? '¥'+h.waterPrice+'/吨'+(h.waterUsage?' ('+h.waterUsage+'吨/月)':'') : '-'],
-          ['物业费', h.propFee ? '¥'+h.propFee+'/㎡'+(h.area?(' ×'+h.area+'㎡'):'') : '-'],
-          ['服务费', h.serviceFee ? '¥'+h.serviceFee+'/月' : '-'],
-          ['押金方式', h.deposit], ['中介费', h.agentFee], ['租期', h.leaseTerm],
-          ['月总支出', calcTotal(h).total > 0 ? '¥'+calcTotal(h).total.toLocaleString() : '-']
-        ]],
-        ['评分', [
-          ['综合评分', h.score ? '⭐ '+h.score+'/10' : '-'],
-          ['满意度', h.satisfaction ? '⭐'.repeat(h.satisfaction) : '-']
-        ]],
-        ['联系信息', [
-          ['看房时间', h.viewTime], ['微信号', h.wechat], ['来源', h.source], ['备注', h.notes]
-        ]],
-        ['优缺点', [
-          ['优点', h.pros], ['缺点', h.cons]
-        ]]
-      ];
-    });
+          function shortAddr(h) {
+            return (h?.address || "地址未填写").split("/").slice(-2).join("/");
+          }
 
-    function detailRowStyle(label, value) {
-      let s = 'font-weight:500;text-align:right;max-width:60%';
-      if (label === '水电类型' && value === '民水民电') s += ';color:#27ae60;font-weight:600';
-      if (label === '水电类型' && value === '商水商电') s += ';color:#e74c3c;font-weight:600';
-      if (label === '月总支出' && value !== '-') s += ';color:#e74c3c;font-weight:700;font-size:15px';
-      return s;
-    }
+          function openDetail(h) {
+            detailHouse.value = h;
+          }
+          function closeDetail() {
+            detailHouse.value = null;
+          }
 
-    function shortAddr(h) { return h.address.split('/').slice(-2).join('/'); }
-
-    function openDetail(h) { detailHouse.value = h; }
-    function closeDetail() { detailHouse.value = null; }
-
-    return {
-      houses, loading, error, tab, detailHouse, today,
-      activeHouses, sortedHouses, cheapest, compareRows,
-      calcTotal, detailSections, detailRowStyle, shortAddr,
-      lowestPrice, highestPrice, openDetail, closeDetail,
-    };
-  },
-  emits: ['edit'],
-}).mount('#app');
-</script>
-</body>
+          return {
+            houses,
+            loading,
+            error,
+            tab,
+            detailHouse,
+            today,
+            adminUrl: "./admin.html",
+            activeHouses,
+            sortedHouses,
+            cheapest,
+            compareRows,
+            calcTotal,
+            detailSections,
+            detailRowStyle,
+            shortAddr,
+            lowestPrice,
+            highestPrice,
+            openDetail,
+            closeDetail,
+          };
+        },
+        emits: ["edit"],
+      }).mount("#app");
+    </script>
+  </body>
 </html>
