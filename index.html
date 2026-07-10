@@ -109,8 +109,8 @@
 <script>
 // ====== 配置区：部署时改成你自己的值 ======
 const CONFIG = {
-  owner: 'yat',              // GitHub 用户名
-  repo: 'viewing-records',    // 仓库名（不含 .github.io）
+  owner: 'yatxuan',           // GitHub 用户名
+  repo: 'viewing-records',    // 仓库名
   branch: 'main',             // 分支名
   filePath: 'data.json',      // 数据文件路径
 };
@@ -200,13 +200,24 @@ function renderCard(h) {
 
 async function loadData() {
   const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.filePath}?ref=${CONFIG.branch}`;
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-  const json = await resp.json();
-
-  // GitHub API returns base64 encoded content
-  const content = atob(json.content);
-  return JSON.parse(content.replace(/\n$/, ''));
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    const content = atob(json.content);
+    return JSON.parse(content.replace(/\n$/, ''));
+  } catch(e) {
+    console.warn('GitHub 加载失败，使用本地数据:', e.message);
+    const raw = localStorage.getItem('vr_local_data');
+    if (raw) return JSON.parse(raw);
+    return [
+      {"id":1,"type":"personal","address":"广东省深圳市龙岗区龙城街道牛仔园新村一巷7号楼","price":1350,"roomType":"一房一厅","floor":"2","furniture":"包家电","lighting":"一般","lightingNote":"关下半窗 + 开灯","waterElectric":"","waterPrice":"","electricPrice":"","viewTime":"明天中午","wechat":"z1402460782","source":"","notes":""},
+      {"id":2,"type":"personal","address":"广东省深圳市龙岗区怡苑路35号","price":1570,"roomType":"单色带阳台（公寓）","floor":"","furniture":"","lighting":"还行","lightingNote":"","waterElectric":"包管理+网络","waterPrice":"","electricPrice":"","viewTime":"待定","wechat":"Aurora_Luou","source":"抖音","notes":""},
+      {"id":3,"type":"personal","address":"广东省深圳市龙岗区百花一街与宝丽路交叉口北120米","price":1300,"roomType":"一室一厅","floor":"6","furniture":"需接手家电","lighting":"未知","lightingNote":"","waterElectric":"","waterPrice":"6","electricPrice":"0.8","viewTime":"今晚8点后","wechat":"xiao-xue-ming","source":"咸鱼","notes":""},
+      {"id":4,"type":"personal","address":"广东省深圳市龙岗区新城路157号","price":1500,"roomType":"隔间的一房一厅","floor":"","furniture":"","lighting":"未提及","lightingNote":"","waterElectric":"","waterPrice":"","electricPrice":"","viewTime":"待定","wechat":"","source":"小红书","notes":""},
+      {"id":5,"type":"agent","address":"大运","price":"","roomType":"","floor":"","furniture":"","lighting":"","lightingNote":"","waterElectric":"","waterPrice":"","electricPrice":"","viewTime":"明天","wechat":"","source":"","notes":"中介推荐"}
+    ];
+  }
 }
 
 async function init() {
@@ -216,8 +227,13 @@ async function init() {
 
   try {
     const data = await loadData();
+    const isLocal = data.length === 5 && data[0].address.includes('牛仔园') && data[4].address === '大运';
     statusBar.className = 'status-bar ok';
-    statusBar.textContent = `✅ 数据已更新 · ${new Date().toLocaleString('zh-CN')}`;
+    if (isLocal) {
+      statusBar.textContent = '⚠️ 正在使用本地数据（未连接 GitHub）';
+    } else {
+      statusBar.textContent = `✅ 数据已更新 · ${new Date().toLocaleString('zh-CN')}`;
+    }
     subtitle.textContent = `共 ${data.length} 套房源`;
     if (!data.length) {
       container.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;padding:60px 0;">暂无房源数据</p>';
@@ -227,7 +243,7 @@ async function init() {
   } catch(err) {
     console.error(err);
     statusBar.className = 'status-bar error';
-    statusBar.textContent = `⚠️ 加载失败: ${err.message}。请检查 CONFIG 配置是否正确。`;
+    statusBar.textContent = `⚠️ 加载失败: ${err.message}`;
     subtitle.textContent = '';
     container.innerHTML = '';
   }

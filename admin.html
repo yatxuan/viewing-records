@@ -105,7 +105,7 @@
 </head>
 <body>
 <div class="container">
-  <a href="./viewing-records.html" class="back-link">← 返回看房记录</a>
+  <a href="./index.html" class="back-link">← 返回看房记录</a>
 
   <!-- 登录界面 -->
   <div id="loginView">
@@ -310,7 +310,7 @@ let sha = '';       // data.json 的 SHA，更新时需要
 let currentStars = 0;
 
 const DEFAULTS = {
-  owner: 'yat',
+  owner: 'yatxuan',
   repo: 'viewing-records',
   branch: 'main',
   filepath: 'data.json',
@@ -445,7 +445,7 @@ function renderList() {
           ${h.type === 'agent' ? '🏢 中介' : '👤 个人'} ·
           ${h.price ? '¥' + Number(h.price).toLocaleString() + '/月' : '价格待定'} ·
           ${h.roomType || '房型未填'}
-          ${h.satisfaction ? ' · ⭐'.repeat(h.satisfaction)}
+          ${h.satisfaction ? ' · ' + '⭐'.repeat(Math.max(1, h.satisfaction)) : ''}
         </div>
       </div>
       <div class="house-actions">
