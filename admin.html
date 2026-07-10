@@ -365,25 +365,50 @@ function doLogout() {
   location.reload();
 }
 
-// ====== GitHub API ======
+// ====== 数据加载（优先 GitHub，回退到 localStorage） ======
+const LOCAL_KEY = 'vr_local_data';
+
+// 安全地用 atob 解码 UTF-8 base64
+function b64DecodeUnicode(str) {
+  const bytes = Uint8Array.from(atob(str), c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
 async function fetchFile() {
   const gh = getGhConfig();
+  // 如果没有 Token，直接用本地数据
+  if (!gh.token) {
+    console.warn('未配置 GitHub Token，使用本地数据');
+    const raw = localStorage.getItem(LOCAL_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }
   const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${gh.filepath}?ref=${gh.branch}`;
-  const resp = await fetch(url, {
-    headers: gh.token ? { 'Authorization': `Bearer ${gh.token}` } : {},
-  });
-  if (!resp.ok) throw new Error(`GitHub API 错误: ${resp.status} ${resp.statusText}`);
-  const json = await resp.json();
-  sha = json.sha;
-  return JSON.parse(atob(json.content).replace(/\n$/, ''));
+  try {
+    const resp = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${gh.token}` },
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    sha = json.sha;
+    return JSON.parse(b64DecodeUnicode(json.content).replace(/\n$/, ''));
+  } catch(e) {
+    console.warn('GitHub 加载失败，使用本地数据:', e.message);
+    const raw = localStorage.getItem(LOCAL_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }
 }
 
 async function updateFile(data) {
   const gh = getGhConfig();
+  // 没有 Token 就存本地
+  if (!gh.token) {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+    return;
+  }
   const url = `https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${gh.filepath}`;
   const body = {
     message: `update: ${data.length} properties`,
-    content: btoa(JSON.stringify(data, null, 2)),
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
     sha: sha,
     branch: gh.branch,
   };
