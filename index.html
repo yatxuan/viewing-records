@@ -45,6 +45,8 @@
         margin-top: 14px;
         display: flex;
         justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
       }
       .admin-entry {
         display: inline-flex;
@@ -63,11 +65,45 @@
       .admin-entry:hover {
         background: #2d2d54;
       }
+      .btn {
+        min-height: 36px;
+        padding: 8px 14px;
+        border: none;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #6c5ce7;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #5b4cdb;
+      }
+      .btn-secondary {
+        background: #edf0f5;
+        color: #4b5563;
+      }
+      .btn-danger {
+        background: #fff0f0;
+        color: #d63031;
+      }
+      .btn-sm {
+        min-height: 30px;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: 12px;
+      }
 
       .tabs {
         display: flex;
         gap: 8px;
         justify-content: center;
+        flex-wrap: wrap;
         margin-bottom: 24px;
       }
       .tab {
@@ -86,6 +122,41 @@
         background: #6c5ce7;
         color: #fff;
       }
+      .tab-button {
+        appearance: none;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .toolbar-actions,
+      .view-switch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .view-btn {
+        min-height: 34px;
+        padding: 7px 12px;
+        border: 1px solid #e1e5ee;
+        border-radius: 9px;
+        background: #fff;
+        color: #6b7280;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .view-btn.active {
+        border-color: #6c5ce7;
+        background: #eef2ff;
+        color: #4f46e5;
+      }
 
       .filter-panel {
         background: #fff;
@@ -94,6 +165,28 @@
         padding: 16px;
         margin-bottom: 18px;
         box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+      }
+      .filter-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .filter-title {
+        color: #1a1a2e;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .filter-toggle {
+        border: none;
+        border-radius: 8px;
+        padding: 7px 11px;
+        background: #f4f6fb;
+        color: #6c5ce7;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
       }
       .filter-grid {
         display: grid;
@@ -172,6 +265,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 10px;
       }
       .badge {
         display: inline-block;
@@ -194,6 +288,13 @@
         padding: 3px 8px;
         background: #f0f0f0;
         border-radius: 10px;
+      }
+      .tag-group {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        flex-wrap: wrap;
       }
 
       .card-body {
@@ -249,7 +350,7 @@
         justify-content: space-between;
         background: #fafbfc;
       }
-      .wechat {
+      .contact-line {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -260,6 +361,11 @@
       .view-time {
         font-size: 12px;
         color: #888;
+      }
+      .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       .subsidy-info {
@@ -311,6 +417,10 @@
         background: #e8f5e9;
         color: #27ae60;
       }
+      .status-bar.sync {
+        background: #eef2ff;
+        color: #4f46e5;
+      }
 
       .compare-table {
         width: 100%;
@@ -332,6 +442,55 @@
       .compare-table td {
         padding: 10px 12px;
         border-bottom: 1px solid #f0f0f0;
+      }
+      .list-panel {
+        background: #fff;
+        border: 1px solid #eceef3;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+      .list-row {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1.8fr) 110px 128px 148px;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid #f0f2f6;
+        cursor: pointer;
+      }
+      .list-row:last-child {
+        border-bottom: none;
+      }
+      .list-row:hover {
+        background: #fafbff;
+      }
+      .list-order {
+        color: #6c5ce7;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .list-main strong {
+        display: block;
+        color: #1a1a2e;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      .list-main span,
+      .list-meta {
+        display: block;
+        color: #8a94a6;
+        font-size: 12px;
+        margin-top: 3px;
+      }
+      .list-price {
+        color: #e74c3c;
+        font-weight: 800;
+      }
+      .list-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
       }
       .cost-low {
         color: #27ae60;
@@ -367,201 +526,104 @@
       .admin-link:hover {
         opacity: 1;
       }
-
-      /* Detail overlay */
-      .detail-overlay {
+      .modal-overlay {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.52);
-        backdrop-filter: blur(8px);
         z-index: 100;
         align-items: center;
         justify-content: center;
         padding: 16px;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(6px);
       }
-      .detail-overlay.show {
+      .modal-overlay.show {
         display: flex;
       }
-      .detail-box {
-        background: #fff;
-        border-radius: 18px;
-        max-width: 760px;
+      .modal {
         width: 100%;
+        max-width: 560px;
         max-height: 90vh;
         overflow-y: auto;
-        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
-      }
-      .detail-hero {
+        border-radius: 16px;
+        background: #fff;
         padding: 24px;
-        background: linear-gradient(135deg, #111827, #243047);
-        color: #fff;
-        border-radius: 18px 18px 0 0;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.24);
       }
-      .detail-hero-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 16px;
-      }
-      .detail-kind {
-        display: inline-flex;
-        align-items: center;
-        min-height: 26px;
-        padding: 5px 10px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.12);
-        color: #d7f7e8;
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .detail-close {
-        width: 34px;
-        height: 34px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
+      .modal h2 {
+        color: #1a1a2e;
         font-size: 20px;
-        line-height: 1;
-        cursor: pointer;
-      }
-      .detail-title {
-        margin: 0;
-        font-size: 22px;
-        line-height: 1.35;
-        font-weight: 800;
-      }
-      .detail-price-row {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 20px;
-      }
-      .detail-stat {
-        min-height: 78px;
-        padding: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.08);
-      }
-      .detail-stat span {
-        display: block;
-        color: #b9c2d3;
-        font-size: 12px;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-      .detail-stat strong {
-        display: block;
-        font-size: 22px;
-        line-height: 1.1;
-      }
-      .detail-stat small {
-        color: #d7deea;
-        font-size: 12px;
-      }
-      .detail-content {
-        padding: 20px 24px 8px;
-      }
-      .detail-summary-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
         margin-bottom: 18px;
       }
-      .summary-tile {
-        border: 1px solid #eef1f6;
-        border-radius: 12px;
-        padding: 12px;
-        background: #fbfcfe;
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
       }
-      .summary-tile span {
-        display: block;
-        color: #8a94a6;
-        font-size: 11px;
-        font-weight: 700;
-        margin-bottom: 6px;
+      .form-row.full {
+        grid-template-columns: 1fr;
       }
-      .summary-tile strong {
-        display: block;
-        color: #1f2937;
-        font-size: 14px;
-        line-height: 1.35;
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
       }
-      .detail-section {
-        padding: 14px 0;
-        border-top: 1px solid #f0f2f6;
-      }
-      .detail-section-title {
+      .form-group label {
+        color: #7b8494;
         font-size: 12px;
         font-weight: 700;
-        color: #6b7280;
-        margin-bottom: 8px;
       }
-      .detail-row {
-        display: grid;
-        grid-template-columns: 96px 1fr;
-        gap: 12px;
-        padding: 8px 0;
-        font-size: 13px;
-      }
-      .detail-row-label {
-        color: #9ca3af;
-        font-weight: 600;
-      }
-      .detail-row-value {
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        min-height: 38px;
+        padding: 8px 10px;
+        border: 1.5px solid #e1e5ee;
+        border-radius: 8px;
+        background: #fbfcfe;
         color: #1f2937;
-        font-weight: 600;
-        text-align: right;
-        word-break: break-word;
+        font: inherit;
+        font-size: 13px;
+        outline: none;
       }
-      .detail-actions {
-        padding: 12px 24px 24px;
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #6c5ce7;
+        background: #fff;
+      }
+      .modal-actions {
         display: flex;
+        justify-content: flex-end;
         gap: 8px;
-      }
-      .btn-edit {
-        flex: 1;
-        padding: 12px;
-        background: #6c5ce7;
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .btn-delete {
-        padding: 12px 16px;
-        background: #fdedec;
-        color: #e74c3c;
-        border: none;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .btn-secondary {
-        padding: 12px 16px;
-        background: #f4f6fb;
-        color: #666;
-        border: none;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
+        margin-top: 18px;
       }
 
       @media (max-width: 480px) {
         body {
           padding: 16px 12px;
         }
+        .toolbar {
+          align-items: stretch;
+        }
+        .toolbar-actions,
+        .view-switch {
+          width: 100%;
+        }
+        .toolbar-actions .btn,
+        .view-switch .view-btn {
+          flex: 1;
+        }
         .filter-grid,
-        .detail-price-row,
-        .detail-summary-grid {
+        .form-row {
           grid-template-columns: 1fr;
+        }
+        .list-row {
+          grid-template-columns: 1fr;
+          align-items: start;
+        }
+        .list-actions {
+          justify-content: flex-start;
         }
         .filter-summary {
           align-items: flex-start;
@@ -573,13 +635,6 @@
         .info-grid {
           grid-template-columns: 1fr;
         }
-        .detail-row {
-          grid-template-columns: 1fr;
-          gap: 4px;
-        }
-        .detail-row-value {
-          text-align: left;
-        }
       }
     </style>
   </head>
@@ -590,7 +645,10 @@
           <h1>🏠 我的看房记录</h1>
           <p>{{ houses.length }} 套房源 · {{ today }}</p>
           <div class="header-actions">
-            <a class="admin-entry" href="./admin.html">管理后台</a>
+            <a class="admin-entry" href="./edit.html">新增房源</a>
+            <button class="btn btn-secondary" type="button" @click="showSettings = true">
+              设置
+            </button>
           </div>
         </header>
 
@@ -602,6 +660,13 @@
           >
             🏠 房源列表
           </div>
+          <button
+            class="tab tab-button"
+            type="button"
+            @click="showFilterModal = true"
+          >
+            🔎 筛选
+          </button>
           <div
             class="tab"
             :class="{ active: tab === 'compare' }"
@@ -611,61 +676,47 @@
           </div>
         </div>
 
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <a class="btn btn-primary" href="./edit.html">＋ 新增房源</a>
+            <button class="btn btn-secondary" type="button" @click="reloadData">
+              刷新数据
+            </button>
+          </div>
+          <div class="view-switch" v-if="tab === 'list'">
+            <button
+              class="view-btn"
+              type="button"
+              :class="{ active: viewMode === 'card' }"
+              @click="viewMode = 'card'"
+            >
+              卡片
+            </button>
+            <button
+              class="view-btn"
+              type="button"
+              :class="{ active: viewMode === 'table' }"
+              @click="viewMode = 'table'"
+            >
+              列表
+            </button>
+          </div>
+        </div>
+
         <!-- List -->
         <div v-if="tab === 'list'">
           <div class="status-bar loading" v-if="loading">加载中...</div>
           <div class="status-bar error" v-if="error">{{ error }}</div>
+          <div class="status-bar sync" v-if="status">{{ status }}</div>
           <div class="status-bar ok" v-if="!loading && !error && houses.length">
             已加载 {{ houses.length }} 套房源
           </div>
           <div class="empty-state" v-if="!loading && !error && !houses.length">
             <strong>还没有房源记录</strong>
-            <p>去管理页添加第一套看房信息吧。</p>
+            <p>添加第一套看房信息吧。</p>
           </div>
-          <div class="filter-panel" v-if="houses.length">
-            <div class="filter-grid">
-              <div class="filter-field">
-                <label>类型</label>
-                <select v-model="filters.type">
-                  <option value="all">全部类型</option>
-                  <option value="personal">个人转租</option>
-                  <option value="agent">中介</option>
-                </select>
-              </div>
-              <div class="filter-field">
-                <label>房型</label>
-                <select v-model="filters.roomType">
-                  <option value="all">全部房型</option>
-                  <option v-for="item in roomTypeOptions" :key="item" :value="item">
-                    {{ item }}
-                  </option>
-                </select>
-              </div>
-              <div class="filter-field">
-                <label>采光</label>
-                <select v-model="filters.lighting">
-                  <option value="all">全部采光</option>
-                  <option v-for="item in lightingOptions" :key="item" :value="item">
-                    {{ item }}
-                  </option>
-                </select>
-              </div>
-              <div class="filter-field">
-                <label>排序</label>
-                <select v-model="filters.sortBy">
-                  <option value="viewTimeAsc">看房时间从近到远</option>
-                  <option value="viewTimeDesc">看房时间从远到近</option>
-                  <option value="priceAsc">房价从低到高</option>
-                  <option value="priceDesc">房价从高到低</option>
-                </select>
-              </div>
-            </div>
-            <div class="filter-summary">
-              <span>当前显示 {{ displayHouses.length }} / {{ houses.length }} 套</span>
-              <button class="filter-reset" type="button" @click="resetFilters">
-                重置筛选
-              </button>
-            </div>
+          <div class="status-bar sync" v-if="houses.length">
+            当前显示 {{ displayHouses.length }} / {{ houses.length }} 套 · {{ filterSummary }}
           </div>
           <div
             class="empty-state"
@@ -674,7 +725,7 @@
             <strong>没有符合条件的房源</strong>
             <p>换个类型、房型或采光条件试试。</p>
           </div>
-          <div class="cards" v-if="displayHouses.length">
+          <div class="cards" v-if="displayHouses.length && viewMode === 'card'">
             <div
               class="card"
               v-for="h in displayHouses"
@@ -687,7 +738,11 @@
                   :class="h.type==='personal'?'badge-personal':'badge-agent'"
                   >{{ h.type==='personal'?'个人转租':'中介' }}</span
                 >
-                <span class="source-tag">{{ h.source || '—' }}</span>
+                <div class="tag-group">
+                  <span class="source-tag" v-if="hasDisplayOrder(h)">#{{ h.displayOrder }}</span>
+                  <span class="source-tag">{{ viewStatus(h) }}</span>
+                  <span class="source-tag">{{ h.source || '—' }}</span>
+                </div>
               </div>
               <div class="card-body">
                 <div class="address">{{ h.address }}</div>
@@ -700,16 +755,16 @@
                       ></span
                     >
                   </div>
-                  <div class="info-item" v-if="h.roomType">
+                  <div class="info-item" v-if="formatRoomType(h)">
                     <span class="info-label">房型</span>
                     <span class="info-value"
-                      >{{ h.roomType }}{{ h.floor ? ' · '+h.floor+'楼' : ''
+                      >{{ formatRoomType(h) }}{{ h.floor ? ' · '+h.floor+'楼' : ''
                       }}</span
                     >
                   </div>
-                  <div class="info-item" v-if="h.furniture">
-                    <span class="info-label">家电</span>
-                    <span class="info-value">{{ h.furniture }}</span>
+                  <div class="info-item" v-if="formatFurniture(h)">
+                    <span class="info-label">家电家具</span>
+                    <span class="info-value">{{ formatFurniture(h) }}</span>
                   </div>
                   <div class="info-item" v-if="h.lighting">
                     <span class="info-label">采光</span>
@@ -760,7 +815,11 @@
                       >{{ '⭐'.repeat(h.satisfaction) }}</span
                     >
                   </div>
-                  <div class="subsidy-info" v-if="h.pros || h.cons || h.notes">
+                  <div
+                    class="subsidy-info"
+                    v-if="h.discountStrategy || h.pros || h.cons || h.notes"
+                  >
+                    <div v-if="h.discountStrategy">入住优惠：{{ h.discountStrategy }}</div>
                     <div v-if="h.pros">✅ {{ h.pros }}</div>
                     <div v-if="h.cons" style="margin-top: 4px">
                       ❌ {{ h.cons }}
@@ -772,10 +831,31 @@
                 </div>
               </div>
               <div class="card-footer">
-                <span class="wechat">{{ h.wechat || '待联系' }}</span>
-                <span class="view-time" v-if="h.viewTime"
-                  >{{ formatViewTime(h.viewTime) }}</span
-                >
+                <span class="contact-line">{{ formatContacts(h) || '待联系' }}</span>
+                <div class="card-actions" @click.stop>
+                  <a class="btn btn-secondary btn-sm" :href="editUrl(h)">编辑</a>
+                  <button class="btn btn-danger btn-sm" type="button" @click="deleteHouse(h)">删除</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="list-panel" v-if="displayHouses.length && viewMode === 'table'">
+            <div
+              class="list-row"
+              v-for="h in displayHouses"
+              :key="'row-'+h.id"
+              @click="openDetail(h)"
+            >
+              <div class="list-order">{{ hasDisplayOrder(h) ? '#' + h.displayOrder : '—' }}</div>
+              <div class="list-main">
+                <strong>{{ h.address || '地址未填写' }}</strong>
+                <span>{{ viewStatus(h) }} · {{ h.type==='personal'?'个人转租':'中介' }} · {{ formatRoomType(h) || '房型未填' }} · {{ h.lighting || '采光未填' }}</span>
+              </div>
+              <div class="list-price">{{ h.price ? '¥' + Number(h.price).toLocaleString() : '待定' }}</div>
+              <div class="list-meta">{{ formatViewTime(h.viewTime) || '看房时间待定' }}</div>
+              <div class="list-actions" @click.stop>
+                <a class="btn btn-secondary btn-sm" :href="editUrl(h)">编辑</a>
+                <button class="btn btn-danger btn-sm" type="button" @click="deleteHouse(h)">删除</button>
               </div>
             </div>
           </div>
@@ -849,94 +929,114 @@
         </div>
       </div>
 
-      <a class="admin-link" href="./admin.html">管理</a>
-
-      <!-- Detail overlay -->
       <div
-        v-if="detailHouse"
-        class="detail-overlay"
-        :class="{ show: detailHouse }"
-        @click.self="closeDetail"
+        class="modal-overlay show"
+        v-if="showFilterModal"
+        @click.self="showFilterModal = false"
       >
-        <div class="detail-box">
-          <div class="detail-hero">
-            <div class="detail-hero-top">
-              <span class="detail-kind">
-                {{ detailHouse.type==='personal'?'个人转租':'中介' }}
-              </span>
-              <button class="detail-close" type="button" @click="closeDetail">
-                ×
-              </button>
+        <div class="modal">
+          <h2>筛选与排序</h2>
+          <div class="filter-grid">
+            <div class="filter-field">
+              <label>类型</label>
+              <select v-model="filters.type">
+                <option value="all">全部类型</option>
+                <option value="personal">个人转租</option>
+                <option value="agent">中介</option>
+              </select>
             </div>
-            <h2 class="detail-title">{{ detailHouse.address || '地址未填写' }}</h2>
-            <div class="detail-price-row">
-              <div class="detail-stat">
-                <span>月租</span>
-                <strong>
-                  {{ detailHouse.price ?
-                  '¥'+Number(detailHouse.price).toLocaleString() : '待定' }}
-                </strong>
-                <small v-if="detailHouse.price">/ 月</small>
-              </div>
-              <div class="detail-stat">
-                <span>月总支出</span>
-                <strong>
-                  {{ calcTotal(detailHouse).total > 0 ?
-                  '¥'+calcTotal(detailHouse).total.toLocaleString() : '待估' }}
-                </strong>
-                <small>{{ calcTotal(detailHouse).detail }}</small>
-              </div>
-              <div class="detail-stat">
-                <span>看房时间</span>
-                <strong style="font-size:18px">
-                  {{ formatViewTime(detailHouse.viewTime) || '待定' }}
-                </strong>
-                <small>{{ detailHouse.source || '来源未填' }}</small>
-              </div>
+            <div class="filter-field">
+              <label>房型</label>
+              <select v-model="filters.roomType">
+                <option value="all">全部房型</option>
+                <option v-for="item in roomTypeOptions" :key="item" :value="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <label>采光</label>
+              <select v-model="filters.lighting">
+                <option value="all">全部采光</option>
+                <option v-for="item in lightingOptions" :key="item" :value="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <label>排序</label>
+              <select v-model="filters.sortBy">
+                <option value="displayOrder">展示顺序</option>
+                <option value="viewTimeAsc">看房时间从近到远</option>
+                <option value="viewTimeDesc">看房时间从远到近</option>
+                <option value="priceAsc">房价从低到高</option>
+                <option value="priceDesc">房价从高到低</option>
+              </select>
             </div>
           </div>
-
-          <div class="detail-content">
-            <div class="detail-summary-grid">
-              <div class="summary-tile">
-                <span>房型</span>
-                <strong>{{ detailHouse.roomType || '未填写' }}</strong>
-              </div>
-              <div class="summary-tile">
-                <span>采光</span>
-                <strong>{{ detailHouse.lighting || '未填写' }}</strong>
-              </div>
-              <div class="summary-tile">
-                <span>楼层 / 朝向</span>
-                <strong>
-                  {{ detailHouse.floor ? detailHouse.floor + '楼' : '楼层未填' }}
-                  {{ detailHouse.direction ? ' · ' + detailHouse.direction : '' }}
-                </strong>
-              </div>
-              <div class="summary-tile">
-                <span>联系</span>
-                <strong>{{ detailHouse.wechat || '待联系' }}</strong>
-              </div>
-            </div>
-
-            <template v-for="[title, rows] in detailSections">
-              <div class="detail-section" v-if="rows.some(r => r[1])">
-                <div class="detail-section-title">{{ title }}</div>
-                <template v-for="[label, value] in rows" :key="label">
-                  <div class="detail-row" v-if="value">
-                    <span class="detail-row-label">{{ label }}</span>
-                    <span class="detail-row-value" :style="detailRowStyle(label, value)">
-                      {{ value }}
-                    </span>
-                  </div>
-                </template>
-              </div>
-            </template>
+          <div class="filter-summary">
+            <span>当前显示 {{ displayHouses.length }} / {{ houses.length }} 套</span>
+            <button class="filter-reset" type="button" @click="resetFilters">
+              重置筛选
+            </button>
           </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary" type="button" @click="showFilterModal = false">
+              完成
+            </button>
+          </div>
+        </div>
+      </div>
 
-          <div class="detail-actions">
-            <a class="btn-edit" :href="adminUrl">去管理页编辑</a>
-            <button class="btn-secondary" @click="closeDetail">关闭</button>
+      <div
+        class="modal-overlay show"
+        v-if="showSettings"
+        @click.self="showSettings = false"
+      >
+        <div class="modal">
+          <h2>数据设置</h2>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>GitHub 用户名</label>
+              <input v-model="cfg.owner" />
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>仓库名</label>
+              <input v-model="cfg.repo" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>分支</label>
+              <input v-model="cfg.branch" />
+            </div>
+            <div class="form-group">
+              <label>文件路径</label>
+              <input v-model="cfg.filepath" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Token 类型</label>
+              <select v-model="cfg.tokenType">
+                <option value="fine-grained">Fine-grained token</option>
+                <option value="classic">Classic token</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Personal Access Token</label>
+              <input type="password" v-model="cfg.token" placeholder="github_pat_xxx 或 ghp_xxx" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" type="button" @click="showSettings = false">
+              取消
+            </button>
+            <button class="btn btn-primary" type="button" @click="saveSettings">
+              保存设置
+            </button>
           </div>
         </div>
       </div>
@@ -956,14 +1056,19 @@
           const houses = ref([]);
           const loading = ref(true);
           const error = ref("");
+          const status = ref("");
           const tab = ref("list");
-          const detailHouse = ref(null);
+          const viewMode = ref("card");
+          const showFilterModal = ref(false);
+          const showSettings = ref(false);
           const filters = reactive({
             type: "all",
             roomType: "all",
             lighting: "all",
-            sortBy: "viewTimeAsc",
+            sortBy: "displayOrder",
           });
+          const cfg = reactive(getStoredConfig());
+          if (!cfg.tokenType) cfg.tokenType = "fine-grained";
           const today = new Date().toLocaleDateString("zh-CN");
 
           // UTF-8 safe base64 decode
@@ -987,8 +1092,31 @@
               repo: cfg.repo || DEFAULT_CONFIG.repo,
               branch: cfg.branch || DEFAULT_CONFIG.branch,
               filepath: cfg.filepath || cfg.filePath || DEFAULT_CONFIG.filepath,
+              tokenType: cfg.tokenType || "fine-grained",
               token: cfg.token || "",
             };
+          }
+
+          function setConfig(value) {
+            localStorage.setItem("vr_config", JSON.stringify(value));
+          }
+
+          function ghHeaders(g, extra = {}) {
+            return {
+              Accept: "application/vnd.github+json",
+              Authorization: `Bearer ${g.token}`,
+              "X-GitHub-Api-Version": "2022-11-28",
+              ...extra,
+            };
+          }
+
+          async function readGithubError(resp) {
+            try {
+              const json = await resp.json();
+              return json.message ? `HTTP ${resp.status}: ${json.message}` : `HTTP ${resp.status}`;
+            } catch {
+              return `HTTP ${resp.status}`;
+            }
           }
 
           async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
@@ -1058,14 +1186,68 @@
             }
           }
 
-          onMounted(async () => {
+          async function fetchRemoteSha(g) {
+            const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}?ref=${g.branch}`;
+            const resp = await fetchWithTimeout(url, { headers: ghHeaders(g) });
+            if (resp.status === 404) return "";
+            if (!resp.ok) throw new Error(await readGithubError(resp));
+            const json = await resp.json();
+            return json.sha || "";
+          }
+
+          async function putRemoteFile(g, data, sha) {
+            const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}`;
+            const body = {
+              message: `update: ${data.length} properties`,
+              content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+              branch: g.branch,
+            };
+            if (sha) body.sha = sha;
+            return fetchWithTimeout(url, {
+              method: "PUT",
+              headers: ghHeaders(g, { "Content-Type": "application/json" }),
+              body: JSON.stringify(body),
+            });
+          }
+
+          async function updateFile(data) {
+            const g = getRemoteConfig();
+            if (!g.token) {
+              localStorage.setItem("vr_local_data", JSON.stringify(data));
+              return;
+            }
+            let sha = await fetchRemoteSha(g);
+            let resp = await putRemoteFile(g, data, sha);
+            if (resp.status === 409) {
+              sha = await fetchRemoteSha(g);
+              resp = await putRemoteFile(g, data, sha);
+            }
+            if (!resp.ok) throw new Error(await readGithubError(resp));
+          }
+
+          async function reloadData() {
+            loading.value = true;
+            error.value = "";
             try {
               houses.value = await loadData();
+              status.value = `已刷新 ${houses.value.length} 套房源`;
             } catch (e) {
               error.value = "加载失败: " + e.message;
             } finally {
               loading.value = false;
             }
+          }
+
+          async function persist(data) {
+            status.value = "同步中...";
+            await updateFile(data);
+            houses.value = await loadData();
+            status.value = "已保存并重新拉取最新数据";
+            setTimeout(() => (status.value = ""), 3000);
+          }
+
+          onMounted(async () => {
+            await reloadData();
           });
 
           const activeHouses = computed(() =>
@@ -1077,8 +1259,23 @@
               .sort((a, b) => parseFloat(a.price) - parseFloat(b.price)),
           );
           const cheapest = computed(() => sortedHouses.value[0]);
-          const roomTypeOptions = computed(() => uniqueValues("roomType"));
+          const roomTypeOptions = computed(() => uniqueDisplayValues(formatRoomType));
           const lightingOptions = computed(() => uniqueValues("lighting"));
+          const filterSummary = computed(() => {
+            const parts = [];
+            if (filters.type !== "all") parts.push(filters.type === "personal" ? "个人转租" : "中介");
+            if (filters.roomType !== "all") parts.push(filters.roomType);
+            if (filters.lighting !== "all") parts.push(filters.lighting + "采光");
+            const sortMap = {
+              displayOrder: "展示顺序",
+              viewTimeAsc: "看房时间近到远",
+              viewTimeDesc: "看房时间远到近",
+              priceAsc: "房价低到高",
+              priceDesc: "房价高到低",
+            };
+            parts.push(sortMap[filters.sortBy] || "默认排序");
+            return parts.join(" / ");
+          });
           const displayHouses = computed(() => {
             const list = houses.value.filter((h) => {
               if (!h) return false;
@@ -1086,7 +1283,7 @@
                 return false;
               if (
                 filters.roomType !== "all" &&
-                (h.roomType || "") !== filters.roomType
+                formatRoomType(h) !== filters.roomType
               )
                 return false;
               if (
@@ -1098,6 +1295,8 @@
             });
 
             return list.slice().sort((a, b) => {
+              if (filters.sortBy === "displayOrder")
+                return sortableDisplayOrder(a) - sortableDisplayOrder(b);
               if (filters.sortBy === "priceAsc")
                 return sortablePrice(a, 1) - sortablePrice(b, 1);
               if (filters.sortBy === "priceDesc")
@@ -1118,7 +1317,7 @@
               },
               true,
             ],
-            ["房型", (h) => h.roomType || "-"],
+            ["房型", (h) => formatRoomType(h) || "-"],
             ["楼层", (h) => (h.floor ? h.floor + "楼" : "-")],
             ["朝向", (h) => h.direction || "-"],
             ["面积", (h) => (h.area ? h.area + "㎡" : "-")],
@@ -1167,10 +1366,13 @@
                 (parseFloat(h.elecUsage) || 0),
             );
             const svcFee = parseFloat(h.serviceFee) || 0;
-            const total = rent + propFee + svcFee + waterFee + elecFee;
+            const networkFee =
+              h.networkMode === "房东提供" ? parseFloat(h.networkFee) || 0 : 0;
+            const total = rent + propFee + svcFee + waterFee + elecFee + networkFee;
             const details = [];
             if (waterFee) details.push("水" + waterFee);
             if (elecFee) details.push("电" + elecFee);
+            if (networkFee) details.push("网" + networkFee);
             if (propFee) details.push("物" + propFee);
             if (svcFee) details.push("服" + svcFee);
             return { total, detail: details.join("+") || "-" };
@@ -1184,6 +1386,42 @@
                   .filter(Boolean),
               ),
             ].sort((a, b) => a.localeCompare(b, "zh-CN"));
+          }
+
+          function uniqueDisplayValues(formatter) {
+            return [
+              ...new Set(houses.value.map((h) => formatter(h).trim()).filter(Boolean)),
+            ].sort((a, b) => a.localeCompare(b, "zh-CN"));
+          }
+
+          function formatRoomType(h) {
+            if (!h) return "";
+            const parts = [
+              h.bedrooms,
+              h.livingRooms,
+              h.balconies,
+              h.hasKitchen === "yes"
+                ? "有厨房"
+                : h.hasKitchen === "no"
+                  ? "无厨房"
+                  : "",
+              h.toilets,
+            ].filter(Boolean);
+            return parts.length ? parts.join("") : h.roomType || "";
+          }
+
+          function formatFurniture(h) {
+            if (!h) return "";
+            if (Array.isArray(h.appliances) && h.appliances.length)
+              return h.appliances.join("、");
+            return h.furniture || "";
+          }
+
+          function formatNetwork(h) {
+            if (!h?.networkMode) return "";
+            if (h.networkMode === "房东提供")
+              return h.networkFee ? `房东提供 · ¥${h.networkFee}/月` : "房东提供";
+            return h.networkMode;
           }
 
           function isDateTimeValue(value) {
@@ -1203,6 +1441,20 @@
             return price;
           }
 
+          function sortableDisplayOrder(h) {
+            const value = parseFloat(h?.displayOrder);
+            if (Number.isFinite(value)) return value;
+            return Number.MAX_SAFE_INTEGER;
+          }
+
+          function hasDisplayOrder(h) {
+            return h?.displayOrder !== undefined && h.displayOrder !== null && h.displayOrder !== "";
+          }
+
+          function viewStatus(h) {
+            return h?.status === "unviewed" ? "未看" : "已看";
+          }
+
           function formatViewTime(value) {
             if (!value) return "";
             if (!isDateTimeValue(value)) return value;
@@ -1216,109 +1468,35 @@
             filters.type = "all";
             filters.roomType = "all";
             filters.lighting = "all";
-            filters.sortBy = "viewTimeAsc";
+            filters.sortBy = "displayOrder";
           }
 
-          const detailSections = computed(() => {
-            const h = detailHouse.value;
-            if (!h) return [];
-            return [
-              [
-                "基本信息",
-                [
-                  ["房型", h.roomType],
-                  ["楼层", h.floor],
-                  ["朝向", h.direction],
-                  ["面积", h.area],
-                  ["采光", h.lighting],
-                  ["采光备注", h.lightingNote],
-                  ["家电", h.furniture],
-                  ["装修", h.decor],
-                  ["电梯", h.elevator],
-                ],
-              ],
-              [
-                "费用明细",
-                [
-                  ["月租金", h.price ? "¥" + h.price : "-"],
-                  ["水电类型", h.utility],
-                  [
-                    "电费",
-                    h.electricPrice
-                      ? "¥" +
-                        h.electricPrice +
-                        "/度" +
-                        (h.elecUsage ? " (" + h.elecUsage + "度/月)" : "")
-                      : "-",
-                  ],
-                  [
-                    "水费",
-                    h.waterPrice
-                      ? "¥" +
-                        h.waterPrice +
-                        "/吨" +
-                        (h.waterUsage ? " (" + h.waterUsage + "吨/月)" : "")
-                      : "-",
-                  ],
-                  [
-                    "物业费",
-                    h.propFee
-                      ? "¥" +
-                        h.propFee +
-                        "/㎡" +
-                        (h.area ? " ×" + h.area + "㎡" : "")
-                      : "-",
-                  ],
-                  ["服务费", h.serviceFee ? "¥" + h.serviceFee + "/月" : "-"],
-                  ["押金方式", h.deposit],
-                  ["中介费", h.agentFee],
-                  ["租期", h.leaseTerm],
-                  [
-                    "月总支出",
-                    calcTotal(h).total > 0
-                      ? "¥" + calcTotal(h).total.toLocaleString()
-                      : "-",
-                  ],
-                ],
-              ],
-              [
-                "评分",
-                [
-                  ["综合评分", h.score ? "⭐ " + h.score + "/10" : "-"],
-                  [
-                    "满意度",
-                    h.satisfaction ? "⭐".repeat(h.satisfaction) : "-",
-                  ],
-                ],
-              ],
-              [
-                "联系信息",
-                [
-                  ["看房时间", formatViewTime(h.viewTime)],
-                  ["微信号", h.wechat],
-                  ["来源", h.source],
-                  ["备注", h.notes],
-                ],
-              ],
-              [
-                "优缺点",
-                [
-                  ["优点", h.pros],
-                  ["缺点", h.cons],
-                ],
-              ],
-            ];
-          });
+          function formatContacts(h) {
+            if (!Array.isArray(h?.contacts) || !h.contacts.length) return "";
+            return h.contacts
+              .filter((item) => item && item.type && item.value)
+              .map((item) => `${item.type}: ${item.value}`)
+              .join(" / ");
+          }
 
-          function detailRowStyle(label, value) {
-            let s = "";
-            if (label === "水电类型" && value === "民水民电")
-              s += ";color:#27ae60;font-weight:600";
-            if (label === "水电类型" && value === "商水商电")
-              s += ";color:#e74c3c;font-weight:600";
-            if (label === "月总支出" && value !== "-")
-              s += ";color:#e74c3c;font-weight:700;font-size:15px";
-            return s;
+          function editUrl(h) {
+            return `./edit.html?id=${encodeURIComponent(h.id)}`;
+          }
+
+          async function deleteHouse(h) {
+            if (!confirm(`确定删除「${h.address || "这套房源"}」吗？`)) return;
+            const next = houses.value.filter((item) => item.id !== h.id);
+            try {
+              await persist(next);
+            } catch (e) {
+              error.value = "删除失败: " + e.message;
+            }
+          }
+
+          function saveSettings() {
+            setConfig({ ...cfg });
+            showSettings.value = false;
+            reloadData();
           }
 
           function shortAddr(h) {
@@ -1326,38 +1504,45 @@
           }
 
           function openDetail(h) {
-            detailHouse.value = h;
-          }
-          function closeDetail() {
-            detailHouse.value = null;
+            window.location.href = `./detail.html?id=${encodeURIComponent(h.id)}`;
           }
 
           return {
             houses,
             loading,
             error,
+            status,
             tab,
-            detailHouse,
+            viewMode,
+            showFilterModal,
+            showSettings,
             filters,
+            cfg,
             today,
-            adminUrl: "./admin.html",
             activeHouses,
             sortedHouses,
             cheapest,
             displayHouses,
             roomTypeOptions,
             lightingOptions,
+            filterSummary,
             compareRows,
             calcTotal,
-            detailSections,
-            detailRowStyle,
             formatViewTime,
+            formatRoomType,
+            formatFurniture,
+            formatContacts,
+            hasDisplayOrder,
+            viewStatus,
             resetFilters,
+            reloadData,
+            editUrl,
+            deleteHouse,
+            saveSettings,
             shortAddr,
             lowestPrice,
             highestPrice,
             openDetail,
-            closeDetail,
           };
         },
         emits: ["edit"],
