@@ -3,6 +3,7 @@ export const DEFAULT_CONFIG = {
   repo: "viewing-records",
   branch: "main",
   filepath: "data.json",
+  dataSourceMode: "remote",
 };
 
 export const DEFAULT_HOUSE = {
@@ -11,6 +12,8 @@ export const DEFAULT_HOUSE = {
   status: "unviewed",
   displayOrder: "",
   address: "",
+  metroStation: "",
+  commuteDurationMinutes: null,
   price: "",
   roomType: "",
   bedrooms: "",

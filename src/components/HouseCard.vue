@@ -4,6 +4,7 @@ import { CreateOutline, TrashOutline } from "@vicons/ionicons5";
 import {
   calcTotal,
   effectiveRent,
+  formatCommuteDuration,
   formatContacts,
   formatFurniture,
   formatHouseType,
@@ -55,6 +56,14 @@ defineEmits(["open", "delete"]);
       <div v-if="formatRoomType(house)" class="meta-item">
         <span class="meta-label">房型</span>
         <span class="meta-value">{{ formatRoomType(house) }}</span>
+      </div>
+      <div v-if="house.metroStation" class="meta-item">
+        <span class="meta-label">地铁站</span>
+        <span class="meta-value">{{ house.metroStation }}</span>
+      </div>
+      <div v-if="formatCommuteDuration(house)" class="meta-item">
+        <span class="meta-label">通勤时长</span>
+        <span class="meta-value">{{ formatCommuteDuration(house) }}</span>
       </div>
       <div v-if="house.lighting" class="meta-item">
         <span class="meta-label">采光</span>

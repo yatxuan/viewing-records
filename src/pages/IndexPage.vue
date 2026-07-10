@@ -119,6 +119,32 @@ function saveSettings(nextConfig) {
   reloadData();
 }
 
+async function copyCurrentJson() {
+  const json = JSON.stringify(houses.value, null, 2);
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(json);
+    } else {
+      copyTextFallback(json);
+    }
+    status.value = `已复制 ${houses.value.length} 条 JSON 数据`;
+  } catch (err) {
+    error.value = `复制失败: ${err.message}`;
+  }
+}
+
+function copyTextFallback(text) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+}
+
 function resetFilters() {
   filters.type = "all";
   filters.roomType = "all";
@@ -240,7 +266,7 @@ onMounted(reloadData);
         :total="houses.length"
         @reset="resetFilters"
       />
-      <SettingsDialog v-model:show="showSettings" :config="config" @save="saveSettings" />
+      <SettingsDialog v-model:show="showSettings" :config="config" @save="saveSettings" @copy-json="copyCurrentJson" />
     </main>
   </n-message-provider>
 </template>

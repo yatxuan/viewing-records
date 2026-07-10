@@ -22,23 +22,27 @@ export function getRemoteConfig() {
     repo: config.repo || DEFAULT_CONFIG.repo,
     branch: config.branch || DEFAULT_CONFIG.branch,
     filepath: config.filepath || config.filePath || DEFAULT_CONFIG.filepath,
+    dataSourceMode: config.dataSourceMode || DEFAULT_CONFIG.dataSourceMode,
     tokenType: config.tokenType || "fine-grained",
     token: config.token || "",
   };
 }
 
 export async function loadHouses() {
+  const config = getRemoteConfig();
+  if (config.dataSourceMode === "local") return fetchLocalData({ preferCache: true });
+
   try {
     return await fetchRemoteData();
   } catch (error) {
     console.warn("GitHub 加载失败，使用本地数据:", error.message);
-    return fetchLocalData();
+    return fetchLocalData({ preferCache: false });
   }
 }
 
 export async function saveHouses(houses) {
   const config = getRemoteConfig();
-  if (!config.token) {
+  if (config.dataSourceMode === "local" || !config.token) {
     localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(houses));
     return;
   }
@@ -54,6 +58,8 @@ export async function saveHouses(houses) {
 
 export async function loadAndSaveHouses(houses) {
   await saveHouses(houses);
+  const config = getRemoteConfig();
+  if (config.dataSourceMode === "local" || !config.token) return houses;
   return loadHouses();
 }
 
@@ -71,14 +77,32 @@ async function fetchRemoteData() {
   return JSON.parse(base64Decode(json.content).replace(/\n$/, ""));
 }
 
-async function fetchLocalData() {
+async function fetchLocalData({ preferCache } = { preferCache: false }) {
   const config = getRemoteConfig();
+  if (preferCache) {
+    const cachedData = readLocalCache();
+    if (cachedData) return cachedData;
+  }
+
   const localFileData = await fetchLocalFileData(config.filepath);
   if (localFileData) return localFileData;
 
-  const raw = localStorage.getItem(LOCAL_DATA_KEY);
-  if (raw) return JSON.parse(raw);
+  if (!preferCache) {
+    const cachedData = readLocalCache();
+    if (cachedData) return cachedData;
+  }
   return [];
+}
+
+function readLocalCache() {
+  const raw = localStorage.getItem(LOCAL_DATA_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    console.warn("浏览器本地缓存不是有效 JSON:", error.message);
+    return null;
+  }
 }
 
 function localDataPaths(filepath) {
@@ -99,7 +123,13 @@ async function fetchLocalFileData(filepath) {
   for (const path of localDataPaths(filepath)) {
     try {
       const response = await fetch(path);
-      if (response.ok) return response.json();
+      if (!response.ok) continue;
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch (error) {
+        console.warn("本地数据文件不是有效 JSON:", path, error.message);
+      }
     } catch (error) {
       console.warn("本地数据加载失败:", path, error.message);
     }

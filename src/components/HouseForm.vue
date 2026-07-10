@@ -105,6 +105,19 @@ function toDateTimeLocal(timestamp) {
         </n-form-item>
       </div>
       <div class="form-grid">
+        <n-form-item label="靠近地铁站">
+          <n-input v-model:value="form.metroStation" placeholder="例如：大运站 / 吉祥站" />
+        </n-form-item>
+        <n-form-item label="上班坐车时长">
+          <n-input-number
+            v-model:value="form.commuteDurationMinutes"
+            clearable
+            :min="0"
+            :step="5"
+            placeholder="单位：分钟"
+            style="width: 100%"
+          />
+        </n-form-item>
         <n-form-item label="房租（元/月）">
           <n-input-number v-model:value="form.price" clearable style="width: 100%" />
         </n-form-item>

@@ -56,6 +56,15 @@ export function formatPrice(value) {
   return Number.isFinite(price) && price > 0 ? `¥${price.toLocaleString()}` : "待定";
 }
 
+export function formatCommuteDuration(house) {
+  const minutes = Number(house?.commuteDurationMinutes);
+  if (!Number.isFinite(minutes) || minutes <= 0) return "";
+  if (minutes < 60) return `${minutes}分钟`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest ? `${hours}小时${rest}分钟` : `${hours}小时`;
+}
+
 export function subsidyAmount(house) {
   const amount = Number(house?.subsidyAmount);
   return Number.isFinite(amount) && amount > 0 ? amount : 0;

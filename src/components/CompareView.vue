@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { NCard, NTable } from "naive-ui";
-import { calcTotal, effectiveRent, formatPrice, formatRoomType, shortAddress } from "../shared/formatters.js";
+import { calcTotal, effectiveRent, formatCommuteDuration, formatPrice, formatRoomType, shortAddress } from "../shared/formatters.js";
 
 const props = defineProps({
   houses: { type: Array, required: true },
@@ -18,6 +18,8 @@ const rows = [
   ["到手价", (house) => formatPrice(effectiveRent(house))],
   ["总月支出", (house) => (calcTotal(house).total ? formatPrice(calcTotal(house).total) : "-")],
   ["房型", (house) => formatRoomType(house) || "-"],
+  ["地铁站", (house) => house.metroStation || "-"],
+  ["通勤时长", (house) => formatCommuteDuration(house) || "-"],
   ["楼层", (house) => (house.floor ? `${house.floor}楼` : "-")],
   ["朝向", (house) => house.direction || "-"],
   ["面积", (house) => (house.area ? `${house.area}㎡` : "-")],

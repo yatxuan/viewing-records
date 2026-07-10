@@ -2,6 +2,7 @@
 import { NDataTable } from "naive-ui";
 import {
   formatHouseType,
+  formatCommuteDuration,
   formatPrice,
   formatRoomType,
   formatViewTime,
@@ -39,6 +40,22 @@ const columns = [
     width: 180,
     render(row) {
       return formatRoomType(row) || "-";
+    },
+  },
+  {
+    title: "地铁站",
+    key: "metroStation",
+    width: 130,
+    render(row) {
+      return row.metroStation || "-";
+    },
+  },
+  {
+    title: "通勤",
+    key: "commuteDurationMinutes",
+    width: 120,
+    render(row) {
+      return formatCommuteDuration(row) || "-";
     },
   },
   {

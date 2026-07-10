@@ -24,6 +24,7 @@ export function normalizeHouse(form) {
   house.toilets = "一厕";
   house.roomType = roomSummary(house);
   house.furniture = house.furnitureComplete ? "家电齐全" : house.appliances.join("、");
+  house.commuteDurationMinutes = normalizePositiveNumber(house.commuteDurationMinutes);
   if (house.hasKitchen !== "yes") {
     house.cookingType = "";
     house.kitchenType = "";
@@ -32,6 +33,11 @@ export function normalizeHouse(form) {
   if (house.kitchenType !== "shared") house.sharedKitchenLocation = "";
   if (house.networkMode !== "房东提供") house.networkFee = "";
   return house;
+}
+
+function normalizePositiveNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : null;
 }
 
 export function applyDefaults(form) {

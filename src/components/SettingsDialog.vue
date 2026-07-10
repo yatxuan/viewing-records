@@ -7,7 +7,7 @@ const props = defineProps({
   config: { type: Object, required: true },
 });
 
-const emit = defineEmits(["update:show", "save"]);
+const emit = defineEmits(["update:show", "save", "copy-json"]);
 const draft = reactive({});
 
 const tokenTypeOptions = [
@@ -15,10 +15,16 @@ const tokenTypeOptions = [
   { label: "Classic token", value: "classic" },
 ];
 
+const dataSourceOptions = [
+  { label: "线上数据", value: "remote" },
+  { label: "本地数据", value: "local" },
+];
+
 watch(
   () => props.show,
   (show) => {
     if (show) Object.assign(draft, props.config);
+    if (show && !draft.dataSourceMode) draft.dataSourceMode = "remote";
   },
   { immediate: true },
 );
@@ -38,6 +44,9 @@ function save() {
     @update:show="$emit('update:show', $event)"
   >
     <div class="form-grid full">
+      <n-form-item label="数据来源">
+        <n-select v-model:value="draft.dataSourceMode" :options="dataSourceOptions" />
+      </n-form-item>
       <n-form-item label="GitHub 用户名">
         <n-input v-model:value="draft.owner" placeholder="yatxuan" />
       </n-form-item>
@@ -63,6 +72,7 @@ function save() {
     </div>
     <template #footer>
       <n-space justify="end">
+        <n-button secondary @click="$emit('copy-json')">复制当前 JSON</n-button>
         <n-button secondary @click="$emit('update:show', false)">取消</n-button>
         <n-button type="primary" @click="save">保存设置</n-button>
       </n-space>

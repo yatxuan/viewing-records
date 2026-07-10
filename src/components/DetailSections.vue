@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { NCard } from "naive-ui";
 import {
   calcTotal,
+  formatCommuteDuration,
   formatContacts,
   formatFurniture,
   formatKitchen,
@@ -26,6 +27,8 @@ const sections = computed(() => [
     [
       ["看房顺序", hasDisplayOrder(props.house) ? `#${props.house.displayOrder}` : ""],
       ["看房状态", viewStatus(props.house)],
+      ["靠近地铁站", props.house.metroStation],
+      ["上班坐车时长", formatCommuteDuration(props.house)],
       ["楼层", props.house.floor],
       ["朝向", props.house.direction],
       ["面积", props.house.area ? `${props.house.area}㎡` : ""],
