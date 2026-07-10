@@ -317,6 +317,44 @@ a {
   grid-template-columns: 1fr;
 }
 
+.priority-form-card {
+  border: 1px solid #edeafd;
+  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.08);
+}
+
+.detail-form-collapse {
+  overflow: hidden;
+  border: 1px solid #edf0f7;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.detail-form-collapse.n-collapse {
+  --n-title-font-weight: 900 !important;
+  --n-title-text-color: #1f2937 !important;
+  --n-divider-color: #f0f2f7 !important;
+}
+
+.detail-form-collapse .n-collapse-item {
+  padding: 0 18px;
+}
+
+.detail-form-collapse .n-collapse-item__content-inner {
+  padding-top: 4px;
+}
+
+.form-actions-sticky {
+  position: sticky;
+  z-index: 5;
+  bottom: 12px;
+  padding: 12px;
+  border: 1px solid #edf0f7;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 30px rgba(31, 41, 55, 0.1);
+  backdrop-filter: blur(10px);
+}
+
 .settings-simple {
   display: grid;
   gap: 2px;
