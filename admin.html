@@ -144,6 +144,8 @@
     <h2 id="editTitle">新增房源</h2>
     <form id="editForm" onsubmit="saveHouse(event)">
       <input type="hidden" id="f_id">
+
+      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-left:4px">排序与状态</div>
       <div class="form-row">
         <div class="form-group">
           <label>类型</label>
@@ -153,10 +155,17 @@
           </select>
         </div>
         <div class="form-group">
-          <label>房租（元/月）</label>
-          <input type="number" id="f_price" placeholder="如 1350">
+          <label>状态</label>
+          <select id="f_status">
+            <option value="viewing">🔍 考虑中</option>
+            <option value="booked">⭐ 意向中</option>
+            <option value="living">🏠 居住中</option>
+            <option value="rejected">❌ 不考虑</option>
+          </select>
         </div>
       </div>
+
+      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 12px;padding-left:4px">基本信息</div>
       <div class="form-row full">
         <div class="form-group">
           <label>地址</label>
@@ -165,38 +174,94 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>房型</label>
-          <input type="text" id="f_roomType" placeholder="如一房一厅">
+          <label>房租（元/月）</label>
+          <input type="number" id="f_price" placeholder="如 1350">
         </div>
         <div class="form-group">
-          <label>楼层</label>
-          <input type="text" id="f_floor" placeholder="如 2楼">
+          <label>房型</label>
+          <input type="text" id="f_roomType" placeholder="如一房一厅">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label>楼层</label>
+          <input type="text" id="f_floor" placeholder="如 2楼">
+        </div>
+        <div class="form-group">
+          <label>朝向</label>
+          <select id="f_direction">
+            <option value="">请选择</option>
+            <option value="南">南</option><option value="东南">东南</option>
+            <option value="东">东</option><option value="西南">西南</option>
+            <option value="西">西</option><option value="北">北</option>
+            <option value="不确定">不确定</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>面积（㎡）</label>
+          <input type="number" step="0.1" id="f_area" placeholder="如 35">
+        </div>
+        <div class="form-group">
           <label>家电情况</label>
           <input type="text" id="f_furniture" placeholder="如包家电 / 需接手">
         </div>
+      </div>
+      <div class="form-row">
         <div class="form-group">
           <label>采光</label>
           <input type="text" id="f_lighting" placeholder="如一般 / 还行 / 未知">
         </div>
+        <div class="form-group">
+          <label>装修</label>
+          <select id="f_decor">
+            <option value="">请选择</option>
+            <option value="毛坯">毛坯</option><option value="简装">简装</option>
+            <option value="精装">精装</option><option value="豪装">豪装</option>
+          </select>
+        </div>
       </div>
-      <div class="form-row full">
+      <div class="form-row">
         <div class="form-group">
           <label>采光备注</label>
           <input type="text" id="f_lightingNote" placeholder="补充说明">
         </div>
+        <div class="form-group">
+          <label>电梯</label>
+          <select id="f_elevator">
+            <option value="">请选择</option>
+            <option value="有电梯">有电梯</option>
+            <option value="无电梯">无电梯</option>
+          </select>
+        </div>
       </div>
+
+      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 12px;padding-left:4px">费用明细</div>
       <div class="form-row">
         <div class="form-group">
           <label>水电网情况</label>
           <input type="text" id="f_waterElectric" placeholder="如包管理+网络">
         </div>
         <div class="form-group">
+          <label>水电类型</label>
+          <select id="f_utility">
+            <option value="">请选择</option>
+            <option value="民水民电">民水民电</option>
+            <option value="商水商电">商水商电</option>
+            <option value="民水商电">民水商电</option>
+            <option value="不确定">不确定</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label>电费（元/度）</label>
-          <input type="number" step="0.1" id="f_electricPrice" placeholder="留空为无">
+          <input type="number" step="0.01" id="f_electricPrice" placeholder="留空为无">
+        </div>
+        <div class="form-group">
+          <label>每月用电量（度）<span style="font-weight:400;color:#aaa">默认425</span></label>
+          <input type="number" id="f_elecUsage" placeholder="425" value="425">
         </div>
       </div>
       <div class="form-row">
@@ -205,38 +270,82 @@
           <input type="number" step="0.1" id="f_waterPrice" placeholder="留空为无">
         </div>
         <div class="form-group">
-          <label>看房时间</label>
-          <input type="text" id="f_viewTime" placeholder="如明天中午">
+          <label>每月用水量（吨）<span style="font-weight:400;color:#aaa">默认2</span></label>
+          <input type="number" id="f_waterUsage" placeholder="2" value="2">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label>物业费（元/㎡/月）</label>
+          <input type="number" step="0.1" id="f_propFee" placeholder="留空为无">
+        </div>
+        <div class="form-group">
+          <label>服务费（元/月）</label>
+          <input type="number" id="f_serviceFee" placeholder="留空为无">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>押金方式</label>
+          <select id="f_deposit">
+            <option value="">请选择</option>
+            <option value="押一付一">押一付一</option>
+            <option value="押二付一">押二付一</option>
+            <option value="押一付三">押一付三</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>中介费</label>
+          <input type="text" id="f_agentFee" placeholder="如：半个月租">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>租期</label>
+          <select id="f_leaseTerm">
+            <option value="">请选择</option>
+            <option value="1年">1年</option><option value="半年">半年</option>
+            <option value="1年可续">1年可续</option><option value="半年可续">半年可续</option>
+            <option value="可短租">可短租</option><option value="面议">面议</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>评分（1-10）</label>
+          <select id="f_score">
+            <option value="">打分</option>
+            <option value="10">10 · 完美</option><option value="9">9 · 很好</option>
+            <option value="8">8 · 不错</option><option value="7">7 · 还行</option>
+            <option value="6">6 · 一般</option><option value="5">5 · 勉强</option>
+            <option value="4">4 · 较差</option><option value="3">3 · 很差</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 12px;padding-left:4px">联系与备注</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>看房时间</label>
+          <input type="text" id="f_viewTime" placeholder="如明天中午">
+        </div>
+        <div class="form-group">
           <label>微信号</label>
           <input type="text" id="f_wechat" placeholder="微信号">
         </div>
+      </div>
+      <div class="form-row">
         <div class="form-group">
           <label>来源</label>
           <select id="f_source">
             <option value="">— 无 —</option>
-            <option value="抖音">抖音</option>
-            <option value="咸鱼">咸鱼</option>
-            <option value="小红书">小红书</option>
-            <option value="58同城">58同城</option>
-            <option value="豆瓣">豆瓣</option>
-            <option value="朋友圈">朋友圈</option>
+            <option value="抖音">抖音</option><option value="咸鱼">咸鱼</option>
+            <option value="小红书">小红书</option><option value="58同城">58同城</option>
+            <option value="豆瓣">豆瓣</option><option value="朋友圈">朋友圈</option>
             <option value="其他">其他</option>
           </select>
         </div>
-      </div>
-      <div class="form-row full">
         <div class="form-group">
-          <label>备注</label>
-          <textarea id="f_notes" placeholder="其他想记录的信息"></textarea>
-        </div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label>满意度</label>
+          <label>满意度（1-5星）</label>
           <div class="star-input" id="starInput">
             <span class="star inactive" data-v="1" onclick="setStar(1)">☆</span>
             <span class="star inactive" data-v="2" onclick="setStar(2)">☆</span>
@@ -247,6 +356,25 @@
           <input type="hidden" id="f_satisfaction" value="">
         </div>
       </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>优点</label>
+          <textarea id="f_pros" placeholder="如：采光好、近地铁..."></textarea>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>缺点 / 隐忧</label>
+          <textarea id="f_cons" placeholder="如：楼道暗、周边吵..."></textarea>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>备注</label>
+          <textarea id="f_notes" placeholder="其他想记录的信息"></textarea>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
         <button type="submit" class="btn btn-primary" id="saveBtn">保存</button>
@@ -497,19 +625,35 @@ function openEditModal(id) {
   document.getElementById('editTitle').textContent = '编辑房源';
   document.getElementById('f_id').value = h.id;
   document.getElementById('f_type').value = h.type || 'personal';
+  document.getElementById('f_status').value = h.status || 'viewing';
   document.getElementById('f_price').value = h.price || '';
   document.getElementById('f_address').value = h.address || '';
   document.getElementById('f_roomType').value = h.roomType || '';
   document.getElementById('f_floor').value = h.floor || '';
+  document.getElementById('f_direction').value = h.direction || '';
+  document.getElementById('f_area').value = h.area || '';
   document.getElementById('f_furniture').value = h.furniture || '';
   document.getElementById('f_lighting').value = h.lighting || '';
+  document.getElementById('f_decor').value = h.decor || '';
   document.getElementById('f_lightingNote').value = h.lightingNote || '';
+  document.getElementById('f_elevator').value = h.elevator || '';
   document.getElementById('f_waterElectric').value = h.waterElectric || '';
+  document.getElementById('f_utility').value = h.utility || '';
   document.getElementById('f_electricPrice').value = h.electricPrice || '';
+  document.getElementById('f_elecUsage').value = h.elecUsage || '425';
   document.getElementById('f_waterPrice').value = h.waterPrice || '';
+  document.getElementById('f_waterUsage').value = h.waterUsage || '2';
+  document.getElementById('f_propFee').value = h.propFee || '';
+  document.getElementById('f_serviceFee').value = h.serviceFee || '';
+  document.getElementById('f_deposit').value = h.deposit || '';
+  document.getElementById('f_agentFee').value = h.agentFee || '';
+  document.getElementById('f_leaseTerm').value = h.leaseTerm || '';
+  document.getElementById('f_score').value = h.score || '';
   document.getElementById('f_viewTime').value = h.viewTime || '';
   document.getElementById('f_wechat').value = h.wechat || '';
   document.getElementById('f_source').value = h.source || '';
+  document.getElementById('f_pros').value = h.pros || '';
+  document.getElementById('f_cons').value = h.cons || '';
   document.getElementById('f_notes').value = h.notes || '';
   document.getElementById('f_satisfaction').value = h.satisfaction || '';
   currentStars = h.satisfaction || 0;
@@ -549,19 +693,35 @@ async function saveHouse(e) {
     const house = {
       id: editId || nextId(),
       type: document.getElementById('f_type').value,
+      status: document.getElementById('f_status').value,
       address: document.getElementById('f_address').value,
       price: document.getElementById('f_price').value || '',
       roomType: document.getElementById('f_roomType').value,
       floor: document.getElementById('f_floor').value,
+      direction: document.getElementById('f_direction').value,
+      area: document.getElementById('f_area').value,
       furniture: document.getElementById('f_furniture').value,
       lighting: document.getElementById('f_lighting').value,
+      decor: document.getElementById('f_decor').value,
       lightingNote: document.getElementById('f_lightingNote').value,
+      elevator: document.getElementById('f_elevator').value,
       waterElectric: document.getElementById('f_waterElectric').value,
+      utility: document.getElementById('f_utility').value,
       electricPrice: document.getElementById('f_electricPrice').value,
+      elecUsage: document.getElementById('f_elecUsage').value,
       waterPrice: document.getElementById('f_waterPrice').value,
+      waterUsage: document.getElementById('f_waterUsage').value,
+      propFee: document.getElementById('f_propFee').value,
+      serviceFee: document.getElementById('f_serviceFee').value,
+      deposit: document.getElementById('f_deposit').value,
+      agentFee: document.getElementById('f_agentFee').value,
+      leaseTerm: document.getElementById('f_leaseTerm').value,
+      score: document.getElementById('f_score').value,
       viewTime: document.getElementById('f_viewTime').value,
       wechat: document.getElementById('f_wechat').value,
       source: document.getElementById('f_source').value,
+      pros: document.getElementById('f_pros').value,
+      cons: document.getElementById('f_cons').value,
       notes: document.getElementById('f_notes').value,
       satisfaction: document.getElementById('f_satisfaction').value || '',
     };

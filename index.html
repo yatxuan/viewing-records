@@ -5,200 +5,237 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的看房记录</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --green: #2ecc71; --green-bg: #eafaf1; --green-dark: #27ae60;
+    --blue: #3498db; --blue-bg: #ebf5fb;
+    --orange: #f39c12; --orange-bg: #fef9e7;
+    --red: #e74c3c; --red-bg: #fdedec;
+    --purple: #9b59b6; --purple-bg: #f5eef8;
+    --gray: #95a5a6; --gray-bg: #f8f9fa;
+    --dark: #2c3e50; --border: #e8e8e8;
+    --shadow: 0 1px 6px rgba(0,0,0,.06);
+    --shadow-hover: 0 4px 16px rgba(0,0,0,.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #f5f6fa; color: #2d3436; padding: 24px 16px; min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f0f2f5; color: var(--dark); min-height: 100vh;
   }
-  .container { max-width: 900px; margin: 0 auto; }
-  header { text-align: center; margin-bottom: 24px; }
-  header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; }
-  header p { color: #888; font-size: 14px; margin-top: 4px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
 
-  .card {
-    background: #fff; border-radius: 16px; overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform 0.2s, box-shadow 0.2s;
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+    color: #fff; padding: 20px 16px 16px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.15);
   }
-  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-  .card-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
-  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .badge-personal { background: #e8f5e9; color: #2e7d32; }
-  .badge-agent { background: #fff3e0; color: #e65100; }
-  .source-tag { font-size: 11px; color: #999; padding: 3px 8px; background: #f0f0f0; border-radius: 10px; }
-  .card-body { padding: 0 20px 16px; }
-  .address { font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 14px; line-height: 1.5; }
-  .address::before { content: "\1F4CD "; }
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-  .info-item { display: flex; flex-direction: column; }
-  .info-label { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-  .info-value { font-size: 14px; font-weight: 500; color: #333; }
-  .info-value.price { color: #e74c3c; font-weight: 700; font-size: 18px; }
-  .info-value.price span { font-size: 13px; font-weight: 400; color: #999; }
-  .light-note { font-size: 12px; color: #888; margin-top: 2px; }
-  .card-footer {
-    padding: 14px 20px; border-top: 1px solid #f0f0f0;
-    display: flex; align-items: center; justify-content: space-between; background: #fafbfc;
+  .header h1 { font-size: 20px; font-weight: 700; text-align: center; }
+  .stats { display: flex; gap: 8px; margin-top: 12px; max-width: 600px; margin: 12px auto 0; }
+  .stat-box {
+    background: rgba(255,255,255,.2); border-radius: 8px; padding: 8px 10px;
+    font-size: 12px; flex: 1; text-align: center; backdrop-filter: blur(10px);
   }
-  .wechat { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #07c160; font-weight: 600; }
-  .wechat::before { content: "微信 "; font-size: 16px; }
-  .view-time { font-size: 12px; color: #888; }
-  .view-time::before { content: "\1F552 "; }
-  .subsidy-info {
-    grid-column: 1 / -1; background: #fef9e7; border-radius: 8px; padding: 8px 12px;
-    font-size: 12px; color: #856404; line-height: 1.5;
-  }
-  .shui-dian { grid-column: 1 / -1; display: flex; gap: 16px; font-size: 13px; }
-  .shui-dian .item { display: flex; align-items: center; gap: 4px; }
-  .dot-electric { width: 8px; height: 8px; border-radius: 50%; background: #f39c12; display: inline-block; }
-  .dot-water { width: 8px; height: 8px; border-radius: 50%; background: #3498db; display: inline-block; }
-  .satisfaction {
-    grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; padding: 8px 12px;
-    background: #f0f3ff; border-radius: 8px; margin-top: 4px;
-  }
-  .stars { display: flex; gap: 2px; }
-  .star { font-size: 18px; }
-  .star.active { color: #f39c12; }
-  .star.inactive { color: #ddd; }
-  .satisfaction-text { font-size: 12px; color: #666; }
+  .stat-box .num { font-size: 18px; font-weight: 800; display: block; line-height: 1.2; }
 
-  /* Loading & Error */
+  /* Tabs */
+  .tabs {
+    display: flex; background: #fff; border-bottom: 1px solid var(--border);
+    position: sticky; top: 56px; z-index: 99;
+  }
+  .tab {
+    flex: 1; text-align: center; padding: 12px 8px; font-size: 14px; font-weight: 600;
+    color: #999; cursor: pointer; border-bottom: 3px solid transparent; transition: all .2s;
+  }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Cards */
+  .house-list { padding: 12px; max-width: 900px; margin: 0 auto; }
+  .house-card {
+    background: #fff; border-radius: 12px; margin-bottom: 12px;
+    box-shadow: var(--shadow); overflow: hidden; transition: transform .2s, box-shadow .2s;
+    cursor: pointer;
+  }
+  .house-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  .house-card.status-rejected { opacity: .5; }
+  .house-card.status-living { border-left: 4px solid var(--red); }
+  .house-card.status-booked { border-left: 4px solid var(--green); }
+
+  .house-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 16px;
+  }
+  .house-title { flex: 1; min-width: 0; }
+  .house-title .name {
+    font-size: 16px; font-weight: 700; color: var(--dark);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .house-title .sub {
+    font-size: 12px; color: #888; margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .house-price {
+    text-align: right; flex-shrink: 0; margin-left: 12px;
+  }
+  .house-price .amount {
+    font-size: 22px; font-weight: 800; color: var(--red); line-height: 1;
+  }
+  .house-price .period { font-size: 12px; font-weight: 400; color: #999; }
+
+  /* Tags */
+  .house-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+  .tag {
+    font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 500;
+    white-space: nowrap;
+  }
+  .tag-green { background: var(--green-bg); color: #1a9c54; }
+  .tag-blue { background: var(--blue-bg); color: #2471a3; }
+  .tag-orange { background: var(--orange-bg); color: #b7950b; }
+  .tag-red { background: var(--red-bg); color: #c0392b; }
+  .tag-purple { background: var(--purple-bg); color: #8e44ad; }
+  .tag-gray { background: var(--gray-bg); color: #777; }
+
+  /* Note */
+  .house-note {
+    padding: 10px 16px; font-size: 13px; color: #666;
+    border-top: 1px solid #f0f0f0; line-height: 1.6;
+  }
+  .house-note .pros { color: #1a9c54; }
+  .house-note .cons { color: #c0392b; }
+
+  /* Compare */
+  .compare-wrap { padding: 12px; max-width: 900px; margin: 0 auto; overflow-x: auto; }
+  .compare-table {
+    width: 100%; border-collapse: collapse; background: #fff;
+    border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); font-size: 13px;
+  }
+  .compare-table th {
+    background: #f8f9fa; padding: 10px 12px; text-align: left;
+    font-size: 12px; color: #888; font-weight: 600; white-space: nowrap;
+  }
+  .compare-table td {
+    padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: #fafafa; }
+  .cost-low { color: var(--green); font-weight: 600; background: var(--green-bg) !important; }
+  .cost-high { color: var(--red); font-weight: 600; background: var(--red-bg) !important; }
+
+  /* Empty */
+  .empty-state { text-align: center; padding: 60px 20px; color: #bbb; }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; margin-bottom: 20px; }
+
+  /* Status bar */
   .status-bar {
-    text-align: center; padding: 12px; margin-bottom: 20px; border-radius: 10px;
-    font-size: 13px; display: none;
+    text-align: center; padding: 10px; margin: 0 auto 8px; border-radius: 8px;
+    font-size: 12px; max-width: 900px; width: calc(100% - 24px);
   }
-  .status-bar.loading { display: block; background: #e8f4fd; color: #2980b9; }
-  .status-bar.error { display: block; background: #fde8e8; color: #c0392b; }
-  .status-bar.ok { display: block; background: #e8f5e9; color: #27ae60; }
-
+  .status-bar.loading { background: var(--blue-bg); color: #2980b9; }
+  .status-bar.error { background: var(--red-bg); color: #c0392b; }
+  .status-bar.ok { background: var(--green-bg); color: #27ae60; }
   .loading-spinner {
-    display: inline-block; width: 14px; height: 14px;
-    border: 2px solid #2980b9; border-top-color: transparent;
-    border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px;
+    display: inline-block; width: 12px; height: 12px;
+    border: 2px solid currentColor; border-top-color: transparent;
+    border-radius: 50%; animation: spin .8s linear infinite;
+    vertical-align: middle; margin-right: 6px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Admin link */
   .admin-link {
-    position: fixed; bottom: 12px; right: 12px; opacity: 0.3; font-size: 12px;
-    color: #999; text-decoration: none; transition: opacity 0.2s;
+    position: fixed; bottom: 12px; right: 12px; opacity: .25; font-size: 12px;
+    color: #999; text-decoration: none; transition: opacity .2s; z-index: 50;
   }
-  .admin-link:hover { opacity: 1; }
+  .admin-link:hover { opacity: .8; }
 
-  @media (max-width: 480px) {
-    .cards { grid-template-columns: 1fr; }
-    .info-grid { grid-template-columns: 1fr; }
+  /* Detail overlay */
+  .detail-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+    backdrop-filter: blur(4px); z-index: 200; align-items: center;
+    justify-content: center; padding: 16px;
+  }
+  .detail-overlay.show { display: flex; }
+  .detail-box {
+    background: #fff; border-radius: 16px; max-width: 500px; width: 100%;
+    max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .detail-header {
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: #fff; padding: 20px; border-radius: 16px 16px 0 0; margin: -16px -16px 0;
+  }
+  .detail-header .addr { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .detail-header .price { font-size: 24px; font-weight: 800; }
+  .detail-section { padding: 16px; }
+  .detail-section-title {
+    font-size: 13px; font-weight: 700; color: #888; text-transform: uppercase;
+    letter-spacing: .5px; margin-bottom: 10px; padding-left: 4px;
+  }
+  .detail-row {
+    display: flex; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5; font-size: 13px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { color: #999; flex-shrink: 0; }
+  .detail-value {
+    color: #333; text-align: right; font-weight: 500;
+    max-width: 60%; word-break: break-all;
+  }
+  .detail-value.cost { color: var(--red); font-weight: 700; font-size: 15px; }
+  .detail-value.good { color: var(--green); }
+  .detail-value.bad { color: var(--red); }
+  .detail-actions { padding: 12px 16px 16px; display: flex; gap: 8px; }
+  .detail-actions button {
+    flex: 1; padding: 12px; border: none; border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .btn-edit { background: var(--green); color: #fff; }
+  .btn-delete { background: var(--red-bg); color: var(--red); }
+
+  @media (max-width: 600px) {
+    .house-card-header { padding: 12px 12px; }
+    .house-tags { padding: 0 12px 10px; }
+    .house-price .amount { font-size: 18px; }
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>🏠 我的看房记录</h1>
-    <p id="subtitle">加载中...</p>
-  </header>
-
-  <div class="status-bar loading" id="statusBar">
-    <span class="loading-spinner"></span>正在加载数据...
+<div class="header">
+  <h1>🏠 我的看房记录</h1>
+  <div class="stats">
+    <div class="stat-box"><span class="num" id="sTotal">0</span>已看</div>
+    <div class="stat-box"><span class="num" id="sViewing" style="color:#fff">0</span>考虑中</div>
+    <div class="stat-box"><span class="num" id="sBooked" style="color:#fff">0</span>意向中</div>
+    <div class="stat-box"><span class="num" id="sRejected" style="color:rgba(255,255,255,.7)">0</span>不考虑</div>
   </div>
+</div>
+<div class="tabs">
+  <div class="tab active" data-tab="list">🏠 房源</div>
+  <div class="tab" data-tab="compare">📊 对比</div>
+</div>
 
-  <div class="cards" id="cardsContainer"></div>
+<div class="tab-content active" id="tab-list">
+  <div class="status-bar loading" id="statusBar"><span class="loading-spinner"></span>加载中...</div>
+  <div class="house-list" id="houseList"></div>
+</div>
+
+<div class="tab-content" id="tab-compare">
+  <div class="compare-wrap" id="compareContent">
+    <div class="empty-state"><div class="icon">📊</div><p>至少添加 2 套有价格的房源才能对比<br>标记为"不考虑"的房源已自动排除</p></div>
+  </div>
 </div>
 
 <a class="admin-link" href="./admin.html">管理</a>
 
+<!-- Detail overlay -->
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-box" id="detailBox"></div>
+</div>
+
 <script>
-// ====== 配置区：部署时改成你自己的值 ======
-const CONFIG = {
-  owner: 'yatxuan',           // GitHub 用户名
-  repo: 'viewing-records',    // 仓库名
-  branch: 'main',             // 分支名
-  filePath: 'data.json',      // 数据文件路径
-};
-// ==========================================
+const CONFIG = { owner: 'yatxuan', repo: 'viewing-records', branch: 'main', filePath: 'data.json' };
 
-const STAR_LABELS = ['', '不满意', '一般', '满意', '很满意', '非常喜欢'];
-
-function renderStars(value) {
-  let html = '';
-  for (let i = 1; i <= 5; i++) {
-    const cls = i <= value ? 'active' : 'inactive';
-    html += `<span class="star ${cls}">${i <= value ? '★' : '☆'}</span>`;
-  }
-  return html;
-}
-
-function renderCard(h) {
-  const isPersonal = h.type === 'personal';
-  const badgeClass = isPersonal ? 'badge-personal' : 'badge-agent';
-  const badgeText = isPersonal ? '个人转租' : '中介';
-  const sourceTag = h.source ? `<span class="source-tag">${h.source}</span>` : '<span class="source-tag">—</span>';
-
-  let priceHtml = '';
-  if (h.price) priceHtml = `<div class="info-item"><span class="info-label">房租</span><span class="info-value price">¥${Number(h.price).toLocaleString()}<span>/月</span></span></div>`;
-
-  let roomHtml = '';
-  if (h.roomType) roomHtml = `<div class="info-item"><span class="info-label">房型</span><span class="info-value">${h.roomType}${h.floor ? ' · ' + h.floor + '楼' : ''}</span></div>`;
-
-  let furnitureHtml = '';
-  if (h.furniture) furnitureHtml = `<div class="info-item"><span class="info-label">家电</span><span class="info-value">${h.furniture}</span></div>`;
-
-  let lightingHtml = '';
-  if (h.lighting) {
-    const note = h.lightingNote ? `<span class="light-note">${h.lightingNote}</span>` : '';
-    lightingHtml = `<div class="info-item"><span class="info-label">采光</span><span class="info-value">${h.lighting}</span>${note}</div>`;
-  }
-
-  let waterElectricHtml = '';
-  if (h.waterElectric) {
-    waterElectricHtml = `<div class="info-item"><span class="info-label">水电网</span><span class="info-value">${h.waterElectric}</span></div>`;
-  } else if (h.electricPrice || h.waterPrice) {
-    const items = [];
-    if (h.electricPrice) items.push(`<div class="item"><span class="dot-electric"></span>电费 ¥${h.electricPrice}/度</div>`);
-    if (h.waterPrice) items.push(`<div class="item"><span class="dot-water"></span>水费 ¥${h.waterPrice}/吨</div>`);
-    waterElectricHtml = `<div class="shui-dian">${items.join('')}</div>`;
-  }
-
-  let viewTimeHtml = '';
-  if (h.viewTime) viewTimeHtml = `<div class="info-item"><span class="info-label">看房时间</span><span class="info-value">${h.viewTime}</span></div>`;
-
-  let subsidyHtml = '';
-  if (h.subsidy) {
-    const s = h.subsidy;
-    subsidyHtml = `<div class="subsidy-info">💰 有 ${s.amount} 元补贴（补贴到 ${s.until}）· 实付约 ${s.actual} 元</div>`;
-  }
-
-  let notesHtml = '';
-  if (h.notes) notesHtml = `<div class="subsidy-info" style="background:#f0f3ff;color:#4a5568;">📝 ${h.notes}</div>`;
-
-  let wechatHtml = '';
-  if (h.wechat) wechatHtml = `<span class="wechat">${h.wechat}</span>`;
-  else wechatHtml = '<span class="wechat" style="color:#ccc;">待联系</span>';
-
-  let satisfactionHtml = '';
-  if (h.satisfaction && h.satisfaction > 0) {
-    satisfactionHtml = `<div class="satisfaction"><div class="stars">${renderStars(h.satisfaction)}</div><span class="satisfaction-text">${STAR_LABELS[h.satisfaction] || ''}</span></div>`;
-  }
-
-  return `
-    <div class="card">
-      <div class="card-header">
-        <span class="badge ${badgeClass}">${badgeText}</span>
-        ${sourceTag}
-      </div>
-      <div class="card-body">
-        <div class="address">${h.address}</div>
-        <div class="info-grid">
-          ${priceHtml}${roomHtml}${furnitureHtml}${lightingHtml}${waterElectricHtml}${viewTimeHtml}${subsidyHtml}${notesHtml}${satisfactionHtml}
-        </div>
-      </div>
-      <div class="card-footer">
-        ${wechatHtml}
-        ${h.viewTime ? `<span class="view-time">${h.viewTime}</span>` : ''}
-      </div>
-    </div>`;
-}
-
-// 安全地用 atob 解码 UTF-8 base64
 function b64Decode(str) {
   const bytes = Uint8Array.from(atob(str), c => c.charCodeAt(0));
   return new TextDecoder().decode(bytes);
@@ -215,45 +252,270 @@ async function loadData() {
     console.warn('GitHub 加载失败，使用本地数据:', e.message);
     const raw = localStorage.getItem('vr_local_data');
     if (raw) return JSON.parse(raw);
-    return [
-      {"id":1,"type":"personal","address":"广东省深圳市龙岗区龙城街道牛仔园新村一巷7号楼","price":1350,"roomType":"一房一厅","floor":"2","furniture":"包家电","lighting":"一般","lightingNote":"关下半窗 + 开灯","waterElectric":"","waterPrice":"","electricPrice":"","viewTime":"明天中午","wechat":"z1402460782","source":"","notes":""},
-      {"id":2,"type":"personal","address":"广东省深圳市龙岗区怡苑路35号","price":1570,"roomType":"单色带阳台（公寓）","floor":"","furniture":"","lighting":"还行","lightingNote":"","waterElectric":"包管理+网络","waterPrice":"","electricPrice":"","viewTime":"待定","wechat":"Aurora_Luou","source":"抖音","notes":""},
-      {"id":3,"type":"personal","address":"广东省深圳市龙岗区百花一街与宝丽路交叉口北120米","price":1300,"roomType":"一室一厅","floor":"6","furniture":"需接手家电","lighting":"未知","lightingNote":"","waterElectric":"","waterPrice":"6","electricPrice":"0.8","viewTime":"今晚8点后","wechat":"xiao-xue-ming","source":"咸鱼","notes":""},
-      {"id":4,"type":"personal","address":"广东省深圳市龙岗区新城路157号","price":1500,"roomType":"隔间的一房一厅","floor":"","furniture":"","lighting":"未提及","lightingNote":"","waterElectric":"","waterPrice":"","electricPrice":"","viewTime":"待定","wechat":"","source":"小红书","notes":""},
-      {"id":5,"type":"agent","address":"大运","price":"","roomType":"","floor":"","furniture":"","lighting":"","lightingNote":"","waterElectric":"","waterPrice":"","electricPrice":"","viewTime":"明天","wechat":"","source":"","notes":"中介推荐"}
-    ];
+    return [];
   }
 }
+
+// ====== Tag helpers ======
+function makeTag(text, cls) { return `<span class="tag tag-${cls}">${text}</span>`; }
+
+// ====== Render card ======
+function renderCard(h) {
+  const isPersonal = h.type === 'personal';
+  let tags = '';
+  tags += makeTag(isPersonal ? '个人转租' : '中介', isPersonal ? 'green' : 'orange');
+  if (h.source) tags += makeTag(h.source, 'gray');
+  if (h.roomType) tags += makeTag(h.roomType, 'blue');
+  if (h.floor) tags += makeTag(h.floor + '楼', 'gray');
+  if (h.lighting === '一般') tags += makeTag('采光一般', 'orange');
+  else if (h.lighting === '还行' || h.lighting === '好') tags += makeTag('采光不错', 'green');
+  else if (h.lighting === '未知' || h.lighting === '未提及') tags += makeTag('采光未知', 'gray');
+  if (h.furniture) tags += makeTag(h.furniture, 'purple');
+  if (h.utility) {
+    if (h.utility === '民水民电') tags += makeTag('民水民电', 'green');
+    else if (h.utility === '商水商电') tags += makeTag('商水商电', 'red');
+    else tags += makeTag(h.utility, 'orange');
+  }
+  if (h.elevator) tags += makeTag(h.elevator, h.elevator === '有电梯' ? 'green' : 'orange');
+  if (h.deposit) tags += makeTag(h.deposit, 'gray');
+  if (h.leaseTerm) tags += makeTag(h.leaseTerm, 'gray');
+  if (h.decor) tags += makeTag(h.decor, 'gray');
+  if (h.satisfaction && h.satisfaction > 0) {
+    const labels = ['', '⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'];
+    tags += makeTag(labels[h.satisfaction], 'orange');
+  }
+  if (h.score) {
+    const sc = parseInt(h.score);
+    tags += makeTag(`评分 ${sc}/10`, sc >= 8 ? 'green' : (sc >= 6 ? 'blue' : 'orange'));
+  }
+
+  // Note section
+  const parts = [];
+  if (h.pros) parts.push(`<span class="pros">✅ ${h.pros}</span>`);
+  if (h.cons) parts.push(`<span class="cons">❌ ${h.cons}</span>`);
+  if (h.notes) parts.push(h.notes);
+  if (h.lightingNote) parts.push(`<span style="color:#aaa;font-size:12px">${h.lightingNote}</span>`);
+  const noteHtml = parts.length ? `<div class="house-note">${parts.join('<br>')}</div>` : '';
+
+  const priceStr = h.price ? `${Number(h.price).toLocaleString()}<span class="period">元/月</span>` : '价格待定';
+  const statusClass = h.status === 'rejected' ? ' status-rejected' :
+    (h.status === 'living' ? ' status-living' : (h.status === 'booked' ? ' status-booked' : ''));
+
+  return `
+    <div class="house-card${statusClass}" onclick="openDetail('${h.id}')">
+      <div class="house-card-header">
+        <div class="house-title">
+          <div class="name">${h.address}</div>
+          <div class="sub">${h.viewTime ? '🕐 ' + h.viewTime : ''}${h.wechat ? ' · 💬 ' + h.wechat : ''}</div>
+        </div>
+        <div class="house-price"><span class="amount">${priceStr}</span></div>
+      </div>
+      <div class="house-tags">${tags}</div>
+      ${noteHtml}
+    </div>`;
+}
+
+// ====== Detail overlay ======
+function openDetail(id) {
+  const h = houses.find(d => String(d.id) === String(id));
+  if (!h) return;
+  const box = document.getElementById('detailBox');
+  const totalEst = calcTotal(h);
+
+  let html = `<div class="detail-header">
+    <div class="addr">${h.address}</div>
+    <div class="price">${h.price ? '¥'+Number(h.price).toLocaleString()+'<span style="font-size:14px;font-weight:400">/月</span>' : '价格待定'}</div>
+    ${totalEst.total > 0 ? `<div style="font-size:12px;opacity:.8;margin-top:4px">月总支出 ¥${totalEst.total.toLocaleString()}</div>` : ''}
+  </div>`;
+
+  const sections = [
+    ['基本信息', [
+      ['房型', h.roomType], ['楼层', h.floor], ['朝向', h.direction],
+      ['采光', h.lighting], ['采光备注', h.lightingNote], ['家电', h.furniture]
+    ]],
+    ['费用明细', [
+      ['月租金', h.price ? '¥'+h.price : '-'],
+      ['水电类型', h.utility],
+      ['电费', h.electricPrice ? '¥'+h.electricPrice+'/度'+(h.elecUsage?' (约'+h.elecUsage+'度/月)':'') : '-'],
+      ['水费', h.waterPrice ? '¥'+h.waterPrice+'/吨'+(h.waterUsage?' (约'+h.waterUsage+'吨/月)':'') : '-'],
+      ['物业费', h.propFee ? '¥'+h.propFee+'/㎡'+(h.area?(' ×'+h.area+'㎡'):'') : '-'],
+      ['服务费', h.serviceFee ? '¥'+h.serviceFee+'/月' : '-'],
+      ['押金方式', h.deposit],
+      ['中介费', h.agentFee || '-'],
+      ['月总支出', totalEst.total > 0 ? '¥'+totalEst.total.toLocaleString()+'<small style="font-size:11px;color:#aaa"> ('+totalEst.detail+')' : '']
+    ]],
+    ['房屋情况', [
+      ['装修', h.decor], ['电梯', h.elevator], ['租期', h.leaseTerm],
+      ['评分', h.score ? '⭐ '+h.score+'/10' : '-'], ['满意度', h.satisfaction ? '⭐'.repeat(h.satisfaction) : '-']
+    ]],
+    ['联系信息', [
+      ['看房时间', h.viewTime], ['微信号', h.wechat], ['来源', h.source], ['备注', h.notes]
+    ]],
+    ['优缺点', [
+      ['优点', h.pros], ['缺点', h.cons]
+    ]]
+  ];
+
+  for (const [title, rows] of sections) {
+    const validRows = rows.filter(r => r[1]);
+    if (!validRows.length) continue;
+    html += `<div class="detail-section"><div class="detail-section-title">${title}</div>`;
+    for (const [label, value] of validRows) {
+      let valCls = 'detail-value';
+      if (label === '月总支出' && value !== '-' && value !== '') valCls += ' cost';
+      if (label === '水电类型' && value === '民水民电') valCls += ' good';
+      if (label === '水电类型' && value === '商水商电') valCls += ' bad';
+      html += `<div class="detail-row"><span class="detail-label">${label}</span><span class="${valCls}">${value}</span></div>`;
+    }
+    html += '</div>';
+  }
+
+  html += `<div class="detail-actions">
+    <button class="btn-edit" onclick="closeDetail();openEdit('${h.id}')">✏️ 编辑</button>
+    <button class="btn-delete" onclick="deleteHouse('${h.id}')">🗑️ 删除</button>
+  </div>`;
+
+  box.innerHTML = html;
+  document.getElementById('detailOverlay').classList.add('show');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('show');
+}
+
+function calcTotal(h) {
+  const rent = parseFloat(h.price) || 0;
+  const propFee = Math.round((parseFloat(h.propFee) || 0) * (parseFloat(h.area) || 0));
+  const waterFee = Math.round((parseFloat(h.waterPrice) || 0) * (parseFloat(h.waterUsage) || 0));
+  const elecFee = Math.round((parseFloat(h.elecPrice) || 0) * (parseFloat(h.elecUsage) || 0));
+  const svcFee = parseFloat(h.serviceFee) || 0;
+  const total = rent + propFee + svcFee + waterFee + elecFee;
+  const details = [];
+  if (waterFee) details.push('水'+waterFee);
+  if (elecFee) details.push('电'+elecFee);
+  if (propFee) details.push('物'+propFee);
+  if (svcFee) details.push('服'+svcFee);
+  return { total, detail: details.join('+') || '-' };
+}
+
+// ====== Compare ======
+function renderCompare() {
+  const container = document.getElementById('compareContent');
+  const active = houses.filter(h => h.status !== 'rejected' && h.price);
+  if (active.length < 2) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📊</div><p>至少添加 2 套有价格的房源才能对比<br>标记为"不考虑"的房源已自动排除</p></div>';
+    return;
+  }
+
+  const sorted = active.slice().sort((a,b) => (parseFloat(a.price)||Infinity) - (parseFloat(b.price)||Infinity));
+  const cheapest = sorted[0];
+
+  let html = `<div style="text-align:center;padding:16px;background:var(--green-bg);border-radius:12px;margin-bottom:16px">
+    <div style="font-size:13px;color:#888;margin-bottom:4px">💰 最低月租</div>
+    <div style="font-size:16px;font-weight:700;color:var(--green-dark)">${cheapest.address.split('/').slice(-2).join('/')}</div>
+    <div style="font-size:22px;font-weight:800">¥${Number(cheapest.price).toLocaleString()}/月</div>
+  </div>`;
+
+  html += `<table class="compare-table"><thead><tr><th>项目</th>`;
+  sorted.forEach(h => html += `<th>${h.address.split('/').slice(-2).join('/')}</th>`);
+  html += `</tr></thead><tbody>`;
+
+  const rows = [
+    ['月租', h => `¥${Number(h.price).toLocaleString()}`, true],
+    ['总月支出', h => { const t = calcTotal(h); return t.total > 0 ? '¥'+t.total.toLocaleString() : '-'; }, true],
+    ['房型', h => h.roomType || '-'],
+    ['楼层', h => h.floor ? h.floor+'楼' : '-'],
+    ['朝向', h => h.direction || '-'],
+    ['面积', h => h.area ? h.area+'㎡' : '-'],
+    ['采光', h => h.lighting || '-'],
+    ['水电类型', h => h.utility || '-'],
+    ['电费', h => h.electricPrice ? '¥'+h.electricPrice+'/度' : '-'],
+    ['水费', h => h.waterPrice ? '¥'+h.waterPrice+'/吨' : '-'],
+    ['物业费', h => h.propFee ? '¥'+h.propFee+'/㎡' : '-'],
+    ['服务费', h => h.serviceFee ? '¥'+h.serviceFee : '-'],
+    ['押金', h => h.deposit || '-'],
+    ['装修', h => h.decor || '-'],
+    ['电梯', h => h.elevator || '-'],
+    ['租期', h => h.leaseTerm || '-'],
+    ['看房时间', h => h.viewTime || '-'],
+    ['微信号', h => h.wechat || '-'],
+    ['评分', h => h.score ? '⭐'+h.score+'/10' : '-'],
+    ['满意度', h => h.satisfaction ? '⭐'.repeat(h.satisfaction) : '-'],
+  ];
+
+  for (const [label, fn, cost] of rows) {
+    html += `<tr><td style="color:#888;font-weight:500">${label}</td>`;
+    sorted.forEach(h => {
+      const val = fn(h);
+      let cls = '';
+      if (cost && val !== '-') {
+        const num = parseFloat(val.replace(/[^\d.]/g,''));
+        if (num === cheapest.price) cls = 'cost-low';
+        else if (num === Math.max(...sorted.map(x=>parseFloat(fn(x).replace(/[^\d.]/g,''))))) cls = 'cost-high';
+      }
+      html += `<td style="${cls}">${val}</td>`;
+    });
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+
+  // Pros/cons summary
+  sorted.forEach(h => {
+    if (!h.pros && !h.cons) return;
+    html += `<div style="background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:var(--shadow)">
+      <h3 style="font-size:14px;color:#888;margin-bottom:12px">${h.address.split('/').slice(-2).join('/')}</h3>`;
+    if (h.pros) html += `<div style="color:#1a9c54;font-size:13px;line-height:1.8">✅ ${h.pros}</div>`;
+    if (h.cons) html += `<div style="color:#c0392b;font-size:13px;line-height:1.8;margin-top:4px">❌ ${h.cons}</div>`;
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+// ====== Tab switch ======
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'compare') renderCompare();
+  });
+});
+
+// ====== Global data & ops ======
+let houses = [];
 
 async function init() {
   const statusBar = document.getElementById('statusBar');
-  const subtitle = document.getElementById('subtitle');
-  const container = document.getElementById('cardsContainer');
-
   try {
-    const data = await loadData();
-    const isLocal = data.length === 5 && data[0].address.includes('牛仔园') && data[4].address === '大运';
+    houses = await loadData();
     statusBar.className = 'status-bar ok';
-    if (isLocal) {
-      statusBar.textContent = '⚠️ 正在使用本地数据（未连接 GitHub）';
-    } else {
-      statusBar.textContent = `✅ 数据已更新 · ${new Date().toLocaleString('zh-CN')}`;
-    }
-    subtitle.textContent = `共 ${data.length} 套房源`;
-    if (!data.length) {
-      container.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;padding:60px 0;">暂无房源数据</p>';
-      return;
-    }
-    container.innerHTML = data.map(renderCard).join('');
+    statusBar.textContent = `✅ 共 ${houses.length} 套 · ${new Date().toLocaleDateString('zh-CN')}`;
+    renderList();
   } catch(err) {
-    console.error(err);
     statusBar.className = 'status-bar error';
     statusBar.textContent = `⚠️ 加载失败: ${err.message}`;
-    subtitle.textContent = '';
-    container.innerHTML = '';
   }
 }
 
+function renderList() {
+  const container = document.getElementById('houseList');
+  document.getElementById('sTotal').textContent = houses.length;
+  document.getElementById('sViewing').textContent = houses.filter(h => h.status === 'viewing' || !h.status).length;
+  document.getElementById('sBooked').textContent = houses.filter(h => h.status === 'booked').length;
+  document.getElementById('sRejected').textContent = houses.filter(h => h.status === 'rejected').length;
+
+  if (!houses.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>暂无房源数据<br>点击右下角"管理"添加</p></div>';
+    return;
+  }
+  container.innerHTML = houses.map(renderCard).join('');
+}
+
+window.openDetail = openDetail;
+window.closeDetail = closeDetail;
+window.calcTotal = calcTotal;
 init();
 </script>
 </body>
