@@ -12,20 +12,79 @@ export function getStoredConfig() {
 }
 
 export function saveStoredConfig(config) {
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(normalizeDataConfig(config)));
 }
 
 export function getRemoteConfig() {
-  const config = getStoredConfig();
-  return {
-    owner: config.owner || DEFAULT_CONFIG.owner,
-    repo: config.repo || DEFAULT_CONFIG.repo,
-    branch: config.branch || DEFAULT_CONFIG.branch,
-    filepath: config.filepath || config.filePath || DEFAULT_CONFIG.filepath,
-    dataSourceMode: config.dataSourceMode || DEFAULT_CONFIG.dataSourceMode,
-    tokenType: config.tokenType || "fine-grained",
-    token: config.token || "",
+  return normalizeDataConfig(getStoredConfig());
+}
+
+export function normalizeDataConfig(config = {}) {
+  const parsed = parseGitHubFileUrl(config.githubFileUrl);
+  const next = { ...config, ...(parsed || {}) };
+  const normalized = {
+    owner: next.owner || DEFAULT_CONFIG.owner,
+    repo: next.repo || DEFAULT_CONFIG.repo,
+    branch: next.branch || DEFAULT_CONFIG.branch,
+    filepath: next.filepath || next.filePath || DEFAULT_CONFIG.filepath,
+    dataSourceMode: next.dataSourceMode || DEFAULT_CONFIG.dataSourceMode,
+    githubFileUrl: next.githubFileUrl || "",
+    token: next.token || "",
   };
+  normalized.githubFileUrl = normalized.githubFileUrl || buildGitHubFileUrl(normalized);
+  return normalized;
+}
+
+export function buildGitHubFileUrl(config = {}) {
+  const owner = config.owner || DEFAULT_CONFIG.owner;
+  const repo = config.repo || DEFAULT_CONFIG.repo;
+  const branch = config.branch || DEFAULT_CONFIG.branch;
+  const filepath = config.filepath || config.filePath || DEFAULT_CONFIG.filepath;
+  return `https://github.com/${owner}/${repo}/blob/${branch}/${filepath}`;
+}
+
+export function parseGitHubFileUrl(value) {
+  const raw = (value || "").trim();
+  if (!raw) return null;
+
+  try {
+    const url = new URL(raw);
+    const parts = url.pathname.split("/").filter(Boolean);
+
+    if (url.hostname === "github.com" && parts.length >= 5 && parts[2] === "blob") {
+      return {
+        owner: parts[0],
+        repo: parts[1],
+        branch: parts[3],
+        filepath: decodeURIComponent(parts.slice(4).join("/")),
+        githubFileUrl: raw,
+      };
+    }
+
+    if (url.hostname === "raw.githubusercontent.com" && parts.length >= 4) {
+      return {
+        owner: parts[0],
+        repo: parts[1],
+        branch: parts[2],
+        filepath: decodeURIComponent(parts.slice(3).join("/")),
+        githubFileUrl: raw,
+      };
+    }
+
+    if (url.hostname === "api.github.com" && parts.length >= 5 && parts[0] === "repos" && parts[3] === "contents") {
+      return {
+        owner: parts[1],
+        repo: parts[2],
+        branch: url.searchParams.get("ref") || DEFAULT_CONFIG.branch,
+        filepath: decodeURIComponent(parts.slice(4).join("/")),
+        githubFileUrl: raw,
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 export async function loadHouses() {
@@ -43,7 +102,10 @@ export async function loadHouses() {
 export async function saveHouses(houses) {
   const config = getRemoteConfig();
   if (config.dataSourceMode === "local" || !config.token) {
-    localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(houses));
+    saveHousesToLocal(houses);
+    if (config.dataSourceMode !== "local") {
+      saveStoredConfig({ ...config, dataSourceMode: "local" });
+    }
     return;
   }
 
@@ -54,6 +116,31 @@ export async function saveHouses(houses) {
     response = await putRemoteFile(config, houses, sha);
   }
   if (!response.ok) throw new Error(await readGithubError(response));
+}
+
+export function saveHousesToLocal(houses) {
+  localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(houses));
+}
+
+export async function testDataConnection(config) {
+  const nextConfig = normalizeDataConfig(config);
+  if (nextConfig.dataSourceMode === "local") {
+    const localFileData = await fetchLocalFileData(nextConfig.filepath || DEFAULT_CONFIG.filepath);
+    const cachedData = readLocalCache();
+    return {
+      ok: true,
+      count: Array.isArray(cachedData || localFileData) ? (cachedData || localFileData).length : 0,
+      source: cachedData ? "localStorage" : "localFile",
+    };
+  }
+
+  const response = await fetchWithTimeout(githubContentUrl(nextConfig), {
+    headers: nextConfig.token ? githubHeaders(nextConfig) : {},
+  });
+  if (!response.ok) throw new Error(await readGithubError(response));
+  const json = await response.json();
+  const data = JSON.parse(base64Decode(json.content).replace(/\n$/, ""));
+  return { ok: true, count: Array.isArray(data) ? data.length : 0, source: "github" };
 }
 
 export async function loadAndSaveHouses(houses) {
@@ -162,7 +249,11 @@ async function putRemoteFile(config, houses, sha) {
 }
 
 function githubContentUrl(config, includeRef = true) {
-  const base = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.filepath}`;
+  const filepath = String(config.filepath || DEFAULT_CONFIG.filepath)
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/");
+  const base = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${filepath}`;
   return includeRef ? `${base}?ref=${config.branch}` : base;
 }
 

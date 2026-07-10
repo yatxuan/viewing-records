@@ -13,7 +13,14 @@ import FilterDialog from "../components/FilterDialog.vue";
 import HouseCard from "../components/HouseCard.vue";
 import HouseListTable from "../components/HouseListTable.vue";
 import SettingsDialog from "../components/SettingsDialog.vue";
-import { getRemoteConfig, loadAndSaveHouses, loadHouses, saveStoredConfig } from "../shared/data-service.js";
+import {
+  getRemoteConfig,
+  loadAndSaveHouses,
+  loadHouses,
+  normalizeDataConfig,
+  saveStoredConfig,
+  testDataConnection,
+} from "../shared/data-service.js";
 import { formatRoomType, sortableDisplayOrder, sortablePrice, sortableTime } from "../shared/formatters.js";
 
 const houses = ref([]);
@@ -114,26 +121,40 @@ function openDetail(house) {
 }
 
 function saveSettings(nextConfig) {
-  Object.assign(config, nextConfig);
-  saveStoredConfig(nextConfig);
+  const normalizedConfig = normalizeDataConfig(nextConfig);
+  Object.assign(config, normalizedConfig);
+  saveStoredConfig(normalizedConfig);
   reloadData();
 }
 
 async function copyCurrentJson() {
   const json = JSON.stringify(houses.value, null, 2);
   try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(json);
-    } else {
-      copyTextFallback(json);
-    }
+    await copyText(json);
     status.value = `已复制 ${houses.value.length} 条 JSON 数据`;
   } catch (err) {
     error.value = `复制失败: ${err.message}`;
   }
 }
 
-function copyTextFallback(text) {
+async function testConfig(nextConfig) {
+  error.value = "";
+  status.value = "正在测试连接...";
+  try {
+    const result = await testDataConnection(nextConfig);
+    const sourceMap = { github: "GitHub", localStorage: "浏览器本地数据", localFile: "本地文件" };
+    status.value = `连接成功，读取到 ${result.count} 条数据（${sourceMap[result.source] || result.source}）`;
+  } catch (err) {
+    error.value = `连接失败: ${err.message}`;
+    status.value = "";
+  }
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
   const textarea = document.createElement("textarea");
   textarea.value = text;
   textarea.setAttribute("readonly", "");
@@ -266,7 +287,13 @@ onMounted(reloadData);
         :total="houses.length"
         @reset="resetFilters"
       />
-      <SettingsDialog v-model:show="showSettings" :config="config" @save="saveSettings" @copy-json="copyCurrentJson" />
+      <SettingsDialog
+        v-model:show="showSettings"
+        :config="config"
+        @save="saveSettings"
+        @copy-json="copyCurrentJson"
+        @test-config="testConfig"
+      />
     </main>
   </n-message-provider>
 </template>
