@@ -87,6 +87,67 @@
         color: #fff;
       }
 
+      .filter-panel {
+        background: #fff;
+        border: 1px solid #eceef3;
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+      }
+      .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .filter-field label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #7b8494;
+      }
+      .filter-field select {
+        width: 100%;
+        min-height: 38px;
+        padding: 8px 10px;
+        border: 1.5px solid #e1e5ee;
+        border-radius: 8px;
+        background: #fbfcfe;
+        color: #1f2937;
+        font: inherit;
+        font-size: 13px;
+        outline: none;
+      }
+      .filter-field select:focus {
+        border-color: #6c5ce7;
+        background: #fff;
+      }
+      .filter-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f2f6;
+        color: #7b8494;
+        font-size: 12px;
+      }
+      .filter-reset {
+        border: none;
+        background: #eef2ff;
+        color: #4f46e5;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
       .cards {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -312,8 +373,8 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(4px);
+        background: rgba(15, 23, 42, 0.52);
+        backdrop-filter: blur(8px);
         z-index: 100;
         align-items: center;
         justify-content: center;
@@ -324,39 +385,137 @@
       }
       .detail-box {
         background: #fff;
-        border-radius: 16px;
-        max-width: 520px;
+        border-radius: 18px;
+        max-width: 760px;
         width: 100%;
         max-height: 90vh;
         overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
       }
-      .detail-header {
+      .detail-hero {
         padding: 24px;
-        background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+        background: linear-gradient(135deg, #111827, #243047);
         color: #fff;
-        border-radius: 16px 16px 0 0;
-        margin: -16px -16px 0;
+        border-radius: 18px 18px 0 0;
+      }
+      .detail-hero-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .detail-kind {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        padding: 5px 10px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #d7f7e8;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .detail-close {
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .detail-title {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.35;
+        font-weight: 800;
+      }
+      .detail-price-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .detail-stat {
+        min-height: 78px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .detail-stat span {
+        display: block;
+        color: #b9c2d3;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .detail-stat strong {
+        display: block;
+        font-size: 22px;
+        line-height: 1.1;
+      }
+      .detail-stat small {
+        color: #d7deea;
+        font-size: 12px;
+      }
+      .detail-content {
+        padding: 20px 24px 8px;
+      }
+      .detail-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .summary-tile {
+        border: 1px solid #eef1f6;
+        border-radius: 12px;
+        padding: 12px;
+        background: #fbfcfe;
+      }
+      .summary-tile span {
+        display: block;
+        color: #8a94a6;
+        font-size: 11px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .summary-tile strong {
+        display: block;
+        color: #1f2937;
+        font-size: 14px;
+        line-height: 1.35;
       }
       .detail-section {
-        padding: 16px 24px;
+        padding: 14px 0;
+        border-top: 1px solid #f0f2f6;
       }
       .detail-section-title {
         font-size: 12px;
         font-weight: 700;
-        color: #aaa;
-        text-transform: uppercase;
-        margin-bottom: 10px;
+        color: #6b7280;
+        margin-bottom: 8px;
       }
       .detail-row {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 12px;
         padding: 8px 0;
-        border-bottom: 1px solid #f5f5f5;
         font-size: 13px;
       }
-      .detail-row:last-child {
-        border-bottom: none;
+      .detail-row-label {
+        color: #9ca3af;
+        font-weight: 600;
+      }
+      .detail-row-value {
+        color: #1f2937;
+        font-weight: 600;
+        text-align: right;
+        word-break: break-word;
       }
       .detail-actions {
         padding: 12px 24px 24px;
@@ -396,11 +555,30 @@
       }
 
       @media (max-width: 480px) {
+        body {
+          padding: 16px 12px;
+        }
+        .filter-grid,
+        .detail-price-row,
+        .detail-summary-grid {
+          grid-template-columns: 1fr;
+        }
+        .filter-summary {
+          align-items: flex-start;
+          flex-direction: column;
+        }
         .cards {
           grid-template-columns: 1fr;
         }
         .info-grid {
           grid-template-columns: 1fr;
+        }
+        .detail-row {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+        .detail-row-value {
+          text-align: left;
         }
       }
     </style>
@@ -444,10 +622,62 @@
             <strong>还没有房源记录</strong>
             <p>去管理页添加第一套看房信息吧。</p>
           </div>
-          <div class="cards" v-if="houses.length">
+          <div class="filter-panel" v-if="houses.length">
+            <div class="filter-grid">
+              <div class="filter-field">
+                <label>类型</label>
+                <select v-model="filters.type">
+                  <option value="all">全部类型</option>
+                  <option value="personal">个人转租</option>
+                  <option value="agent">中介</option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label>房型</label>
+                <select v-model="filters.roomType">
+                  <option value="all">全部房型</option>
+                  <option v-for="item in roomTypeOptions" :key="item" :value="item">
+                    {{ item }}
+                  </option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label>采光</label>
+                <select v-model="filters.lighting">
+                  <option value="all">全部采光</option>
+                  <option v-for="item in lightingOptions" :key="item" :value="item">
+                    {{ item }}
+                  </option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label>排序</label>
+                <select v-model="filters.sortBy">
+                  <option value="viewTimeAsc">看房时间从近到远</option>
+                  <option value="viewTimeDesc">看房时间从远到近</option>
+                  <option value="priceAsc">房价从低到高</option>
+                  <option value="priceDesc">房价从高到低</option>
+                </select>
+              </div>
+            </div>
+            <div class="filter-summary">
+              <span>当前显示 {{ displayHouses.length }} / {{ houses.length }} 套</span>
+              <button class="filter-reset" type="button" @click="resetFilters">
+                重置筛选
+              </button>
+            </div>
+          </div>
+          <div
+            class="empty-state"
+            v-if="!loading && !error && houses.length && !displayHouses.length"
+          >
+            <strong>没有符合条件的房源</strong>
+            <p>换个类型、房型或采光条件试试。</p>
+          </div>
+          <div class="cards" v-if="displayHouses.length">
             <div
               class="card"
-              v-for="h in houses"
+              v-for="h in displayHouses"
               :key="h.id"
               @click="openDetail(h)"
             >
@@ -510,7 +740,7 @@
                   </template>
                   <div class="info-item" v-if="h.viewTime">
                     <span class="info-label">看房时间</span>
-                    <span class="info-value">{{ h.viewTime }}</span>
+                    <span class="info-value">{{ formatViewTime(h.viewTime) }}</span>
                   </div>
                   <div class="info-item" v-if="h.score">
                     <span class="info-label">评分</span>
@@ -544,7 +774,7 @@
               <div class="card-footer">
                 <span class="wechat">{{ h.wechat || '待联系' }}</span>
                 <span class="view-time" v-if="h.viewTime"
-                  >{{ h.viewTime }}</span
+                  >{{ formatViewTime(h.viewTime) }}</span
                 >
               </div>
             </div>
@@ -629,34 +859,80 @@
         @click.self="closeDetail"
       >
         <div class="detail-box">
-          <div class="detail-header">
-            <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px">
-              {{ detailHouse.address }}
+          <div class="detail-hero">
+            <div class="detail-hero-top">
+              <span class="detail-kind">
+                {{ detailHouse.type==='personal'?'个人转租':'中介' }}
+              </span>
+              <button class="detail-close" type="button" @click="closeDetail">
+                ×
+              </button>
             </div>
-            <div style="font-size: 28px; font-weight: 800">
-              {{ detailHouse.price ?
-              '¥'+Number(detailHouse.price).toLocaleString()+'/月' : '价格待定'
-              }}
-            </div>
-            <div
-              v-if="calcTotal(detailHouse).total > 0"
-              style="font-size: 13px; opacity: 0.8; margin-top: 4px"
-            >
-              月总支出 ¥{{ calcTotal(detailHouse).total.toLocaleString() }}
+            <h2 class="detail-title">{{ detailHouse.address || '地址未填写' }}</h2>
+            <div class="detail-price-row">
+              <div class="detail-stat">
+                <span>月租</span>
+                <strong>
+                  {{ detailHouse.price ?
+                  '¥'+Number(detailHouse.price).toLocaleString() : '待定' }}
+                </strong>
+                <small v-if="detailHouse.price">/ 月</small>
+              </div>
+              <div class="detail-stat">
+                <span>月总支出</span>
+                <strong>
+                  {{ calcTotal(detailHouse).total > 0 ?
+                  '¥'+calcTotal(detailHouse).total.toLocaleString() : '待估' }}
+                </strong>
+                <small>{{ calcTotal(detailHouse).detail }}</small>
+              </div>
+              <div class="detail-stat">
+                <span>看房时间</span>
+                <strong style="font-size:18px">
+                  {{ formatViewTime(detailHouse.viewTime) || '待定' }}
+                </strong>
+                <small>{{ detailHouse.source || '来源未填' }}</small>
+              </div>
             </div>
           </div>
 
-          <template v-for="[title, rows] in detailSections">
-            <div class="detail-section" v-if="rows.some(r => r[1])">
-              <div class="detail-section-title">{{ title }}</div>
-              <template v-for="[label, value] in rows" :key="label">
-                <div class="detail-row" v-if="value">
-                  <span style="color: #999">{{ label }}</span>
-                  <span :style="detailRowStyle(label, value)">{{ value }}</span>
-                </div>
-              </template>
+          <div class="detail-content">
+            <div class="detail-summary-grid">
+              <div class="summary-tile">
+                <span>房型</span>
+                <strong>{{ detailHouse.roomType || '未填写' }}</strong>
+              </div>
+              <div class="summary-tile">
+                <span>采光</span>
+                <strong>{{ detailHouse.lighting || '未填写' }}</strong>
+              </div>
+              <div class="summary-tile">
+                <span>楼层 / 朝向</span>
+                <strong>
+                  {{ detailHouse.floor ? detailHouse.floor + '楼' : '楼层未填' }}
+                  {{ detailHouse.direction ? ' · ' + detailHouse.direction : '' }}
+                </strong>
+              </div>
+              <div class="summary-tile">
+                <span>联系</span>
+                <strong>{{ detailHouse.wechat || '待联系' }}</strong>
+              </div>
             </div>
-          </template>
+
+            <template v-for="[title, rows] in detailSections">
+              <div class="detail-section" v-if="rows.some(r => r[1])">
+                <div class="detail-section-title">{{ title }}</div>
+                <template v-for="[label, value] in rows" :key="label">
+                  <div class="detail-row" v-if="value">
+                    <span class="detail-row-label">{{ label }}</span>
+                    <span class="detail-row-value" :style="detailRowStyle(label, value)">
+                      {{ value }}
+                    </span>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
 
           <div class="detail-actions">
             <a class="btn-edit" :href="adminUrl">去管理页编辑</a>
@@ -667,21 +943,27 @@
     </div>
 
     <script>
-      const { createApp, ref, computed, onMounted } = Vue;
+      const { createApp, ref, reactive, computed, onMounted } = Vue;
 
       createApp({
         setup() {
-          const CONFIG = {
+          const DEFAULT_CONFIG = {
             owner: "yatxuan",
             repo: "viewing-records",
             branch: "main",
-            filePath: "data.json",
+            filepath: "data.json",
           };
           const houses = ref([]);
           const loading = ref(true);
           const error = ref("");
           const tab = ref("list");
           const detailHouse = ref(null);
+          const filters = reactive({
+            type: "all",
+            roomType: "all",
+            lighting: "all",
+            sortBy: "viewTimeAsc",
+          });
           const today = new Date().toLocaleDateString("zh-CN");
 
           // UTF-8 safe base64 decode
@@ -690,17 +972,77 @@
             return new TextDecoder().decode(bytes);
           }
 
+          function getStoredConfig() {
+            try {
+              return JSON.parse(localStorage.getItem("vr_config") || "{}");
+            } catch {
+              return {};
+            }
+          }
+
+          function getRemoteConfig() {
+            const cfg = getStoredConfig();
+            return {
+              owner: cfg.owner || DEFAULT_CONFIG.owner,
+              repo: cfg.repo || DEFAULT_CONFIG.repo,
+              branch: cfg.branch || DEFAULT_CONFIG.branch,
+              filepath: cfg.filepath || cfg.filePath || DEFAULT_CONFIG.filepath,
+              token: cfg.token || "",
+            };
+          }
+
+          async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+              return await fetch(url, { ...options, signal: controller.signal });
+            } finally {
+              clearTimeout(timer);
+            }
+          }
+
           async function fetchRemoteData() {
-            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.filePath}?ref=${CONFIG.branch}`;
-            const resp = await fetch(url);
+            const cfg = getRemoteConfig();
+            const headers = cfg.token
+              ? { Authorization: `Bearer ${cfg.token}` }
+              : {};
+            const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.filepath}?ref=${cfg.branch}`;
+            const resp = await fetchWithTimeout(url, { headers });
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const json = await resp.json();
             return JSON.parse(b64Decode(json.content).replace(/\n$/, ""));
           }
 
+          function localDataPaths(filepath) {
+            const configuredPath = filepath || DEFAULT_CONFIG.filepath;
+            const configuredFile = configuredPath.split("/").pop();
+            return [
+              ...new Set(
+                [
+                  configuredFile ? `./${configuredFile}` : "",
+                  configuredPath ? `./${configuredPath}` : "",
+                  `./${DEFAULT_CONFIG.filepath}`,
+                ].filter(Boolean),
+              ),
+            ];
+          }
+
+          async function fetchLocalFileData(filepath) {
+            for (const path of localDataPaths(filepath)) {
+              try {
+                const resp = await fetch(path);
+                if (resp.ok) return resp.json();
+              } catch (e) {
+                console.warn("本地数据加载失败:", path, e.message);
+              }
+            }
+            return null;
+          }
+
           async function fetchLocalData() {
-            const localResp = await fetch("./data.json");
-            if (localResp.ok) return localResp.json();
+            const cfg = getRemoteConfig();
+            const localData = await fetchLocalFileData(cfg.filepath);
+            if (localData) return localData;
 
             const raw = localStorage.getItem("vr_local_data");
             if (raw) return JSON.parse(raw);
@@ -735,6 +1077,36 @@
               .sort((a, b) => parseFloat(a.price) - parseFloat(b.price)),
           );
           const cheapest = computed(() => sortedHouses.value[0]);
+          const roomTypeOptions = computed(() => uniqueValues("roomType"));
+          const lightingOptions = computed(() => uniqueValues("lighting"));
+          const displayHouses = computed(() => {
+            const list = houses.value.filter((h) => {
+              if (!h) return false;
+              if (filters.type !== "all" && h.type !== filters.type)
+                return false;
+              if (
+                filters.roomType !== "all" &&
+                (h.roomType || "") !== filters.roomType
+              )
+                return false;
+              if (
+                filters.lighting !== "all" &&
+                (h.lighting || "") !== filters.lighting
+              )
+                return false;
+              return true;
+            });
+
+            return list.slice().sort((a, b) => {
+              if (filters.sortBy === "priceAsc")
+                return sortablePrice(a, 1) - sortablePrice(b, 1);
+              if (filters.sortBy === "priceDesc")
+                return sortablePrice(b, -1) - sortablePrice(a, -1);
+              if (filters.sortBy === "viewTimeDesc")
+                return sortableTime(b.viewTime) - sortableTime(a.viewTime);
+              return sortableTime(a.viewTime) - sortableTime(b.viewTime);
+            });
+          });
 
           const compareRows = [
             ["月租", (h) => `¥${Number(h.price).toLocaleString()}`, true],
@@ -802,6 +1174,49 @@
             if (propFee) details.push("物" + propFee);
             if (svcFee) details.push("服" + svcFee);
             return { total, detail: details.join("+") || "-" };
+          }
+
+          function uniqueValues(field) {
+            return [
+              ...new Set(
+                houses.value
+                  .map((h) => (h?.[field] || "").trim())
+                  .filter(Boolean),
+              ),
+            ].sort((a, b) => a.localeCompare(b, "zh-CN"));
+          }
+
+          function isDateTimeValue(value) {
+            return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value || "");
+          }
+
+          function sortableTime(value) {
+            if (!isDateTimeValue(value)) return Number.MAX_SAFE_INTEGER;
+            const time = new Date(value).getTime();
+            return Number.isNaN(time) ? Number.MAX_SAFE_INTEGER : time;
+          }
+
+          function sortablePrice(h, direction) {
+            const price = parseFloat(h?.price);
+            if (!Number.isFinite(price))
+              return direction > 0 ? Number.MAX_SAFE_INTEGER : -1;
+            return price;
+          }
+
+          function formatViewTime(value) {
+            if (!value) return "";
+            if (!isDateTimeValue(value)) return value;
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            const pad = (n) => String(n).padStart(2, "0");
+            return `${date.getMonth() + 1}月${date.getDate()}日 ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+          }
+
+          function resetFilters() {
+            filters.type = "all";
+            filters.roomType = "all";
+            filters.lighting = "all";
+            filters.sortBy = "viewTimeAsc";
           }
 
           const detailSections = computed(() => {
@@ -879,7 +1294,7 @@
               [
                 "联系信息",
                 [
-                  ["看房时间", h.viewTime],
+                  ["看房时间", formatViewTime(h.viewTime)],
                   ["微信号", h.wechat],
                   ["来源", h.source],
                   ["备注", h.notes],
@@ -896,7 +1311,7 @@
           });
 
           function detailRowStyle(label, value) {
-            let s = "font-weight:500;text-align:right;max-width:60%";
+            let s = "";
             if (label === "水电类型" && value === "民水民电")
               s += ";color:#27ae60;font-weight:600";
             if (label === "水电类型" && value === "商水商电")
@@ -923,15 +1338,21 @@
             error,
             tab,
             detailHouse,
+            filters,
             today,
             adminUrl: "./admin.html",
             activeHouses,
             sortedHouses,
             cheapest,
+            displayHouses,
+            roomTypeOptions,
+            lightingOptions,
             compareRows,
             calcTotal,
             detailSections,
             detailRowStyle,
+            formatViewTime,
+            resetFilters,
             shortAddr,
             lowestPrice,
             highestPrice,

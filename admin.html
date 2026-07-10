@@ -42,6 +42,7 @@
   .form-group label { font-size: 12px; font-weight: 600; color: #888; }
   .form-group input, .form-group select, .form-group textarea { padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #6c5ce7; }
+  .field-hint { font-size: 11px; color: #8a94a6; line-height: 1.4; }
   .form-group textarea { resize: vertical; min-height: 60px; }
   .modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
   .star-input { display: flex; gap: 4px; }
@@ -81,7 +82,10 @@
       <div class="house-item" v-for="h in houses" :key="h.id">
         <div class="house-info">
           <div class="addr">{{ h.address }}</div>
-          <div class="meta">{{ h.type==='agent'?'🏢 中介':'👤 个人' }} · ¥{{ Number(h.price||0).toLocaleString() }}/月 · {{ h.roomType || '房型未填' }}</div>
+          <div class="meta">
+            {{ h.type==='agent'?'🏢 中介':'👤 个人' }} · ¥{{ Number(h.price||0).toLocaleString() }}/月 · {{ h.roomType || '房型未填' }}
+            <span v-if="h.viewTime"> · {{ formatViewTime(h.viewTime) }}</span>
+          </div>
         </div>
         <div class="house-actions">
           <button class="btn btn-secondary btn-sm" @click="openEdit(h)">编辑</button>
@@ -174,7 +178,12 @@
 
         <div class="section-title">联系与备注</div>
         <div class="form-row">
-          <div class="form-group"><label>看房时间</label><input v-model="form.viewTime"></div>
+          <div class="form-group"><label>看房时间</label>
+            <input type="datetime-local" v-model="form.viewTime">
+            <small class="field-hint" v-if="form.viewTime && !isDateTimeValue(form.viewTime)">
+              旧记录：{{ form.viewTime }}，选择具体时间后会替换
+            </small>
+          </div>
           <div class="form-group"><label>微信号</label><input v-model="form.wechat"></div>
         </div>
         <div class="form-row">
@@ -209,9 +218,21 @@
         <div class="form-group"><label>分支</label><input v-model="cfg.branch"></div>
         <div class="form-group"><label>文件路径</label><input v-model="cfg.filepath"></div>
       </div>
-      <div class="form-row full"><div class="form-group"><label>Personal Access Token</label>
-        <input type="password" v-model="cfg.token" placeholder="ghp_xxxxxxxxxxxx">
-        <small style="font-size:11px;color:#aaa"><a href="https://github.com/settings/tokens/new" target="_blank" style="color:#6c5ce7">创建 Token</a>（勾选 repo 权限）</small>
+      <div class="form-row">
+        <div class="form-group"><label>Token 类型</label>
+          <select v-model="cfg.tokenType">
+            <option value="fine-grained">Fine-grained token（推荐）</option>
+            <option value="classic">Classic token</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Personal Access Token</label>
+          <input type="password" v-model="cfg.token" placeholder="github_pat_xxx 或 ghp_xxx">
+        </div>
+      </div>
+      <div class="form-row full"><div class="form-group">
+        <small style="font-size:11px;color:#aaa">
+          <a :href="tokenCreateUrl()" target="_blank" style="color:#6c5ce7">创建 Token</a>（{{ tokenPermissionHint() }}）
+        </small>
       </div></div>
       <div class="form-row full"><div class="form-group"><label>修改管理密码</label><input type="password" v-model="newPwd" placeholder="留空不修改"></div></div>
       <div class="modal-actions">
@@ -238,7 +259,7 @@ createApp({
     const editId = ref(null);
     const newPwd = ref('');
 
-    const DEFAULTS = { owner: 'yatxuan', repo: 'viewing-records', branch: 'main', filepath: 'data.json', password: 'admin123' };
+    const DEFAULTS = { owner: 'yatxuan', repo: 'viewing-records', branch: 'main', filepath: 'data.json', tokenType: 'fine-grained', password: 'admin123' };
 
     function getConfig() { try { return JSON.parse(localStorage.getItem('vr_config') || '{}'); } catch { return {}; } }
     function setConfig(cfg) { localStorage.setItem('vr_config', JSON.stringify(cfg)); }
@@ -266,34 +287,110 @@ createApp({
     }
     function doLogout() { loggedIn.value = false; location.reload(); }
 
-    function getGhCfg() { const c = getConfig(); return { owner: c.owner || DEFAULTS.owner, repo: c.repo || DEFAULTS.repo, branch: c.branch || DEFAULTS.branch, filepath: c.filepath || DEFAULTS.filepath, token: c.token || '' }; }
+    function getGhCfg() { const c = getConfig(); return { owner: c.owner || DEFAULTS.owner, repo: c.repo || DEFAULTS.repo, branch: c.branch || DEFAULTS.branch, filepath: c.filepath || DEFAULTS.filepath, tokenType: c.tokenType || DEFAULTS.tokenType, token: c.token || '' }; }
+
+    function ghHeaders(g, extra = {}) {
+      return {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${g.token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...extra
+      };
+    }
+
+    async function readGithubError(resp) {
+      try {
+        const json = await resp.json();
+        return json.message ? `HTTP ${resp.status}: ${json.message}` : `HTTP ${resp.status}`;
+      } catch {
+        return `HTTP ${resp.status}`;
+      }
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    function localDataPaths(filepath) {
+      const configuredPath = filepath || DEFAULTS.filepath;
+      const configuredFile = configuredPath.split('/').pop();
+      return [...new Set([
+        configuredFile ? `./${configuredFile}` : '',
+        configuredPath ? `./${configuredPath}` : '',
+        `./${DEFAULTS.filepath}`
+      ].filter(Boolean))];
+    }
+
+    async function fetchLocalFile(filepath) {
+      for (const path of localDataPaths(filepath)) {
+        try {
+          const resp = await fetch(path);
+          if (resp.ok) return resp.json();
+        } catch(e) {
+          console.warn('本地数据加载失败:', path, e.message);
+        }
+      }
+
+      const raw = localStorage.getItem('vr_local_data');
+      return raw ? JSON.parse(raw) : [];
+    }
 
     async function fetchFile() {
       const g = getGhCfg();
-      if (!g.token) { const raw = localStorage.getItem('vr_local_data'); return raw ? JSON.parse(raw) : []; }
+      if (!g.token) return fetchLocalFile(g.filepath);
       try {
         const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}?ref=${g.branch}`;
-        const resp = await fetch(url, { headers: { Authorization: `Bearer ${g.token}` } });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const resp = await fetchWithTimeout(url, { headers: ghHeaders(g) });
+        if (!resp.ok) throw new Error(await readGithubError(resp));
         const json = await resp.json();
         const bytes = Uint8Array.from(atob(json.content), c => c.charCodeAt(0));
         return JSON.parse(new TextDecoder().decode(bytes).replace(/\n$/, ''));
-      } catch(e) { console.warn('GitHub 失败:', e.message); const raw = localStorage.getItem('vr_local_data'); return raw ? JSON.parse(raw) : []; }
+      } catch(e) { console.warn('GitHub 失败:', e.message); return fetchLocalFile(g.filepath); }
+    }
+
+    async function fetchRemoteSha(g) {
+      const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}?ref=${g.branch}`;
+      const resp = await fetchWithTimeout(url, { headers: ghHeaders(g) });
+      if (resp.status === 404) return '';
+      if (!resp.ok) throw new Error(await readGithubError(resp));
+      const json = await resp.json();
+      return json.sha || '';
     }
 
     async function updateFile(data) {
       const g = getGhCfg();
       if (!g.token) { localStorage.setItem('vr_local_data', JSON.stringify(data)); return; }
+      const sha = await fetchRemoteSha(g);
       const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${g.filepath}`;
-      const body = { message: `update: ${data.length} properties`, content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) };
-      const resp = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${g.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const body = {
+        message: `update: ${data.length} properties`,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+        branch: g.branch
+      };
+      if (sha) body.sha = sha;
+      const resp = await fetchWithTimeout(url, { method: 'PUT', headers: ghHeaders(g, { 'Content-Type': 'application/json' }), body: JSON.stringify(body) });
+      if (!resp.ok) throw new Error(await readGithubError(resp));
     }
 
     async function loadHouses() { try { houses.value = await fetchFile(); setStatus('success', `已加载 ${houses.value.length} 套房源`); } catch(e) { setStatus('error', e.message); } }
     async function persist() { setStatus('loading', '同步中...'); try { await updateFile(houses.value); setStatus('success', '✅ 已同步到 GitHub'); setTimeout(() => status.value = '', 3000); } catch(e) { setStatus('error', '同步失败: ' + e.message); } }
     function nextId() { return houses.value.length ? Math.max(...houses.value.map(h => h.id || 0)) + 1 : 1; }
     function setStatus(type, msg) { status.value = `[${type}] ${msg}`; }
+    function isDateTimeValue(value) { return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value || ''); }
+    function formatViewTime(value) {
+      if (!value) return '';
+      if (!isDateTimeValue(value)) return value;
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      const pad = n => String(n).padStart(2, '0');
+      return `${date.getMonth() + 1}月${date.getDate()}日 ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
 
     function openAdd() { resetForm(); editId.value = null; showModal.value = true; }
     function openEdit(h) {
@@ -316,6 +413,17 @@ createApp({
     function delHouse(id) { if (!confirm('确定删除？')) return; houses.value = houses.value.filter(d => d.id !== id); persist(); }
 
     const cfg = reactive(getConfig());
+    if (!cfg.tokenType) cfg.tokenType = DEFAULTS.tokenType;
+    function tokenCreateUrl() {
+      return cfg.tokenType === 'classic'
+        ? 'https://github.com/settings/tokens/new'
+        : 'https://github.com/settings/personal-access-tokens/new';
+    }
+    function tokenPermissionHint() {
+      return cfg.tokenType === 'classic'
+        ? '勾选 repo 权限'
+        : '只选择数据仓库，授予 Contents: Read and Write';
+    }
     function saveSettings() {
       const c = { ...cfg };
       if (newPwd.value && newPwd.value.length >= 4) c.password = newPwd.value;
@@ -325,7 +433,8 @@ createApp({
     onMounted(() => { if (sessionStorage.getItem('vr_auth') === '1') loggedIn.value = true; });
 
     return { loggedIn, loginPwd, loginError, houses, showModal, showSettings, saving, status, editId,
-      form, directions, sources, cfg, newPwd, doLogin, doLogout, openAdd, openEdit, save, delHouse, saveSettings };
+      form, directions, sources, cfg, newPwd, tokenCreateUrl, tokenPermissionHint,
+      isDateTimeValue, formatViewTime, doLogin, doLogout, openAdd, openEdit, save, delHouse, saveSettings };
   }
 }).mount('#app');
 </script>
