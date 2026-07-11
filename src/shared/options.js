@@ -1,8 +1,8 @@
 export const DEFAULT_CONFIG = {
   owner: "yatxuan",
-  repo: "viewing-records",
+  repo: "jsonData",
   branch: "main",
-  filepath: "data.json",
+  filepath: "viewing-records/json.data",
 };
 
 export const DEFAULT_HOUSE = {

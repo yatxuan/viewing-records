@@ -125,10 +125,10 @@ async function refreshRemoteData() {
 async function submitRemoteData() {
   loading.value = true;
   error.value = "";
-  status.value = "正在提交本地数据到远程...";
+  status.value = "正在拉取远程数据并合并提交...";
   try {
-    await submitLocalHousesToRemote(houses.value);
-    status.value = `已提交 ${houses.value.length} 套本地房源到远程`;
+    houses.value = await submitLocalHousesToRemote(houses.value);
+    status.value = `已合并并提交 ${houses.value.length} 套房源到远程`;
   } catch (err) {
     error.value = `提交远程失败: ${err.message}`;
     status.value = "";

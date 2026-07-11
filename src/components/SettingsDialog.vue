@@ -65,25 +65,6 @@ function testDraft() {
         <n-input v-model:value="draft.token" type="password" show-password-on="click" placeholder="github_pat_xxx 或 ghp_xxx" />
       </n-form-item>
     </div>
-    <details class="advanced-settings">
-      <summary>高级设置</summary>
-      <div class="form-grid full">
-        <n-form-item label="GitHub 用户名">
-          <n-input v-model:value="draft.owner" placeholder="yatxuan" />
-        </n-form-item>
-        <n-form-item label="仓库名">
-          <n-input v-model:value="draft.repo" placeholder="viewing-records" />
-        </n-form-item>
-      </div>
-      <div class="form-grid">
-        <n-form-item label="分支">
-          <n-input v-model:value="draft.branch" placeholder="main" />
-        </n-form-item>
-        <n-form-item label="文件路径">
-          <n-input v-model:value="draft.filepath" placeholder="data.json" />
-        </n-form-item>
-      </div>
-    </details>
     <template #footer>
       <n-space justify="end">
         <n-button secondary @click="$emit('copy-json')">复制当前 JSON</n-button>

@@ -128,9 +128,12 @@ export async function refreshRemoteHouses() {
 }
 
 export async function submitLocalHousesToRemote(houses) {
-  const data = Array.isArray(houses) ? houses : await loadHouses();
-  await saveRemoteHouses(data);
-  return data;
+  const localHouses = Array.isArray(houses) ? houses : await loadHouses();
+  const remoteHouses = await fetchRemoteData();
+  const mergedHouses = mergeHouses(localHouses, remoteHouses);
+  saveHousesToLocal(mergedHouses);
+  await saveRemoteHouses(mergedHouses);
+  return mergedHouses;
 }
 
 export function nextHouseId(houses) {
@@ -179,14 +182,10 @@ async function fetchRemoteData() {
 }
 
 async function fetchLocalData({ preferCache } = { preferCache: false }) {
-  const config = getRemoteConfig();
   if (preferCache) {
     const cachedData = readLocalCache();
     if (cachedData) return cachedData;
   }
-
-  const localFileData = await fetchLocalFileData(config.filepath);
-  if (localFileData) return localFileData;
 
   if (!preferCache) {
     const cachedData = readLocalCache();
@@ -204,38 +203,6 @@ function readLocalCache() {
     console.warn("浏览器本地缓存不是有效 JSON:", error.message);
     return null;
   }
-}
-
-function localDataPaths(filepath) {
-  const configuredPath = filepath || DEFAULT_CONFIG.filepath;
-  const configuredFile = configuredPath.split("/").pop();
-  return [
-    ...new Set(
-      [
-        configuredFile ? `./${configuredFile}` : "",
-        configuredPath ? `./${configuredPath}` : "",
-        `./${DEFAULT_CONFIG.filepath}`,
-      ].filter(Boolean),
-    ),
-  ];
-}
-
-async function fetchLocalFileData(filepath) {
-  for (const path of localDataPaths(filepath)) {
-    try {
-      const response = await fetch(path);
-      if (!response.ok) continue;
-      const text = await response.text();
-      try {
-        return JSON.parse(text);
-      } catch (error) {
-        console.warn("本地数据文件不是有效 JSON:", path, error.message);
-      }
-    } catch (error) {
-      console.warn("本地数据加载失败:", path, error.message);
-    }
-  }
-  return null;
 }
 
 async function fetchRemoteSha(config) {
