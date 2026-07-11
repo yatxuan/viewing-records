@@ -22,8 +22,13 @@ export function normalizeHouse(form) {
       : [],
   };
   delete house.toilets;
+  delete house.waterElectric;
+  delete house.elecUsage;
+  delete house.waterUsage;
+  delete house.serviceFee;
   house.roomType = roomSummary(house);
   house.furniture = house.furnitureComplete ? "家电齐全" : house.appliances.join("、");
+  house.metroStationDurationMinutes = normalizePositiveNumber(house.metroStationDurationMinutes);
   house.commuteDurationMinutes = normalizePositiveNumber(house.commuteDurationMinutes);
   if (house.hasKitchen !== "yes") {
     house.cookingType = "";
@@ -49,6 +54,10 @@ function applyDefaults(form) {
   if (!form.direction) form.direction = "未知";
   if (!form.livingRooms) form.livingRooms = "0厅";
   delete form.toilets;
+  delete form.waterElectric;
+  delete form.elecUsage;
+  delete form.waterUsage;
+  delete form.serviceFee;
 }
 
 function roomSummary(house) {

@@ -1,7 +1,13 @@
 <script setup>
 import { computed } from "vue";
 import { NCard, NTable } from "naive-ui";
-import { calcTotal, effectiveRent, formatCommuteDuration, formatPrice, formatRoomType, shortAddress } from "../shared/formatters.js";
+import {
+  effectiveRent,
+  formatCommuteDuration,
+  formatNetwork,
+  formatPrice,
+  displayTitle,
+} from "../shared/formatters.js";
 
 const props = defineProps({
   houses: { type: Array, required: true },
@@ -14,23 +20,14 @@ const sortedHouses = computed(() =>
 const cheapest = computed(() => sortedHouses.value[0]);
 
 const rows = [
-  ["原月租", (house) => formatPrice(house.price)],
-  ["到手价", (house) => formatPrice(effectiveRent(house))],
-  ["总月支出", (house) => (calcTotal(house).total ? formatPrice(calcTotal(house).total) : "-")],
-  ["房型", (house) => formatRoomType(house) || "-"],
-  ["地铁站", (house) => house.metroStation || "-"],
-  ["通勤时长", (house) => formatCommuteDuration(house) || "-"],
-  ["楼层", (house) => (house.floor ? `${house.floor}楼` : "-")],
-  ["朝向", (house) => house.direction || "-"],
-  ["面积", (house) => (house.area ? `${house.area}㎡` : "-")],
-  ["采光", (house) => house.lighting || "-"],
+  ["房租", (house) => formatPrice(effectiveRent(house))],
   ["水电类型", (house) => house.utility || "-"],
-  ["电费", (house) => (house.electricPrice ? `¥${house.electricPrice}/度` : "-")],
-  ["水费", (house) => (house.waterPrice ? `¥${house.waterPrice}/吨` : "-")],
-  ["物业费", (house) => (house.propFee ? `¥${house.propFee}/㎡` : "-")],
-  ["押金", (house) => house.deposit || "-"],
-  ["装修", (house) => house.decor || "-"],
-  ["电梯", (house) => house.elevator || "-"],
+  ["网费", (house) => formatNetwork(house) || "-"],
+  ["管理费", (house) => (house.propFee ? `¥${house.propFee}/㎡/月` : "-")],
+  ["通勤", (house) => formatCommuteDuration(house) || "-"],
+  ["采光", (house) => house.lighting || "-"],
+  ["楼层", (house) => (house.floor ? `${house.floor}楼` : "-")],
+  ["是否电梯", (house) => house.elevator || "-"],
 ];
 </script>
 
@@ -46,22 +43,24 @@ const rows = [
         <strong class="price-value">{{ formatPrice(cheapest.price) }}/月</strong>
       </n-card>
       <n-card>
-        <n-table :bordered="false" :single-line="false">
-          <thead>
-            <tr>
-              <th>项目</th>
-              <th v-for="house in sortedHouses" :key="house.id">{{ shortAddress(house) }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="[label, getter] in rows" :key="label">
-              <td>
-                <strong>{{ label }}</strong>
-              </td>
-              <td v-for="house in sortedHouses" :key="house.id">{{ getter(house) }}</td>
-            </tr>
-          </tbody>
-        </n-table>
+        <div class="compare-table-scroll">
+          <n-table class="compare-table" :bordered="false" :single-line="false">
+            <thead>
+              <tr>
+                <th>项目</th>
+                <th v-for="house in sortedHouses" :key="house.id">{{ displayTitle(house) }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="[label, getter] in rows" :key="label">
+                <td>
+                  <strong>{{ label }}</strong>
+                </td>
+                <td v-for="house in sortedHouses" :key="house.id">{{ getter(house) }}</td>
+              </tr>
+            </tbody>
+          </n-table>
+        </div>
       </n-card>
     </template>
   </div>

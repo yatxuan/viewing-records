@@ -37,6 +37,9 @@ function toDateTimeLocal(timestamp) {
 <template>
   <n-card title="核心信息" class="priority-form-card">
     <div class="form-grid full">
+      <n-form-item label="标题名称">
+        <n-input v-model:value="form.title" placeholder="例如：大运锦秀花园 / 近地铁南向一房" />
+      </n-form-item>
       <n-form-item label="地址" required>
         <n-input v-model:value="form.address" placeholder="小区 / 楼栋 / 房号" />
       </n-form-item>

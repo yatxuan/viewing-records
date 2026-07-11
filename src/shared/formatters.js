@@ -70,6 +70,12 @@ export function formatCommuteDuration(house) {
   return rest ? `${hours}小时${rest}分钟` : `${hours}小时`;
 }
 
+export function formatMetroStationDuration(house) {
+  const minutes = Number(house?.metroStationDurationMinutes);
+  if (!Number.isFinite(minutes) || minutes <= 0) return "";
+  return `${minutes}分钟`;
+}
+
 export function subsidyAmount(house) {
   const amount = Number(house?.subsidyAmount);
   return Number.isFinite(amount) && amount > 0 ? amount : 0;
@@ -128,17 +134,11 @@ export function calcTotal(house) {
   if (!house) return { total: 0, detail: "-" };
   const rent = effectiveRent(house);
   const propFee = Math.round((Number(house.propFee) || 0) * (Number(house.area) || 0));
-  const waterFee = Math.round((Number(house.waterPrice) || 0) * (Number(house.waterUsage) || 0));
-  const elecFee = Math.round((Number(house.electricPrice) || 0) * (Number(house.elecUsage) || 0));
-  const serviceFee = Number(house.serviceFee) || 0;
   const networkFee = house.networkMode === "房东提供" ? Number(house.networkFee) || 0 : 0;
-  const total = rent + propFee + waterFee + elecFee + serviceFee + networkFee;
+  const total = rent + propFee + networkFee;
   const detail = [
-    waterFee ? `水${waterFee}` : "",
-    elecFee ? `电${elecFee}` : "",
     networkFee ? `网${networkFee}` : "",
     propFee ? `物${propFee}` : "",
-    serviceFee ? `服${serviceFee}` : "",
   ]
     .filter(Boolean)
     .join("+");
@@ -147,4 +147,8 @@ export function calcTotal(house) {
 
 export function shortAddress(house) {
   return (house?.address || "地址未填写").split("/").slice(-2).join("/");
+}
+
+export function displayTitle(house) {
+  return house?.title || shortAddress(house);
 }

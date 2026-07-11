@@ -6,6 +6,7 @@ import DetailSections from "../components/DetailSections.vue";
 import { loadHouses } from "../shared/data-service.js";
 import {
   calcTotal,
+  displayTitle,
   effectiveRent,
   formatHouseType,
   formatPrice,
@@ -66,7 +67,7 @@ onMounted(async () => {
             <n-tag>{{ house.source || "来源未填" }}</n-tag>
           </n-space>
         </n-space>
-        <h1 class="detail-title">{{ house.address || "地址未填写" }}</h1>
+        <h1 class="detail-title">{{ displayTitle(house) }}</h1>
         <div class="summary-grid" style="margin-top: 18px">
           <div class="summary-tile">
             <span>到手月租</span>

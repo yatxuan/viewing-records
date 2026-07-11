@@ -3,10 +3,12 @@ import { NDataTable } from "naive-ui";
 import {
   formatHouseType,
   formatCommuteDuration,
+  formatMetroStationDuration,
   formatPrice,
   formatRoomType,
   formatViewTime,
   hasDisplayOrder,
+  displayTitle,
   viewStatus,
 } from "../shared/formatters.js";
 
@@ -25,7 +27,14 @@ const columns = [
       return hasDisplayOrder(row) ? `#${row.displayOrder}` : "-";
     },
   },
-  { title: "地址", key: "address", ellipsis: { tooltip: true } },
+  {
+    title: "标题",
+    key: "title",
+    ellipsis: { tooltip: true },
+    render(row) {
+      return displayTitle(row);
+    },
+  },
   {
     title: "类型",
     key: "type",
@@ -48,6 +57,14 @@ const columns = [
     width: 130,
     render(row) {
       return row.metroStation || "-";
+    },
+  },
+  {
+    title: "距地铁",
+    key: "metroStationDurationMinutes",
+    width: 100,
+    render(row) {
+      return formatMetroStationDuration(row) || "-";
     },
   },
   {

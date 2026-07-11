@@ -12,6 +12,16 @@ defineProps({
     <n-form-item label="靠近地铁站">
       <n-input v-model:value="form.metroStation" placeholder="例如：大运站 / 吉祥站" />
     </n-form-item>
+    <n-form-item label="距离地铁站通行时长">
+      <n-input-number
+        v-model:value="form.metroStationDurationMinutes"
+        clearable
+        :min="0"
+        :step="1"
+        placeholder="单位：分钟"
+        style="width: 100%"
+      />
+    </n-form-item>
     <n-form-item label="上班坐车时长">
       <n-input-number
         v-model:value="form.commuteDurationMinutes"

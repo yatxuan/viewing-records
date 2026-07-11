@@ -138,7 +138,7 @@ async function submitRemoteData() {
 }
 
 async function deleteHouse(house) {
-  if (!confirm(`确定删除「${house.address || "这套房源"}」吗？`)) return;
+  if (!confirm(`确定删除「${house.title || house.address || "这套房源"}」吗？`)) return;
   error.value = "";
   status.value = "同步中...";
   try {

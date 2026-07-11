@@ -268,6 +268,34 @@ a {
   gap: 14px;
 }
 
+.compare-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.compare-table {
+  min-width: max-content;
+}
+
+.compare-table th,
+.compare-table td {
+  min-width: 160px;
+  max-width: 280px;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.compare-table th:first-child,
+.compare-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 72px;
+  max-width: 72px;
+  background: #fff;
+}
+
 .section-title {
   margin: 0 0 12px;
   color: #6b7280;

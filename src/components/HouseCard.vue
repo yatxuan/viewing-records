@@ -3,11 +3,13 @@ import { NButton, NCard, NIcon, NSpace, NTag } from "naive-ui";
 import { CreateOutline, TrashOutline } from "@vicons/ionicons5";
 import {
   calcTotal,
+  displayTitle,
   effectiveRent,
   formatCommuteDuration,
   formatContacts,
   formatFurniture,
   formatHouseType,
+  formatMetroStationDuration,
   formatPrice,
   formatRoomType,
   formatScore,
@@ -27,7 +29,7 @@ defineEmits(["open", "delete"]);
 <template>
   <n-card class="house-card" hoverable @click="$emit('open', house)">
     <template #header>
-      <div class="house-card-title">{{ house.address || "地址未填写" }}</div>
+      <div class="house-card-title">{{ displayTitle(house) }}</div>
     </template>
     <template #header-extra>
       <n-space size="small">
@@ -60,6 +62,10 @@ defineEmits(["open", "delete"]);
       <div v-if="house.metroStation" class="meta-item">
         <span class="meta-label">地铁站</span>
         <span class="meta-value">{{ house.metroStation }}</span>
+      </div>
+      <div v-if="formatMetroStationDuration(house)" class="meta-item">
+        <span class="meta-label">距地铁站</span>
+        <span class="meta-value">{{ formatMetroStationDuration(house) }}</span>
       </div>
       <div v-if="formatCommuteDuration(house)" class="meta-item">
         <span class="meta-label">通勤时长</span>

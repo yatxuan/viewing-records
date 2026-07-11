@@ -125,15 +125,22 @@ export async function refreshRemoteHouses() {
 
 export async function submitLocalHousesToRemote(houses) {
   const localHouses = Array.isArray(houses) ? houses : await loadHouses();
-  const remoteHouses = await fetchRemoteData();
-  const mergedHouses = mergeHouses(localHouses, remoteHouses);
-  saveHousesToLocal(mergedHouses);
-  await saveRemoteHouses(mergedHouses);
-  return mergedHouses;
+  const remoteFile = await fetchRemoteFile();
+  saveHousesToLocal(localHouses);
+  await saveRemoteHouses(localHouses, remoteFile.sha);
+  return localHouses;
 }
 
 export function nextHouseId(houses) {
-  return houses.length ? Math.max(...houses.map((house) => Number(house.id) || 0)) + 1 : 1;
+  const id = typeof globalThis.crypto?.randomUUID === "function" ? globalThis.crypto.randomUUID() : fallbackUuid();
+  const existingIds = new Set((Array.isArray(houses) ? houses : []).map((house) => String(house?.id || "")));
+  return existingIds.has(id) ? nextHouseId(houses) : id;
+}
+
+function fallbackUuid() {
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (char) =>
+    (Number(char) ^ (Math.random() * 16) >> (Number(char) / 4)).toString(16),
+  );
 }
 
 function mergeHouses(localHouses, remoteHouses) {
@@ -155,26 +162,34 @@ function houseIdentity(house) {
   return address ? `address:${address}` : "";
 }
 
-async function saveRemoteHouses(houses) {
+async function saveRemoteHouses(houses, latestSha = "") {
   const config = getRemoteConfig();
   if (!config.token) throw new Error("请先在设置中填写 Personal Access Token，才能提交到远程");
-  let sha = await fetchRemoteSha(config);
+  let sha = latestSha || (await fetchRemoteSha(config));
   let response = await putRemoteFile(config, houses, sha);
   if (response.status === 409) {
-    sha = await fetchRemoteSha(config);
+    sha = (await readConflictSha(response)) || (await fetchRemoteSha(config));
     response = await putRemoteFile(config, houses, sha);
   }
   if (!response.ok) throw new Error(await readGithubError(response));
 }
 
 async function fetchRemoteData() {
+  const remoteFile = await fetchRemoteFile();
+  return remoteFile.data;
+}
+
+async function fetchRemoteFile() {
   const config = getRemoteConfig();
   const headers = config.token ? githubHeaders(config) : {};
   const url = githubContentUrl(config);
   const response = await fetchWithTimeout(url, { headers });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const json = await response.json();
-  return JSON.parse(base64Decode(json.content).replace(/\n$/, ""));
+  return {
+    data: JSON.parse(base64Decode(json.content).replace(/\n$/, "")),
+    sha: json.sha || "",
+  };
 }
 
 async function fetchLocalData({ preferCache } = { preferCache: false }) {
@@ -249,6 +264,15 @@ async function readGithubError(response) {
     return json.message ? `HTTP ${response.status}: ${json.message}` : `HTTP ${response.status}`;
   } catch {
     return `HTTP ${response.status}`;
+  }
+}
+
+async function readConflictSha(response) {
+  try {
+    const json = await response.json();
+    return String(json.message || "").match(/does not match ([0-9a-f]{40})/i)?.[1] || "";
+  } catch {
+    return "";
   }
 }
 

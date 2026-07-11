@@ -9,9 +9,6 @@ defineProps({
 
 <template>
   <div class="form-grid">
-    <n-form-item label="水电网情况">
-      <n-input v-model:value="form.waterElectric" />
-    </n-form-item>
     <n-form-item label="水电类型">
       <n-select v-model:value="form.utility" :options="utilityOptions" />
     </n-form-item>
@@ -24,20 +21,11 @@ defineProps({
     <n-form-item label="电费（元/度）">
       <n-input-number v-model:value="form.electricPrice" clearable :precision="2" style="width: 100%" />
     </n-form-item>
-    <n-form-item label="每月用电量（度）">
-      <n-input-number v-model:value="form.elecUsage" clearable style="width: 100%" />
-    </n-form-item>
     <n-form-item label="水费（元/吨）">
       <n-input-number v-model:value="form.waterPrice" clearable :precision="2" style="width: 100%" />
     </n-form-item>
-    <n-form-item label="每月用水量（吨）">
-      <n-input-number v-model:value="form.waterUsage" clearable :precision="1" style="width: 100%" />
-    </n-form-item>
     <n-form-item label="物业费（元/㎡/月）">
       <n-input-number v-model:value="form.propFee" clearable :precision="1" style="width: 100%" />
-    </n-form-item>
-    <n-form-item label="服务费（元/月）">
-      <n-input-number v-model:value="form.serviceFee" clearable style="width: 100%" />
     </n-form-item>
     <n-form-item label="押金方式">
       <n-select v-model:value="form.deposit" clearable :options="depositOptions" />
