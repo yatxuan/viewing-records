@@ -40,7 +40,7 @@ function normalizePositiveNumber(value) {
   return Number.isFinite(number) && number > 0 ? number : null;
 }
 
-export function applyDefaults(form) {
+function applyDefaults(form) {
   if (!form.status) form.status = "unviewed";
   if (!form.utility) form.utility = "民水民电";
   if (!form.elevator) form.elevator = "未知";

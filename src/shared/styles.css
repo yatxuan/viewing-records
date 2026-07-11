@@ -367,26 +367,6 @@ a {
   line-height: 1.6;
 }
 
-.advanced-settings {
-  margin-top: 6px;
-  border: 1px solid #edf0f7;
-  border-radius: 10px;
-  background: #fafbff;
-}
-
-.advanced-settings summary {
-  padding: 12px 14px;
-  color: #6c5ce7;
-  font-size: 13px;
-  font-weight: 900;
-  cursor: pointer;
-  user-select: none;
-}
-
-.advanced-settings .form-grid {
-  padding: 0 14px 14px;
-}
-
 .contact-row {
   display: grid;
   grid-template-columns: 160px 1fr auto;

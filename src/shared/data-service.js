@@ -3,7 +3,7 @@ import { DEFAULT_CONFIG } from "./options.js";
 const CONFIG_KEY = "vr_config";
 const LOCAL_DATA_KEY = "vr_local_data";
 
-export function getStoredConfig() {
+function getStoredConfig() {
   try {
     return JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}");
   } catch {
@@ -90,11 +90,7 @@ export async function loadHouses() {
   return fetchLocalData({ preferCache: true });
 }
 
-export async function saveHouses(houses) {
-  saveHousesToLocal(houses);
-}
-
-export function saveHousesToLocal(houses) {
+function saveHousesToLocal(houses) {
   localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(houses));
 }
 
@@ -110,7 +106,7 @@ export async function testDataConnection(config) {
 }
 
 export async function loadAndSaveHouses(houses) {
-  await saveHouses(houses);
+  saveHousesToLocal(houses);
   return houses;
 }
 

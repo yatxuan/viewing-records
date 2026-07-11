@@ -6,7 +6,7 @@
   "packageManager": "pnpm@11.0.7",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build && cp data.json dist/data.json && touch dist/.nojekyll",
+    "build": "vite build && touch dist/.nojekyll",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test"
   },
