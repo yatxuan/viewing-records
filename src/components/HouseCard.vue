@@ -42,6 +42,10 @@ defineEmits(["open", "delete"]);
     </template>
 
     <div class="meta-grid">
+      <div v-if="house.address" class="meta-item meta-item-wide">
+        <span class="meta-label">地址</span>
+        <span class="meta-value">{{ house.address }}</span>
+      </div>
       <div class="meta-item">
         <span class="meta-label">月租</span>
         <span class="price-value">{{ formatPrice(effectiveRent(house)) }}</span>

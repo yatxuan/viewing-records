@@ -192,6 +192,10 @@ a {
   min-width: 0;
 }
 
+.meta-item-wide {
+  grid-column: 1 / -1;
+}
+
 .meta-label {
   display: block;
   margin-bottom: 2px;

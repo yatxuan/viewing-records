@@ -30,9 +30,19 @@ const columns = [
   {
     title: "标题",
     key: "title",
+    width: 180,
     ellipsis: { tooltip: true },
     render(row) {
       return displayTitle(row);
+    },
+  },
+  {
+    title: "地址",
+    key: "address",
+    width: 240,
+    ellipsis: { tooltip: true },
+    render(row) {
+      return row.address || "-";
     },
   },
   {
