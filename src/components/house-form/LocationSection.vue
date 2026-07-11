@@ -1,5 +1,6 @@
 <script setup>
-import { NFormItem, NInput, NInputNumber, NSelect } from "naive-ui";
+import { NFormItem, NInput, NInputNumber } from "naive-ui";
+import OptionRadioGroup from "../OptionRadioGroup.vue";
 import { directionOptions, lightingOptions } from "../../shared/options.js";
 
 defineProps({
@@ -36,13 +37,13 @@ defineProps({
       <n-input v-model:value="form.floor" />
     </n-form-item>
     <n-form-item label="朝向">
-      <n-select v-model:value="form.direction" :options="directionOptions" />
+      <OptionRadioGroup v-model:value="form.direction" :options="directionOptions" />
     </n-form-item>
     <n-form-item label="面积（㎡）">
       <n-input-number v-model:value="form.area" clearable :precision="1" style="width: 100%" />
     </n-form-item>
     <n-form-item label="采光">
-      <n-select v-model:value="form.lighting" :options="lightingOptions" />
+      <OptionRadioGroup v-model:value="form.lighting" :options="lightingOptions" />
     </n-form-item>
   </div>
   <div class="form-grid full">

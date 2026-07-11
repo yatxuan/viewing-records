@@ -35,3 +35,25 @@ test("normalizeHouse keeps the house title", () => {
 
   assert.equal(house.title, "大运锦秀花园");
 });
+
+test("normalizeHouse defaults unknown utility to residential utility", () => {
+  const house = normalizeHouse({
+    address: "sample house",
+    utility: "未知",
+  });
+
+  assert.equal(house.utility, "民水民电");
+});
+
+test("normalizeHouse converts legacy balcony values to yes or no", () => {
+  assert.equal(normalizeHouse({ address: "sample house", balconies: "一阳台" }).balconies, "yes");
+  assert.equal(normalizeHouse({ address: "sample house", balconies: "无阳台", balconySize: "中阳台" }).balconies, "no");
+  assert.equal(normalizeHouse({ address: "sample house", balconies: "无阳台", balconySize: "中阳台" }).balconySize, "");
+});
+
+test("normalizeHouse defaults empty kitchen and balcony to no", () => {
+  const house = normalizeHouse({ address: "sample house" });
+
+  assert.equal(house.hasKitchen, "no");
+  assert.equal(house.balconies, "no");
+});

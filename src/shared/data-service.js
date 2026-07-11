@@ -2,6 +2,7 @@ import { DEFAULT_CONFIG } from "./options.js";
 
 const CONFIG_KEY = "vr_config";
 const LOCAL_DATA_KEY = "vr_local_data";
+let activeSubmitPromise = null;
 
 function getStoredConfig() {
   try {
@@ -124,6 +125,16 @@ export async function refreshRemoteHouses() {
 }
 
 export async function submitLocalHousesToRemote(houses) {
+  if (activeSubmitPromise) return activeSubmitPromise;
+  activeSubmitPromise = submitLocalHousesToRemoteOnce(houses);
+  try {
+    return await activeSubmitPromise;
+  } finally {
+    activeSubmitPromise = null;
+  }
+}
+
+async function submitLocalHousesToRemoteOnce(houses) {
   const localHouses = Array.isArray(houses) ? houses : await loadHouses();
   const remoteFile = await fetchRemoteFile();
   saveHousesToLocal(localHouses);
@@ -168,7 +179,7 @@ async function saveRemoteHouses(houses, latestSha = "") {
   let sha = latestSha || (await fetchRemoteSha(config));
   let response = await putRemoteFile(config, houses, sha);
   if (response.status === 409) {
-    sha = (await readConflictSha(response)) || (await fetchRemoteSha(config));
+    sha = await fetchRemoteSha(config);
     response = await putRemoteFile(config, houses, sha);
   }
   if (!response.ok) throw new Error(await readGithubError(response));
@@ -264,15 +275,6 @@ async function readGithubError(response) {
     return json.message ? `HTTP ${response.status}: ${json.message}` : `HTTP ${response.status}`;
   } catch {
     return `HTTP ${response.status}`;
-  }
-}
-
-async function readConflictSha(response) {
-  try {
-    const json = await response.json();
-    return String(json.message || "").match(/does not match ([0-9a-f]{40})/i)?.[1] || "";
-  } catch {
-    return "";
   }
 }
 

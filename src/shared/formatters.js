@@ -14,11 +14,21 @@ export function formatRoomType(house) {
   if (!house) return "";
   const kitchen =
     house.hasKitchen === "yes" ? "有厨房" : house.hasKitchen === "no" ? "无厨房" : "";
-  const balcony = [house.balconies, house.balconySize && house.balconies !== "无阳台" ? house.balconySize : ""]
-    .filter(Boolean)
-    .join(" ");
+  const balconyStatus = normalizeBalconyStatus(house.balconies);
+  const balcony =
+    balconyStatus === "yes"
+      ? ["有阳台", house.balconySize].filter(Boolean).join(" ")
+      : balconyStatus === "no"
+        ? "无阳台"
+        : "";
   const parts = [house.bedrooms, house.livingRooms, balcony, kitchen].filter(Boolean);
   return removeToiletText(parts.length ? parts.join("") : house.roomType || "");
+}
+
+function normalizeBalconyStatus(value) {
+  if (value === "yes" || value === "有阳台" || value === "一阳台" || value === "二阳台") return "yes";
+  if (!value || value === "no" || value === "无阳台") return "no";
+  return "";
 }
 
 function removeToiletText(value) {

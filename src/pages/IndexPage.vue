@@ -64,8 +64,8 @@ const displayHouses = computed(() => {
     if (!house) return false;
     if (filters.type !== "all" && house.type !== filters.type) return false;
     if (filters.roomType !== "all" && formatRoomType(house) !== filters.roomType) return false;
-    if (filters.lighting !== "all" && (house.lighting || "") !== filters.lighting) return false;
-    return true;
+    return !(filters.lighting !== "all" && (house.lighting || "") !== filters.lighting);
+
   });
 
   return list.slice().sort((a, b) => {
@@ -107,6 +107,7 @@ async function reloadData() {
 }
 
 async function refreshRemoteData() {
+  if (loading.value) return;
   loading.value = true;
   error.value = "";
   status.value = "正在从远程拉取并合并...";
@@ -123,12 +124,13 @@ async function refreshRemoteData() {
 }
 
 async function submitRemoteData() {
+  if (loading.value) return;
   loading.value = true;
   error.value = "";
-  status.value = "正在拉取远程数据并合并提交...";
+  status.value = "正在拉取远程提交历史并提交...";
   try {
     houses.value = await submitLocalHousesToRemote(houses.value);
-    status.value = `已合并并提交 ${houses.value.length} 套房源到远程`;
+    status.value = `已提交 ${houses.value.length} 套房源到远程`;
   } catch (err) {
     error.value = `提交远程失败: ${err.message}`;
     status.value = "";
@@ -259,13 +261,13 @@ onMounted(reloadData);
 
       <div class="toolbar">
         <div class="toolbar-group">
-          <n-button secondary @click="refreshRemoteData">
+          <n-button secondary :disabled="loading" @click="refreshRemoteData">
             <template #icon>
               <n-icon><RefreshOutline /></n-icon>
             </template>
             刷新数据
           </n-button>
-          <n-button type="primary" secondary @click="submitRemoteData">
+          <n-button type="primary" secondary :loading="loading" :disabled="loading" @click="submitRemoteData">
             提交数据
           </n-button>
         </div>

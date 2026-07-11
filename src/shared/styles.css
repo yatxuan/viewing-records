@@ -407,6 +407,14 @@ a {
   margin-bottom: 10px;
 }
 
+.option-radio-group {
+  width: 100%;
+}
+
+.option-radio-group .n-space {
+  row-gap: 4px !important;
+}
+
 .star-input {
   display: flex;
   align-items: center;

@@ -80,9 +80,10 @@ test("submitLocalHousesToRemote pulls remote data and pushes local data as the f
   assert.equal(pushedSha, "remote-sha");
 });
 
-test("submitLocalHousesToRemote retries 409 with sha from GitHub error message", async () => {
+test("submitLocalHousesToRemote retries 409 with a freshly fetched remote sha", async () => {
   const localHouses = [{ id: 1, address: "local house" }];
   const requestedShas = [];
+  let getCount = 0;
 
   globalThis.fetch = async (url, options = {}) => {
     if (options.method === "PUT") {
@@ -99,9 +100,10 @@ test("submitLocalHousesToRemote retries 409 with sha from GitHub error message",
       return new Response(JSON.stringify({ content: { sha: "next-sha" } }), { status: 200 });
     }
 
+    getCount += 1;
     return new Response(
       JSON.stringify({
-        sha: "stale-sha",
+        sha: getCount === 1 ? "stale-sha" : "fresh-sha",
         content: encodeJson([{ id: 1, address: "remote stale" }]),
       }),
       { status: 200 },
@@ -110,7 +112,40 @@ test("submitLocalHousesToRemote retries 409 with sha from GitHub error message",
 
   await submitLocalHousesToRemote(localHouses);
 
-  assert.deepEqual(requestedShas, ["stale-sha", "82c6da777ef465d6e58cf3aaaddac8ddf2dd14e3"]);
+  assert.deepEqual(requestedShas, ["stale-sha", "fresh-sha"]);
+});
+
+test("submitLocalHousesToRemote reuses an in-flight submit instead of sending duplicate PUTs", async () => {
+  const localHouses = [{ id: 1, address: "local house" }];
+  let putCalls = 0;
+  let releasePut;
+  const putStarted = new Promise((resolve) => {
+    releasePut = resolve;
+  });
+
+  globalThis.fetch = async (url, options = {}) => {
+    if (options.method === "PUT") {
+      putCalls += 1;
+      await putStarted;
+      return new Response(JSON.stringify({ content: { sha: "next-sha" } }), { status: 200 });
+    }
+
+    return new Response(
+      JSON.stringify({
+        sha: "remote-sha",
+        content: encodeJson([{ id: 1, address: "remote stale" }]),
+      }),
+      { status: 200 },
+    );
+  };
+
+  const firstSubmit = submitLocalHousesToRemote(localHouses);
+  const secondSubmit = submitLocalHousesToRemote(localHouses);
+  releasePut();
+  const results = await Promise.all([firstSubmit, secondSubmit]);
+
+  assert.deepEqual(results, [localHouses, localHouses]);
+  assert.equal(putCalls, 1);
 });
 
 test("normalizeDataConfig defaults to the shared json.data file", () => {

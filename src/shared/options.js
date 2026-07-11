@@ -9,25 +9,25 @@ export const DEFAULT_HOUSE = {
   id: "",
   type: "personal",
   status: "unviewed",
-  displayOrder: "",
+  displayOrder: null,
   title: "",
   address: "",
   metroStation: "",
   metroStationDurationMinutes: null,
   commuteDurationMinutes: null,
-  price: "",
+  price: null,
   roomType: "",
   bedrooms: "",
   livingRooms: "0厅",
-  balconies: "",
+  balconies: "no",
   balconySize: "",
-  hasKitchen: "",
+  hasKitchen: "no",
   kitchenType: "",
   sharedKitchenLocation: "",
   cookingType: "",
   floor: "",
   direction: "未知",
-  area: "",
+  area: null,
   furniture: "",
   furnitureComplete: false,
   appliances: [],
@@ -37,17 +37,17 @@ export const DEFAULT_HOUSE = {
   elevator: "未知",
   utility: "民水民电",
   networkMode: "未知",
-  networkFee: "",
-  electricPrice: "",
-  waterPrice: "",
-  propFee: "",
+  networkFee: null,
+  electricPrice: null,
+  waterPrice: null,
+  propFee: null,
   deposit: "",
   agentFee: "",
   leaseTerm: "",
-  subsidyAmount: "",
-  subsidyMonths: "",
+  subsidyAmount: null,
+  subsidyMonths: null,
   discountStrategy: "",
-  score: "",
+  score: null,
   viewTime: "",
   source: "",
   contacts: [],
@@ -72,11 +72,14 @@ export const statusOptions = [
 
 export const bedroomOptions = ["一房", "两房", "三房"].map(toOption);
 export const livingRoomOptions = ["0厅", "一厅", "两厅"].map(toOption);
-export const balconyOptions = ["无阳台", "一阳台", "二阳台"].map(toOption);
+export const balconyOptions = [
+  { label: "有", value: "yes" },
+  { label: "无", value: "no" },
+];
 export const balconySizeOptions = ["未知", "小阳台", "中阳台", "大阳台"].map(toOption);
 export const kitchenOptions = [
-  { label: "有厨房", value: "yes" },
-  { label: "无厨房", value: "no" },
+  { label: "有", value: "yes" },
+  { label: "无", value: "no" },
 ];
 export const kitchenTypeOptions = [
   { label: "独立厨房", value: "independent" },
@@ -96,7 +99,7 @@ export const applianceOptions = ["床", "冰箱", "空调", "洗衣机", "热水
 export const completeAppliances = ["床", "冰箱", "空调", "洗衣机", "热水器"];
 export const decorOptions = ["毛坯", "简装", "精装", "豪装"].map(toOption);
 export const elevatorOptions = ["未知", "有电梯", "无电梯"].map(toOption);
-export const utilityOptions = ["民水民电", "商水商电", "民水商电", "未知"].map(toOption);
+export const utilityOptions = ["民水民电", "商水商电", "民水商电"].map(toOption);
 export const networkOptions = ["未知", "房东提供", "自己签网络"].map(toOption);
 export const depositOptions = ["押一付一", "押二付一", "押一付三"].map(toOption);
 export const leaseTermOptions = ["1年", "半年", "1年可续"].map(toOption);

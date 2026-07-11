@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { NButton, NCard, NDatePicker, NFormItem, NInput, NInputNumber, NSelect } from "naive-ui";
+import OptionRadioGroup from "../OptionRadioGroup.vue";
 import { contactTypeOptions, houseTypeOptions, sourceOptions, statusOptions } from "../../shared/options.js";
 
 const props = defineProps({
@@ -46,10 +47,10 @@ function toDateTimeLocal(timestamp) {
     </div>
     <div class="form-grid">
       <n-form-item label="类型">
-        <n-select v-model:value="form.type" :options="houseTypeOptions" />
+        <OptionRadioGroup v-model:value="form.type" :options="houseTypeOptions" />
       </n-form-item>
       <n-form-item label="状态">
-        <n-select v-model:value="form.status" :options="statusOptions" />
+        <OptionRadioGroup v-model:value="form.status" :options="statusOptions" />
       </n-form-item>
       <n-form-item label="房租（元/月）">
         <n-input-number v-model:value="form.price" clearable style="width: 100%" />
@@ -64,7 +65,7 @@ function toDateTimeLocal(timestamp) {
         <n-date-picker v-model:value="viewTimeValue" type="datetime" clearable style="width: 100%" />
       </n-form-item>
       <n-form-item label="来源">
-        <n-select v-model:value="form.source" clearable :options="sourceOptions" />
+        <OptionRadioGroup v-model:value="form.source" clearable :options="sourceOptions" />
       </n-form-item>
       <n-form-item label="展示顺序">
         <n-input-number v-model:value="form.displayOrder" clearable placeholder="数字越小越靠前" style="width: 100%" />
