@@ -111,16 +111,18 @@ export async function loadAndSaveHouses(houses) {
   return houses;
 }
 
-export async function refreshRemoteHouses() {
+export async function refreshRemoteHouses(strategy = "local") {
   const localHouses = await loadHouses();
   const remoteHouses = await fetchRemoteData();
-  const houses = mergeHouses(localHouses, remoteHouses);
+  const localFirst = strategy !== "remote";
+  const houses = localFirst ? mergeHouses(localHouses, remoteHouses) : mergeHouses(remoteHouses, localHouses);
   saveHousesToLocal(houses);
   return {
     houses,
+    strategy: localFirst ? "local" : "remote",
     localCount: localHouses.length,
     remoteCount: remoteHouses.length,
-    addedCount: houses.length - localHouses.length,
+    addedCount: houses.length - (localFirst ? localHouses.length : remoteHouses.length),
   };
 }
 

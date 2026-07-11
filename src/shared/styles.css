@@ -399,6 +399,41 @@ a {
   line-height: 1.6;
 }
 
+.refresh-choice-list {
+  display: grid;
+  gap: 10px;
+}
+
+.refresh-choice {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #4b5563;
+  font: inherit;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+}
+
+.refresh-choice:hover {
+  border-color: #6c5ce7;
+  background: #f8f7ff;
+}
+
+.refresh-choice strong {
+  color: #1f2937;
+  font-size: 15px;
+}
+
+.refresh-choice span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
 .contact-row {
   display: grid;
   grid-template-columns: 160px 1fr auto;

@@ -6,6 +6,7 @@ import {
   loadHouses,
   nextHouseId,
   normalizeDataConfig,
+  refreshRemoteHouses,
   saveStoredConfig,
   submitLocalHousesToRemote,
 } from "../src/shared/data-service.js";
@@ -157,6 +158,60 @@ test("normalizeDataConfig defaults to the shared json.data file", () => {
     githubFileUrl: "https://github.com/yatxuan/jsonData/blob/main/viewing-records/json.data",
     token: "",
   });
+});
+
+test("refreshRemoteHouses keeps local records first by default", async () => {
+  await loadAndSaveHouses([
+    { id: 1, address: "local override" },
+    { id: 2, address: "local only" },
+  ]);
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        sha: "remote-sha",
+        content: encodeJson([
+          { id: 1, address: "remote stale" },
+          { id: 3, address: "remote only" },
+        ]),
+      }),
+      { status: 200 },
+    );
+
+  const result = await refreshRemoteHouses();
+
+  assert.equal(result.strategy, "local");
+  assert.deepEqual(result.houses, [
+    { id: 1, address: "local override" },
+    { id: 2, address: "local only" },
+    { id: 3, address: "remote only" },
+  ]);
+});
+
+test("refreshRemoteHouses can keep remote records first", async () => {
+  await loadAndSaveHouses([
+    { id: 1, address: "local stale" },
+    { id: 2, address: "local only" },
+  ]);
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        sha: "remote-sha",
+        content: encodeJson([
+          { id: 1, address: "remote override" },
+          { id: 3, address: "remote only" },
+        ]),
+      }),
+      { status: 200 },
+    );
+
+  const result = await refreshRemoteHouses("remote");
+
+  assert.equal(result.strategy, "remote");
+  assert.deepEqual(result.houses, [
+    { id: 1, address: "remote override" },
+    { id: 3, address: "remote only" },
+    { id: 2, address: "local only" },
+  ]);
 });
 
 test("loadHouses does not fall back to local data files when cache is empty", async () => {
