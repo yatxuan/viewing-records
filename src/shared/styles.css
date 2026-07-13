@@ -140,9 +140,36 @@ a {
   margin-bottom: 14px;
 }
 
+.house-list-table {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid #edf0f7;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.house-list-table .n-data-table-wrapper {
+  max-width: 100%;
+}
+
+.house-list-table .n-data-table-base-table {
+  max-width: 100%;
+}
+
+.house-list-table .n-data-table-th,
+.house-list-table .n-data-table-td {
+  vertical-align: middle;
+}
+
+.house-list-table .n-data-table-td {
+  line-height: 1.45;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  align-items: start;
   gap: 20px;
 }
 
@@ -186,6 +213,15 @@ a {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 14px;
+}
+
+.card-summary-grid {
+  margin-top: 0;
+}
+
+.card-detail-grid {
+  padding-top: 14px;
+  border-top: 1px solid #f1f3f7;
 }
 
 .meta-item {

@@ -1,6 +1,7 @@
 <script setup>
+import { ref } from "vue";
 import { NButton, NCard, NIcon, NSpace, NTag } from "naive-ui";
-import { CreateOutline, TrashOutline } from "@vicons/ionicons5";
+import { ChevronDownOutline, ChevronUpOutline, CreateOutline, TrashOutline } from "@vicons/ionicons5";
 import {
   calcTotal,
   displayTitle,
@@ -24,6 +25,8 @@ defineProps({
 });
 
 defineEmits(["open", "delete"]);
+
+const collapsed = ref(false);
 </script>
 
 <template>
@@ -38,14 +41,24 @@ defineEmits(["open", "delete"]);
         </n-tag>
         <n-tag v-if="hasDisplayOrder(house)" size="small">#{{ house.displayOrder }}</n-tag>
         <n-tag size="small">{{ viewStatus(house) }}</n-tag>
+        <n-button
+          quaternary
+          circle
+          size="small"
+          :aria-label="collapsed ? '展开卡片' : '折叠卡片'"
+          @click.stop="collapsed = !collapsed"
+        >
+          <template #icon>
+            <n-icon>
+              <ChevronDownOutline v-if="collapsed" />
+              <ChevronUpOutline v-else />
+            </n-icon>
+          </template>
+        </n-button>
       </n-space>
     </template>
 
-    <div class="meta-grid">
-      <div v-if="house.address" class="meta-item meta-item-wide">
-        <span class="meta-label">地址</span>
-        <span class="meta-value">{{ house.address }}</span>
-      </div>
+    <div class="meta-grid card-summary-grid">
       <div class="meta-item">
         <span class="meta-label">月租</span>
         <span class="price-value">{{ formatPrice(effectiveRent(house)) }}</span>
@@ -58,6 +71,13 @@ defineEmits(["open", "delete"]);
         <span class="meta-value">
           {{ calcTotal(house).total ? formatPrice(calcTotal(house).total) : "待估" }}
         </span>
+      </div>
+    </div>
+
+    <div v-if="!collapsed" class="meta-grid card-detail-grid">
+      <div v-if="house.address" class="meta-item meta-item-wide">
+        <span class="meta-label">地址</span>
+        <span class="meta-value">{{ house.address }}</span>
       </div>
       <div v-if="formatRoomType(house)" class="meta-item">
         <span class="meta-label">房型</span>
@@ -97,7 +117,10 @@ defineEmits(["open", "delete"]);
       </div>
     </div>
 
-    <div v-if="house.discountStrategy || formatSubsidy(house) || house.pros || house.cons || house.notes" class="note-box">
+    <div
+      v-if="!collapsed && (house.discountStrategy || formatSubsidy(house) || house.pros || house.cons || house.notes)"
+      class="note-box"
+    >
       <div v-if="house.discountStrategy">入住优惠：{{ house.discountStrategy }}</div>
       <div v-if="formatSubsidy(house)">房租补贴：{{ formatSubsidy(house) }}</div>
       <div v-if="house.pros">优点：{{ house.pros }}</div>

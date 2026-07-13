@@ -1,9 +1,11 @@
+import { statusOptions } from "./options.js";
+
 export function formatHouseType(value) {
   return value === "agent" ? "中介" : "个人转租";
 }
 
 export function viewStatus(house) {
-  return house?.status === "unviewed" ? "未看" : "已看";
+  return statusOptions.find((option) => option.value === house?.status)?.label || "未看";
 }
 
 export function hasDisplayOrder(house) {

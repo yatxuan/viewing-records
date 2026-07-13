@@ -23,9 +23,9 @@ const columns = [
     title: "顺序",
     key: "displayOrder",
     width: 80,
-    render(row) {
-      return hasDisplayOrder(row) ? `#${row.displayOrder}` : "-";
-    },
+    render: (_, index) => {
+      return `${index + 1}`
+    }
   },
   {
     title: "标题",
@@ -128,12 +128,16 @@ function rowProps(row) {
 </script>
 
 <template>
-  <n-data-table
-    :columns="columns"
-    :data="houses"
-    :row-key="(row) => row.id"
-    :row-props="rowProps"
-    :bordered="false"
-    :single-line="false"
-  />
+  <div class="house-list-table">
+    <n-data-table
+      :columns="columns"
+      :data="houses"
+      :row-key="(row) => row.id"
+      :row-props="rowProps"
+      :bordered="false"
+      :single-line="false"
+      :scroll-x="1580"
+      size="small"
+    />
+  </div>
 </template>

@@ -7,6 +7,7 @@ import {
   nextHouseId,
   normalizeDataConfig,
   refreshRemoteHouses,
+  resetRemoteHouses,
   saveStoredConfig,
   submitLocalHousesToRemote,
 } from "../src/shared/data-service.js";
@@ -212,6 +213,34 @@ test("refreshRemoteHouses can keep remote records first", async () => {
     { id: 3, address: "remote only" },
     { id: 2, address: "local only" },
   ]);
+});
+
+test("resetRemoteHouses replaces local cache with remote records", async () => {
+  await loadAndSaveHouses([
+    { id: 1, address: "local stale" },
+    { id: 2, address: "local only" },
+  ]);
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        sha: "remote-sha",
+        content: encodeJson([
+          { id: 1, address: "remote override" },
+          { id: 3, address: "remote only" },
+        ]),
+      }),
+      { status: 200 },
+    );
+
+  const result = await resetRemoteHouses();
+  const cachedHouses = await loadHouses();
+
+  assert.deepEqual(result.houses, [
+    { id: 1, address: "remote override" },
+    { id: 3, address: "remote only" },
+  ]);
+  assert.deepEqual(cachedHouses, result.houses);
+  assert.equal(result.remoteCount, 2);
 });
 
 test("loadHouses does not fall back to local data files when cache is empty", async () => {

@@ -126,6 +126,15 @@ export async function refreshRemoteHouses(strategy = "local") {
   };
 }
 
+export async function resetRemoteHouses() {
+  const remoteHouses = await fetchRemoteData();
+  saveHousesToLocal(remoteHouses);
+  return {
+    houses: remoteHouses,
+    remoteCount: remoteHouses.length,
+  };
+}
+
 export async function submitLocalHousesToRemote(houses) {
   if (activeSubmitPromise) return activeSubmitPromise;
   activeSubmitPromise = submitLocalHousesToRemoteOnce(houses);

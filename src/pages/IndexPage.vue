@@ -5,7 +5,6 @@ import {
   NButton,
   NIcon,
   NMessageProvider,
-  NModal,
   NSpace,
 } from "naive-ui";
 import { Add, RefreshOutline, SettingsOutline } from "@vicons/ionicons5";
@@ -20,6 +19,7 @@ import {
   loadHouses,
   normalizeDataConfig,
   refreshRemoteHouses,
+  resetRemoteHouses,
   saveStoredConfig,
   submitLocalHousesToRemote,
   testDataConnection,
@@ -34,7 +34,6 @@ const tab = ref("list");
 const viewMode = ref("card");
 const showFilter = ref(false);
 const showSettings = ref(false);
-const showRefreshStrategy = ref(false);
 const config = reactive(getRemoteConfig());
 const filters = reactive({
   type: "all",
@@ -108,24 +107,34 @@ async function reloadData() {
   }
 }
 
-function openRefreshStrategy() {
+async function resetRemoteData() {
   if (loading.value) return;
-  showRefreshStrategy.value = true;
-}
-
-async function refreshRemoteData(strategy) {
-  if (loading.value) return;
-  showRefreshStrategy.value = false;
   loading.value = true;
   error.value = "";
-  status.value = `正在从远程拉取并按${strategy === "remote" ? "远程" : "本地"}为主合并...`;
+  status.value = "正在清空本地缓存并拉取远程数据...";
   try {
-    const result = await refreshRemoteHouses(strategy);
+    const result = await resetRemoteHouses();
     houses.value = result.houses;
-    const strategyLabel = result.strategy === "remote" ? "远程为主" : "本地为主";
-    status.value = `已按${strategyLabel}合并：本地 ${result.localCount} 套，远程 ${result.remoteCount} 套，补充 ${result.addedCount} 套`;
+    status.value = `已重置为远程数据：${result.remoteCount} 套房源`;
   } catch (err) {
-    error.value = `刷新远程失败: ${err.message}`;
+    error.value = `重置失败: ${err.message}`;
+    status.value = "";
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function syncRemoteData() {
+  if (loading.value) return;
+  loading.value = true;
+  error.value = "";
+  status.value = "正在拉取远程数据并按本地为主同步...";
+  try {
+    const result = await refreshRemoteHouses("local");
+    houses.value = result.houses;
+    status.value = `已同步：本地 ${result.localCount} 套，远程 ${result.remoteCount} 套，补充 ${result.addedCount} 套`;
+  } catch (err) {
+    error.value = `同步失败: ${err.message}`;
     status.value = "";
   } finally {
     loading.value = false;
@@ -260,9 +269,6 @@ onMounted(reloadData);
         <button class="tab" :class="{ active: tab === 'list' }" type="button" @click="tab = 'list'">
           房源列表
         </button>
-        <button class="tab" type="button" @click="showFilter = true">
-          筛选
-        </button>
         <button class="tab" :class="{ active: tab === 'compare' }" type="button" @click="tab = 'compare'">
           对比分析
         </button>
@@ -270,14 +276,20 @@ onMounted(reloadData);
 
       <div class="toolbar">
         <div class="toolbar-group">
-          <n-button secondary :disabled="loading" @click="openRefreshStrategy">
+          <n-button secondary :loading="loading" :disabled="loading" @click="resetRemoteData">
             <template #icon>
               <n-icon><RefreshOutline /></n-icon>
             </template>
-            刷新数据
+            重置
+          </n-button>
+          <n-button secondary :loading="loading" :disabled="loading" @click="syncRemoteData">
+            <template #icon>
+              <n-icon><RefreshOutline /></n-icon>
+            </template>
+            同步
           </n-button>
           <n-button type="primary" secondary :loading="loading" :disabled="loading" @click="submitRemoteData">
-            提交数据
+            提交
           </n-button>
         </div>
         <div v-if="tab === 'list'" class="view-switch">
@@ -341,28 +353,6 @@ onMounted(reloadData);
         @copy-json="copyCurrentJson"
         @test-config="testConfig"
       />
-      <n-modal
-        v-model:show="showRefreshStrategy"
-        preset="card"
-        title="选择刷新合并方式"
-        style="width: min(560px, calc(100vw - 32px))"
-      >
-        <div class="refresh-choice-list">
-          <button class="refresh-choice" type="button" @click="refreshRemoteData('local')">
-            <strong>本地为主</strong>
-            <span>保留当前浏览器里的房源内容；远程只补充本地没有的房源。</span>
-          </button>
-          <button class="refresh-choice" type="button" @click="refreshRemoteData('remote')">
-            <strong>远程为主</strong>
-            <span>同一 ID 的房源以远程文件为准；本地只补充远程没有的房源。</span>
-          </button>
-        </div>
-        <template #footer>
-          <n-space justify="end">
-            <n-button secondary @click="showRefreshStrategy = false">取消</n-button>
-          </n-space>
-        </template>
-      </n-modal>
     </main>
   </n-message-provider>
 </template>
