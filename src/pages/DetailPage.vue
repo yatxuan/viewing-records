@@ -5,7 +5,6 @@ import { HomeOutline } from "@vicons/ionicons5";
 import DetailSections from "../components/DetailSections.vue";
 import { loadHouses } from "../shared/data-service.js";
 import {
-  calcTotal,
   displayTitle,
   effectiveRent,
   formatHouseType,
@@ -80,10 +79,6 @@ onMounted(async () => {
           <div class="summary-tile">
             <span>房租补贴</span>
             <strong>{{ formatSubsidy(house) || "无" }}</strong>
-          </div>
-          <div class="summary-tile">
-            <span>月总支出</span>
-            <strong>{{ calcTotal(house).total ? formatPrice(calcTotal(house).total) : "待估" }}</strong>
           </div>
           <div class="summary-tile">
             <span>房型</span>

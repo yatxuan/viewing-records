@@ -2,7 +2,6 @@
 import { computed } from "vue";
 import { NCard } from "naive-ui";
 import {
-  calcTotal,
   formatCommuteDuration,
   formatContacts,
   formatFurniture,
@@ -50,7 +49,6 @@ const sections = computed(() => [
       ["月租金", props.house.price ? formatPrice(props.house.price) : ""],
       ["房租补贴", formatSubsidy(props.house)],
       ["到手价", props.house.price ? formatPrice(Math.max(0, Number(props.house.price) - (Number(props.house.subsidyAmount) || 0))) : ""],
-      ["月总支出", calcTotal(props.house).total ? formatPrice(calcTotal(props.house).total) : ""],
       ["水电类型", props.house.utility],
       ["网络", formatNetwork(props.house)],
       ["电费", props.house.electricPrice ? `¥${props.house.electricPrice}/度` : ""],

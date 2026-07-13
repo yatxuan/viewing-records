@@ -49,7 +49,7 @@ function testDraft() {
   >
     <div class="settings-simple">
       <p class="settings-hint">
-        页面默认使用浏览器本地缓存；只有点击“刷新数据”时才会从这里配置的 GitHub 文件拉取远程数据。
+        页面默认使用浏览器本地缓存；只有点击“重置”或“同步”时才会从这里配置的 GitHub 文件拉取远程数据。
       </p>
       <n-form-item label="数据文件地址">
         <n-input

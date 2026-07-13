@@ -3,7 +3,6 @@ import { ref } from "vue";
 import { NButton, NCard, NIcon, NSpace, NTag } from "naive-ui";
 import { ChevronDownOutline, ChevronUpOutline, CreateOutline, TrashOutline } from "@vicons/ionicons5";
 import {
-  calcTotal,
   displayTitle,
   effectiveRent,
   formatCommuteDuration,
@@ -64,12 +63,6 @@ const collapsed = ref(false);
         <span class="price-value">{{ formatPrice(effectiveRent(house)) }}</span>
         <span v-if="formatSubsidy(house)" class="meta-label">
           原价 {{ formatPrice(house.price) }} · {{ formatSubsidy(house) }}
-        </span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">总支出</span>
-        <span class="meta-value">
-          {{ calcTotal(house).total ? formatPrice(calcTotal(house).total) : "待估" }}
         </span>
       </div>
     </div>
